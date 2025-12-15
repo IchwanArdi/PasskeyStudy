@@ -24,11 +24,19 @@ export const getRegistrationOptions = async (user) => {
     // Prepare exclude credentials (if any)
     const excludeCredentials = (user.webauthnCredentials || []).map((cred) => {
       // credentialID should be a base64url string
-      return {
+      const excludeDescriptor = {
         id: cred.credentialID,
         type: 'public-key',
-        transports: ['internal', 'usb', 'nfc', 'ble'],
       };
+
+      // Only include transports for cross-platform authenticators that have transports saved
+      // Platform authenticators should not have transports specified
+      if (cred.deviceType === 'cross-platform' && cred.transports && Array.isArray(cred.transports) && cred.transports.length > 0) {
+        excludeDescriptor.transports = cred.transports;
+      }
+      // For platform authenticators or if no transports saved, omit transports field
+
+      return excludeDescriptor;
     });
 
     console.log('Generating registration options:', {
@@ -235,18 +243,39 @@ export const verifyRegistration = async (body, expectedChallenge, user) => {
     // Ensure counter is a number (default to 0 if not provided)
     const finalCounter = typeof counter === 'number' ? counter : 0;
 
+    const deviceType = body.response?.authenticatorAttachment || body.authenticatorAttachment || 'cross-platform';
+
+    // Extract transports from response if available
+    // For platform authenticators (built-in like fingerprint/face ID), we don't store transports
+    // because they can be used on other devices with platform authenticators
+    // For cross-platform authenticators (USB keys), we store transports to help browser identify them
+    let transports = [];
+    if (deviceType === 'cross-platform') {
+      // Only store transports for cross-platform authenticators
+      if (verification.registrationInfo?.transports && Array.isArray(verification.registrationInfo.transports)) {
+        transports = verification.registrationInfo.transports;
+      } else if (body.response?.transports && Array.isArray(body.response.transports)) {
+        transports = body.response.transports;
+      } else if (body.transports && Array.isArray(body.transports)) {
+        transports = body.transports;
+      }
+    }
+    // For platform authenticators, leave transports empty so browser can use any platform authenticator
+
     console.log('Credential data to save:', {
       credentialID: credentialIDString.substring(0, 20) + '...',
       hasPublicKey: !!credentialPublicKeyString,
       counter: finalCounter,
-      deviceType: body.response?.authenticatorAttachment || body.authenticatorAttachment || 'cross-platform',
+      deviceType,
+      transports,
     });
 
     return {
       credentialID: credentialIDString,
       credentialPublicKey: credentialPublicKeyString,
       counter: finalCounter,
-      deviceType: body.response?.authenticatorAttachment || body.authenticatorAttachment || 'cross-platform',
+      deviceType,
+      transports,
     };
   } catch (error) {
     console.error('Error in verifyRegistration:', error);
@@ -264,11 +293,26 @@ export const getAuthenticationOptions = async (user) => {
     rpID,
     timeout: 60000,
     allowCredentials:
-      user.webauthnCredentials?.map((cred) => ({
-        id: cred.credentialID, // credentialID is already stored as base64url string
-        type: 'public-key',
-        transports: ['internal', 'usb', 'nfc', 'ble'],
-      })) || [],
+      user.webauthnCredentials?.map((cred) => {
+        // For platform authenticators, don't specify transports
+        // This allows the credential to be used with any platform authenticator
+        // (e.g., credential created on phone can be used with Windows Hello on laptop)
+        // For cross-platform authenticators, use stored transports if available
+        const credentialDescriptor = {
+          id: cred.credentialID, // credentialID is already stored as base64url string
+          type: 'public-key',
+        };
+
+        // Only include transports for cross-platform authenticators that have transports saved
+        // Platform authenticators should not have transports specified to allow cross-device use
+        if (cred.deviceType === 'cross-platform' && cred.transports && Array.isArray(cred.transports) && cred.transports.length > 0) {
+          credentialDescriptor.transports = cred.transports;
+        }
+        // For platform authenticators or if no transports saved, omit transports field
+        // This allows browser to use any compatible authenticator
+
+        return credentialDescriptor;
+      }) || [],
     userVerification: 'preferred',
   });
 

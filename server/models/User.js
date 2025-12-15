@@ -19,6 +19,10 @@ const webauthnCredentialSchema = new mongoose.Schema({
     type: String,
     enum: ['platform', 'cross-platform'],
   },
+  transports: {
+    type: [String],
+    default: [],
+  },
   createdAt: {
     type: Date,
     default: Date.now,
