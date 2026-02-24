@@ -1,126 +1,133 @@
 import { useState } from 'react';
 import { toast } from 'react-toastify';
-import { CheckCircle, X, Star } from 'lucide-react';
+import { CheckCircle, X, Star, MessageSquare } from 'lucide-react';
 
-const Feedback = ({ onClose, authMethod, duration }) => {
+const Feedback = ({ isOpen, onClose, authMethod, duration, onSuccess }) => {
   const [rating, setRating] = useState(0);
   const [feedback, setFeedback] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
-    // Simpan feedback ke localStorage (bisa diubah ke API jika diperlukan)
-    const feedbackData = {
-      method: authMethod,
-      duration,
-      rating,
-      feedback,
-      timestamp: new Date().toISOString(),
-    };
+    try {
+      const feedbackData = {
+        method: authMethod || 'undetermined',
+        duration: duration || 0,
+        rating,
+        feedback,
+        timestamp: new Date().toISOString(),
+      };
 
-    const existingFeedback = JSON.parse(localStorage.getItem('userFeedback') || '[]');
-    existingFeedback.push(feedbackData);
-    localStorage.setItem('userFeedback', JSON.stringify(existingFeedback));
+      const existingFeedback = JSON.parse(localStorage.getItem('userFeedback') || '[]');
+      existingFeedback.push(feedbackData);
+      localStorage.setItem('userFeedback', JSON.stringify(existingFeedback));
 
-    setSubmitted(true);
-    toast.success('Terima kasih atas feedback Anda!');
+      setSubmitted(true);
+      toast.success('Feedback berhasil disimpan.');
 
-    setTimeout(() => {
-      if (onClose) onClose();
-    }, 2000);
+      if (onSuccess) onSuccess();
+
+      setTimeout(() => {
+        setSubmitted(false);
+        setRating(0);
+        setFeedback('');
+        onClose();
+      }, 2000);
+    } catch (error) {
+      toast.error('Gagal menyimpan feedback.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  if (submitted) {
-    return (
-      <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-        <div className="bg-[#1a1a1a] border border-gray-800 rounded-xl p-6 max-w-md w-full text-center">
-          <CheckCircle className="w-20 h-20 text-green-400 mx-auto mb-4" />
-          <h3 className="text-2xl font-bold text-white mb-2">Terima Kasih!</h3>
-          <p className="text-gray-400">Feedback Anda telah direkam dan akan membantu penelitian ini.</p>
-        </div>
-      </div>
-    );
-  }
+  if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      <div className="bg-[#1a1a1a] border border-gray-800 rounded-xl p-6 max-w-md w-full relative">
-        <button className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-800 transition-colors text-gray-400 hover:text-white" onClick={onClose}>
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[100] p-4 animate-fade-in-up">
+      <div className="glass-card rounded-2xl max-w-md w-full relative shadow-2xl">
+        <button className="absolute top-5 right-5 p-2 text-gray-500 hover:text-white transition-all hover:bg-white/5 rounded-lg" onClick={onClose}>
           <X className="w-5 h-5" />
         </button>
 
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-white mb-2">Bagaimana Pengalaman Anda?</h2>
-          <p className="text-gray-400">Bantu kami dengan memberikan feedback tentang pengalaman login Anda</p>
+        <div className="p-8">
+          {submitted ? (
+            <div className="text-center py-10 space-y-4">
+              <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto">
+                <CheckCircle className="w-8 h-8 text-blue-400" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-base font-bold text-white">Terima Kasih!</h3>
+                <p className="text-sm text-gray-500">Feedback Anda telah berhasil disimpan untuk analisis penelitian.</p>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="mb-8">
+                <div className="flex items-center gap-2 mb-3 text-blue-400">
+                  <MessageSquare className="w-4 h-4" />
+                  <span className="text-xs font-semibold">Feedback Pengguna</span>
+                </div>
+                <h2 className="text-xl font-bold text-white tracking-tight">Berikan Pendapat Anda</h2>
+                <p className="text-sm text-gray-500 mt-1">Kontribusi untuk analisis kegunaan empiris.</p>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                  <label className="block mb-3 text-sm font-medium text-gray-400">Rating Pengalaman (1-5)</label>
+                  <div className="flex gap-2.5 justify-between">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        className={`w-12 h-12 border transition-all flex items-center justify-center rounded-xl ${
+                          rating >= star ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-500/20' : 'bg-white/[0.03] border-white/[0.08] text-gray-600 hover:border-blue-500/30'
+                        }`}
+                        onClick={() => setRating(star)}
+                      >
+                        <Star className={`w-5 h-5 ${rating >= star ? 'fill-current' : ''}`} />
+                      </button>
+                    ))}
+                  </div>
+                  {rating > 0 && <p className="text-center text-xs font-semibold text-blue-400 mt-3">Nilai: {rating}/5</p>}
+                </div>
+
+                <div>
+                  <label htmlFor="feedback" className="block mb-2 text-sm font-medium text-gray-400">
+                    Observasi Kualitatif (Opsional)
+                  </label>
+                  <textarea
+                    id="feedback"
+                    value={feedback}
+                    onChange={(e) => setFeedback(e.target.value)}
+                    placeholder="Bagikan pendapat Anda tentang sistem autentikasi..."
+                    rows="4"
+                    className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all text-sm resize-none"
+                  />
+                </div>
+
+                <div className="flex gap-3 pt-2">
+                  <button
+                    type="button"
+                    className="px-5 py-3.5 bg-white/[0.04] border border-white/[0.08] text-gray-400 rounded-xl text-sm font-medium hover:bg-white/[0.08] transition-all flex-1"
+                    onClick={onClose}
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-3.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-semibold transition-all flex-1 disabled:opacity-30 shadow-lg shadow-blue-500/20"
+                    disabled={rating === 0 || isSubmitting}
+                  >
+                    {isSubmitting ? 'Menyimpan...' : 'Kirim Feedback'}
+                  </button>
+                </div>
+              </form>
+            </>
+          )}
         </div>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-gray-400">Metode Autentikasi:</span>
-              <span className="text-white font-semibold">{authMethod === 'password' ? 'Password' : 'WebAuthn'}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-400">Durasi Login:</span>
-              <span className="text-white font-semibold">{duration}ms</span>
-            </div>
-          </div>
-
-          <div>
-            <label className="block mb-3 text-sm font-medium text-white">Rating Pengalaman (1-5)</label>
-            <div className="flex gap-2 justify-center mb-2">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                  key={star}
-                  type="button"
-                  className={`w-12 h-12 rounded-full border-2 flex items-center justify-center transition-all ${
-                    rating >= star ? 'bg-yellow-400 border-yellow-400 text-gray-900' : 'bg-transparent border-gray-700 text-gray-400 hover:border-yellow-400/50'
-                  }`}
-                  onClick={() => setRating(star)}
-                >
-                  <Star className={`w-6 h-6 ${rating >= star ? 'fill-current' : ''}`} />
-                </button>
-              ))}
-            </div>
-            {rating > 0 && (
-              <p className="text-center text-yellow-400 font-semibold text-sm mt-2">
-                {rating === 1 && 'Sangat Buruk'}
-                {rating === 2 && 'Buruk'}
-                {rating === 3 && 'Biasa'}
-                {rating === 4 && 'Baik'}
-                {rating === 5 && 'Sangat Baik'}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label htmlFor="feedback" className="block mb-2 text-sm font-medium text-white">
-              Komentar (Opsional)
-            </label>
-            <textarea
-              id="feedback"
-              value={feedback}
-              onChange={(e) => setFeedback(e.target.value)}
-              placeholder="Bagikan pengalaman Anda, saran, atau komentar..."
-              rows="4"
-              className="w-full px-4 py-2.5 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none"
-            />
-          </div>
-
-          <div className="flex gap-3 pt-4">
-            <button type="button" className="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-medium hover:bg-gray-700 transition-all flex-1" onClick={onClose}>
-              Lewati
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-white text-black rounded-lg text-sm font-medium hover:bg-gray-200 transition-all flex-1 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={rating === 0}
-            >
-              Kirim Feedback
-            </button>
-          </div>
-        </form>
       </div>
     </div>
   );

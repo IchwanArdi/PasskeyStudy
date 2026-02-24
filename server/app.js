@@ -13,6 +13,8 @@ import securityRoutes from './routes/security.js';
 import uxRoutes from './routes/ux.js';
 import costRoutes from './routes/cost.js';
 import compatibilityRoutes from './routes/compatibility.js';
+import recoveryRoutes from './routes/recovery.js';
+import performanceRoutes from './routes/performance.js';
 
 // Create Express app
 const app = express();
@@ -58,6 +60,10 @@ app.use(cors(corsOptions));
 
 // Middleware
 app.use(express.json());
+
+// Performance measurement middleware
+import performanceMiddleware from './middleware/performanceMiddleware.js';
+app.use(performanceMiddleware);
 
 // Security headers
 app.use(
@@ -119,6 +125,10 @@ app.use('/api/cost', costRoutes);
 app.use('/cost', costRoutes); // Alias for client compatibility
 app.use('/api/compatibility', compatibilityRoutes);
 app.use('/compatibility', compatibilityRoutes); // Alias for client compatibility
+app.use('/api/recovery', recoveryRoutes);
+app.use('/recovery', recoveryRoutes);
+app.use('/api/performance', performanceRoutes);
+app.use('/performance', performanceRoutes);
 
 // Export app for use in server.js
 export default app;

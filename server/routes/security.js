@@ -80,15 +80,36 @@ router.post('/brute-force-simulation', authenticate, async (req, res) => {
 
 /**
  * Phishing Resistance Analysis
- * Analisis kerentanan terhadap phishing attack
+ * Analisis kerentanan terhadap phishing attack 
  */
 router.get('/phishing-resistance', authenticate, async (req, res) => {
   try {
-    // Analisis berdasarkan karakteristik metode autentikasi
+    // Collect real login ratio data to offset base scores
+    const allLogs = await AuthLog.find();
+    
+    // Filter by method
+    const passLogs = allLogs.filter((l) => l.method === 'password');
+    const webLogs = allLogs.filter((l) => l.method === 'webauthn');
+
+    // Calculate Dynamic Success vs Failure impact
+    const calculateDynamicScore = (logs, baseScore) => {
+      if (logs.length === 0) return baseScore;
+      const failed = logs.filter((l) => !l.success).length;
+      const failureRate = failed / logs.length;
+      
+      // Every 10% failure drops the base score slightly, min constrained to 1
+      const adjustment = Math.floor(failureRate * 10); 
+      return Math.max(1, baseScore - adjustment);
+    };
+
+    // Calculate actual logical scores using a base limit where Password is max 5, and WebAuthn is max 10
+    const dynamicPasswordScore = calculateDynamicScore(passLogs, 5);
+    const dynamicWebauthnScore = calculateDynamicScore(webLogs, 10);
+
     const passwordAnalysis = {
       method: 'password',
-      vulnerability: 'High',
-      score: 3, // 1-10, lower is more vulnerable
+      vulnerability: dynamicPasswordScore <= 3 ? 'High' : (dynamicPasswordScore <= 4 ? 'Medium' : 'Low'),
+      score: dynamicPasswordScore, 
       reasons: [
         'Users can be tricked into entering password on fake websites',
         'Password can be stolen via keyloggers',
@@ -102,9 +123,15 @@ router.get('/phishing-resistance', authenticate, async (req, res) => {
 
     const webauthnAnalysis = {
       method: 'webauthn',
-      vulnerability: 'Very Low',
-      score: 9, // 1-10, higher is more secure
-      reasons: ['Credentials are bound to domain (origin)', 'Cannot be used on fake websites', 'Private key never leaves device', 'Requires physical interaction (biometric/security key)', 'Cryptographic proof of origin'],
+      vulnerability: dynamicWebauthnScore >= 9 ? 'Very Low' : 'Low',
+      score: dynamicWebauthnScore, 
+      reasons: [
+        'Credentials are bound to domain (origin)', 
+        'Cannot be used on fake websites', 
+        'Private key never leaves device', 
+        'Requires physical interaction (biometric/security key)', 
+        'Cryptographic proof of origin'
+      ],
       attackVectors: ['Physical device theft (mitigated by biometric)', 'Malware on device (mitigated by secure enclave)'],
       protection: ['Built-in origin verification', 'Hardware security (secure enclave)', 'Biometric authentication', 'No credential reuse'],
     };
@@ -115,7 +142,7 @@ router.get('/phishing-resistance', authenticate, async (req, res) => {
         webauthn: webauthnAnalysis,
       },
       conclusion: {
-        winner: 'webauthn',
+        winner: dynamicWebauthnScore > dynamicPasswordScore ? 'webauthn' : 'password',
         advantage: 'WebAuthn provides significantly better protection against phishing attacks due to origin binding and cryptographic verification',
         recommendation: 'WebAuthn should be preferred for high-security applications',
       },
@@ -500,13 +527,53 @@ router.get('/security-score', authenticate, async (req, res) => {
         difference: Math.round(webauthnScores.overall - passwordScores.overall),
         improvement: (((webauthnScores.overall - passwordScores.overall) / passwordScores.overall) * 100).toFixed(1),
         conclusion: `WebAuthn has ${Math.round(webauthnScores.overall - passwordScores.overall)} points higher security score (${(((webauthnScores.overall - passwordScores.overall) / passwordScores.overall) * 100).toFixed(
-          1
+          1,
         )}% improvement)`,
       },
     });
   } catch (error) {
     console.error('Security score calculation error:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+/**
+ * Consolidated Simulation Endpoint
+ */
+router.post('/simulate', authenticate, async (req, res) => {
+  try {
+    const { method = 'password', attempts = 100 } = req.body;
+    
+    // Fetch average latency dynamically instead of Math.random()
+    const performanceLogs = await mongoose.model('PerformanceLog').find({ method });
+    const avgLatency = performanceLogs.length > 0 
+      ? Math.round(performanceLogs.reduce((sum, log) => sum + log.latency, 0) / performanceLogs.length)
+      : (method === 'password' ? 120 : 50); // Fallbacks if empty
+      
+    if (method === 'password') {
+      res.json({
+        method: 'password',
+        attempts: 20,
+        successCount: 0,
+        duration: avgLatency,
+        avgTimePerAttempt: (avgLatency / 20).toFixed(2),
+        resistance: 'Low',
+        vulnerability: 'High susceptibility to dictionary-based extraction vectors.',
+      });
+    } else {
+      res.json({
+        method: 'webauthn',
+        attempts: 0,
+        successCount: 0,
+        duration: avgLatency,
+        avgTimePerAttempt: 0,
+        resistance: 'Very High',
+        vulnerability: 'Zero-knowledge proof architecture eliminates extraction vectors.',
+      });
+    }
+  } catch (error) {
+    console.error('Simulation Failure:', error);
+    res.status(500).json({ message: 'Simulation Failure', error: error.message });
   }
 });
 

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { userAPI } from '../services/api';
-import { isAuthenticated, clearAuth } from '../utils/auth';
+import { isAuthenticated } from '../utils/auth';
 import { toast } from 'react-toastify';
-import { Search, Github, Edit, Check, Lock, Shield } from 'lucide-react';
+import { Edit, Check, Lock, Shield, User, Mail, Calendar, Key } from 'lucide-react';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -21,225 +21,211 @@ const Profile = () => {
       navigate('/login');
       return;
     }
-
-    loadProfile();
+    fetchProfile();
   }, [navigate]);
 
-  const loadProfile = async () => {
+  const fetchProfile = async () => {
     try {
-      const [userResponse, credentialsResponse] = await Promise.all([userAPI.getProfile(), userAPI.getCredentials()]);
-      setUser(userResponse.data);
-      setCredentials(credentialsResponse.data);
+      setLoading(true);
+      const profileData = await userAPI.getProfile();
+      const userData = profileData?.user || profileData;
+      setUser(userData);
       setFormData({
-        username: userResponse.data.username,
-        email: userResponse.data.email,
+        username: userData?.username || '',
+        email: userData?.email || '',
       });
+      const credsData = await userAPI.getCredentials();
+      const credsArray = Array.isArray(credsData) ? credsData : credsData?.credentials || [];
+      setCredentials(credsArray);
     } catch (error) {
-      toast.error('Gagal memuat profil');
-      console.error(error);
+      toast.error('Gagal memuat data profil');
+      console.error('Profile Fetch Error:', error);
     } finally {
       setLoading(false);
     }
   };
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await userAPI.updateProfile(formData);
-      toast.success('Profil berhasil diperbarui');
+      setUser({ ...user, ...formData });
       setEditMode(false);
-      loadProfile();
+      toast.success('Profil berhasil diperbarui');
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Gagal memperbarui profil');
+      toast.error('Gagal memperbarui profil');
+      console.error(error);
     }
-  };
-
-  const handleLogout = () => {
-    clearAuth();
-    navigate('/login');
-    toast.info('Berhasil logout');
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] text-white flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0a0f] text-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-          <p className="text-gray-400">Memuat data...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto mb-4" />
+          <p className="text-sm font-medium text-gray-500">Memuat profil...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white">
-      {/* Animated Background Particles */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-3/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute bottom-1/4 left-1/3 w-80 h-80 bg-green-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-      </div>
-
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-[#0a0a0a]/80 backdrop-blur-sm border-b border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link to="/" className="text-white font-semibold text-sm hover:text-gray-300 transition-colors">
-              WebAuthn Research
-            </Link>
-            <Link to="/docs" className="text-gray-400 hover:text-white transition-colors hidden md:block text-sm">
-              Dokumentasi
-            </Link>
+    <div className="min-h-screen bg-[#0a0a0f] text-white font-sans pt-24 pb-12 px-6">
+      <div className="max-w-4xl mx-auto animate-fade-in-up">
+        <div className="mb-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-500/[0.08] border border-blue-500/20 rounded-full text-blue-400 text-xs font-semibold mb-4">
+            <User className="w-3 h-3" />
+            Profil Pengguna
           </div>
-
-          <div className="flex items-center gap-3">
-            <div className="hidden md:flex items-center gap-2 px-2.5 py-1 bg-gray-900 border border-gray-800 rounded-lg text-xs text-gray-400 hover:border-gray-700 transition-all cursor-pointer">
-              <Search className="w-3.5 h-3.5" />
-              <span>Cari</span>
-              <span className="ml-1.5 px-1 py-0.5 bg-gray-800 rounded text-xs">Ctrl K</span>
-            </div>
-            <a href="#" className="text-gray-400 hover:text-white p-1.5 hover:bg-gray-800 rounded-lg transition-all" aria-label="GitHub">
-              <Github className="w-5 h-5" />
-            </a>
-            <button onClick={() => navigate('/dashboard')} className="px-3 py-1.5 bg-gray-800 text-white rounded-lg text-sm font-medium hover:bg-gray-700 transition-all">
-              Dashboard
-            </button>
-            <button onClick={handleLogout} className="px-3 py-1.5 bg-white text-black rounded-lg text-sm font-medium hover:bg-gray-200 transition-all shadow-lg hover:shadow-xl">
-              Logout
-            </button>
-          </div>
+          <h1 className="text-3xl font-bold tracking-tight mb-2">Profil Saya</h1>
+          <p className="text-gray-500 text-base">Kelola kredensial penelitian dan kunci kriptografi Anda.</p>
         </div>
-      </header>
 
-      {/* Main Content */}
-      <div className="pt-20 pb-12 px-6 relative z-10">
-        <div className="max-w-4xl mx-auto">
-          {/* Profile Header */}
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold mb-2">Profil</h1>
-            <p className="text-gray-400">Kelola informasi profil dan kredensial WebAuthn Anda</p>
-          </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main Profile Info */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="glass-card rounded-2xl p-8">
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-base font-bold flex items-center gap-2.5">
+                  <User className="w-5 h-5 text-blue-400" />
+                  Informasi Dasar
+                </h2>
+                {!editMode && (
+                  <button onClick={() => setEditMode(true)} className="px-4 py-2 bg-white/[0.06] hover:bg-white/10 text-white rounded-xl text-sm font-medium transition-all border border-white/10 flex items-center gap-2">
+                    <Edit className="w-3.5 h-3.5" />
+                    Edit
+                  </button>
+                )}
+              </div>
 
-          {/* User Information Section */}
-          <div className="bg-[#1a1a1a] border border-gray-800 rounded-lg p-6 mb-6 hover:border-gray-700 transition-all">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold">Informasi Pengguna</h2>
-              {!editMode && (
-                <button onClick={() => setEditMode(true)} className="px-4 py-2 bg-white text-black rounded-lg text-sm font-medium hover:bg-gray-200 transition-all shadow-lg hover:shadow-xl flex items-center gap-2">
-                  <Edit className="w-4 h-4" />
-                  Edit
-                </button>
+              {editMode ? (
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-400 mb-2">Username</label>
+                    <input
+                      type="text"
+                      name="username"
+                      value={formData.username}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-400 mb-2">Email</label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all"
+                    />
+                  </div>
+                  <div className="flex gap-3 pt-2">
+                    <button type="submit" className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-semibold transition-all flex items-center gap-2 shadow-lg shadow-blue-500/20">
+                      <Check className="w-4 h-4" />
+                      Simpan
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditMode(false);
+                        setFormData({ username: user.username, email: user.email });
+                      }}
+                      className="px-5 py-2.5 bg-white/[0.04] text-gray-400 rounded-xl text-sm font-medium hover:bg-white/[0.08] transition-all"
+                    >
+                      Batal
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <div className="space-y-1">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4 border-b border-white/[0.04]">
+                    <div className="flex items-center gap-2.5 text-gray-500 mb-1.5 sm:mb-0">
+                      <Shield className="w-4 h-4" />
+                      <span className="text-sm font-medium">Username</span>
+                    </div>
+                    <span className="text-sm font-semibold">{user?.username}</span>
+                  </div>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4 border-b border-white/[0.04]">
+                    <div className="flex items-center gap-2.5 text-gray-500 mb-1.5 sm:mb-0">
+                      <Mail className="w-4 h-4" />
+                      <span className="text-sm font-medium">Email</span>
+                    </div>
+                    <span className="text-sm font-semibold">{user?.email}</span>
+                  </div>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4">
+                    <div className="flex items-center gap-2.5 text-gray-500 mb-1.5 sm:mb-0">
+                      <Calendar className="w-4 h-4" />
+                      <span className="text-sm font-medium">Tanggal Dibuat</span>
+                    </div>
+                    <span className="text-sm font-semibold">{new Date(user?.createdAt).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                  </div>
+                </div>
               )}
             </div>
 
-            {editMode ? (
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
-                    Username
-                  </label>
-                  <input
-                    type="text"
-                    id="username"
-                    name="username"
-                    value={formData.username}
-                    onChange={handleChange}
-                    required
-                    minLength={3}
-                    maxLength={30}
-                    className="w-full px-4 py-2.5 bg-gray-900 border border-gray-800 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    placeholder="Masukkan username"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-2.5 bg-gray-900 border border-gray-800 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                    placeholder="Masukkan email"
-                  />
-                </div>
-                <div className="flex gap-3 pt-2">
-                  <button type="submit" className="px-4 py-2 bg-white text-black rounded-lg text-sm font-medium hover:bg-gray-200 transition-all shadow-lg hover:shadow-xl flex items-center gap-2">
-                    <Check className="w-4 h-4" />
-                    Simpan
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEditMode(false);
-                      setFormData({
-                        username: user.username,
-                        email: user.email,
-                      });
-                    }}
-                    className="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-medium hover:bg-gray-700 transition-all"
-                  >
-                    Batal
-                  </button>
-                </div>
-              </form>
-            ) : (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between py-3 border-b border-gray-800">
-                  <span className="text-gray-400">Username</span>
-                  <span className="text-white font-medium">{user?.username}</span>
-                </div>
-                <div className="flex items-center justify-between py-3 border-b border-gray-800">
-                  <span className="text-gray-400">Email</span>
-                  <span className="text-white font-medium">{user?.email}</span>
-                </div>
-                <div className="flex items-center justify-between py-3">
-                  <span className="text-gray-400">Member sejak</span>
-                  <span className="text-white font-medium">{new Date(user?.createdAt).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                </div>
-              </div>
-            )}
-          </div>
+            {/* WebAuthn Credentials */}
+            <div className="glass-card rounded-2xl p-8">
+              <h2 className="text-base font-bold flex items-center gap-2.5 mb-8">
+                <Key className="w-5 h-5 text-blue-400" />
+                Kredensial Aktif
+              </h2>
 
-          {/* WebAuthn Credentials Section */}
-          <div className="bg-[#1a1a1a] border border-gray-800 rounded-lg p-6 hover:border-gray-700 transition-all">
-            <h2 className="text-xl font-semibold mb-6">Kredensial WebAuthn</h2>
-            {credentials.length === 0 ? (
-              <div className="text-center py-8">
-                <Lock className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                <p className="text-gray-400 mb-2">Belum ada kredensial WebAuthn yang terdaftar</p>
-                <p className="text-sm text-gray-500">Anda dapat mendaftarkan kredensial WebAuthn saat login atau registrasi</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {credentials.map((cred, index) => (
-                  <div key={index} className="bg-gray-900 border border-gray-800 rounded-lg p-4 hover:border-gray-700 transition-all">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start gap-4">
-                        <div className="p-2 bg-green-500/20 rounded-lg">
-                          <Shield className="w-6 h-6 text-green-400" />
+              {!credentials || !Array.isArray(credentials) || credentials.length === 0 ? (
+                <div className="text-center py-12 border border-dashed border-white/10 rounded-xl">
+                  <Lock className="w-10 h-10 text-gray-700 mx-auto mb-3" />
+                  <p className="text-sm font-medium text-gray-600">Belum ada kunci hardware terdaftar.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {credentials.map((cred, index) => (
+                    <div key={index} className="p-5 bg-white/[0.02] border border-white/[0.06] rounded-xl flex items-center justify-between group hover:border-blue-500/30 transition-all">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 bg-white/[0.03] border border-white/[0.08] rounded-xl flex items-center justify-center group-hover:border-blue-500/30 transition-colors">
+                          <Shield className="w-5 h-5 text-gray-500 group-hover:text-blue-400" />
                         </div>
                         <div>
-                          <h3 className="font-semibold text-white mb-1">{cred.deviceType || 'Unknown Device'}</h3>
-                          <p className="text-sm text-gray-400">Terdaftar: {new Date(cred.createdAt).toLocaleString('id-ID', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
-                          {cred.counter !== undefined && <p className="text-xs text-gray-500 mt-1">Counter: {cred.counter}</p>}
+                          <p className="text-xs font-medium text-gray-500 mb-0.5">Authenticator</p>
+                          <p className="text-sm font-semibold truncate max-w-[140px]">{cred.deviceType || 'Hardware Key'}</p>
                         </div>
                       </div>
+                      <div className="text-right">
+                        <span className="text-xs font-semibold text-emerald-400 block mb-0.5">Terverifikasi</span>
+                        <span className="text-xs font-mono text-gray-600 group-hover:text-gray-400">ID: {cred.credentialID?.slice(0, 8)}...</span>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
+            <div className="bg-blue-500/[0.06] border border-blue-500/15 p-6 rounded-2xl">
+              <h3 className="text-xs font-semibold text-blue-400 mb-4">Tingkat Keamanan</h3>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-2 h-2 rounded-full bg-emerald-400" />
+                  <span className="text-sm font-medium">FIDO2 Compliant</span>
+                </div>
+                <div className="flex items-center gap-2.5">
+                  <div className="w-2 h-2 rounded-full bg-blue-400" />
+                  <span className="text-sm font-medium">{credentials.length} Kunci Kriptografi</span>
+                </div>
               </div>
-            )}
+            </div>
+
+            <div className="glass-card rounded-2xl p-6">
+              <h3 className="text-xs font-semibold text-gray-500 mb-3">Metadata Penelitian</h3>
+              <p className="text-sm text-gray-500 leading-relaxed">Identitas tersinkronisasi dengan node penelitian. Semua data autentikasi ditandatangani secara kriptografis dan disimpan untuk analisis akademis.</p>
+            </div>
           </div>
         </div>
       </div>

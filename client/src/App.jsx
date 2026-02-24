@@ -5,10 +5,13 @@ import { isAuthenticated } from './utils/auth';
 import Navigation from './components/Navigation';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Recovery from './pages/Recovery';
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import Welcome from './pages/Welcome';
 import Documentation from './pages/Documentation';
+import UsabilityTest from './pages/UsabilityTest';
+import ScrollToTop from './components/ScrollToTop';
 import './App.css';
 
 const PrivateRoute = ({ children }) => {
@@ -20,11 +23,13 @@ function App() {
     <Router>
       <div className="App">
         {isAuthenticated() && <Navigation />}
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<Welcome />} />
           <Route path="/docs" element={<Documentation />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/recovery" element={<Recovery />} />
           <Route
             path="/dashboard"
             element={
@@ -38,6 +43,14 @@ function App() {
             element={
               <PrivateRoute>
                 <Profile />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/usability-test"
+            element={
+              <PrivateRoute>
+                <UsabilityTest />
               </PrivateRoute>
             }
           />

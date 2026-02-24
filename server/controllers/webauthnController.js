@@ -2,6 +2,7 @@ import User from '../models/User.js';
 import AuthLog from '../models/AuthLog.js';
 import jwt from 'jsonwebtoken';
 import { getRegistrationOptions, verifyRegistration, getAuthenticationOptions, verifyAuthentication } from '../utils/webauthn.js';
+import { calculateRiskScore } from '../utils/riskEngine.js';
 
 const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '7d' });
@@ -447,8 +448,33 @@ export const verifyLogin = async (req, res) => {
       // Clear challenge
       challenges.delete(user._id.toString());
 
+      // Assess Risk
+      const currentIP = req.ip || req.connection.remoteAddress;
+      const currentUA = req.get('user-agent');
+
+      // Get deep historical logs for ML Behavioral Profiling
+      const recentLogs = await AuthLog.find({ userId: user._id }).sort({ timestamp: -1 }).limit(20);
+
+      const { score: riskScore, factors: riskFactors } = await calculateRiskScore(user, {
+        currentIP,
+        currentUA,
+        recentLogs,
+      });
+
       const duration = Date.now() - startTime;
       const token = generateToken(user._id);
+
+      // Update user security profile
+      user.lastLoginIP = currentIP;
+      user.lastLoginUA = currentUA;
+
+      const deviceIndex = user.knownDevices.findIndex((d) => d.userAgent === currentUA);
+      if (deviceIndex > -1) {
+        user.knownDevices[deviceIndex].lastUsed = new Date();
+      } else {
+        user.knownDevices.push({ userAgent: currentUA, lastUsed: new Date() });
+      }
+      await user.save();
 
       // Log successful login
       const authLog = await AuthLog.create({
@@ -456,8 +482,10 @@ export const verifyLogin = async (req, res) => {
         method: 'webauthn',
         duration,
         success: true,
-        ipAddress: req.ip || req.connection.remoteAddress,
-        userAgent: req.get('user-agent'),
+        ipAddress: currentIP,
+        userAgent: currentUA,
+        riskScore,
+        riskFactors,
       });
 
       console.log('WebAuthn login logged:', {
@@ -473,6 +501,8 @@ export const verifyLogin = async (req, res) => {
           id: user._id,
           username: user.username,
           email: user.email,
+          riskScore,
+          riskFactors,
         },
         duration,
       });

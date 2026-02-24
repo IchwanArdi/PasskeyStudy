@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { startRegistration, startAuthentication } from '@simplewebauthn/browser';
 import { authAPI } from '../services/api';
 import { setAuth } from '../utils/auth';
+import { Fingerprint } from 'lucide-react';
 
 const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
   const [email, setEmail] = useState('');
@@ -18,7 +19,7 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
   const handleRegister = async (e) => {
     e.preventDefault();
     if (!email) {
-      setError('Email is required');
+      setError('Email harus diisi');
       return;
     }
 
@@ -27,27 +28,23 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
     setMessage('');
 
     try {
-      // Step 1: Get registration options
-      setMessage('Requesting registration options...');
-      const optionsResponse = await authAPI.getRegisterOptions(email);
-      const options = optionsResponse.data;
+      setMessage('Meminta opsi registrasi...');
+      const options = await authAPI.getRegisterOptions(email);
 
-      // Step 2: Start registration
-      setMessage('Please use your authenticator (Touch ID, Face ID, Windows Hello, etc.)...');
+      setMessage('Gunakan authenticator Anda (Touch ID, Face ID, Windows Hello, dll)...');
       const credential = await startRegistration(options);
 
-      // Step 3: Verify registration
-      setMessage('Verifying registration...');
+      setMessage('Memverifikasi registrasi...');
       const verifyResponse = await authAPI.verifyRegister({
         email,
         credential,
       });
 
-      setAuth(verifyResponse.data.token, verifyResponse.data.user);
-      setMessage('Registration successful!');
-      onSuccess(verifyResponse.data);
+      setAuth(verifyResponse.token, verifyResponse.user);
+      setMessage('Registrasi berhasil!');
+      onSuccess(verifyResponse);
     } catch (err) {
-      setError(err.response?.data?.message || err.message || 'Registration failed');
+      setError(err.response?.data?.message || err.message || 'Registrasi gagal');
       setMessage('');
     } finally {
       setLoading(false);
@@ -57,7 +54,7 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!email) {
-      setError('Email is required');
+      setError('Email harus diisi');
       return;
     }
 
@@ -66,32 +63,27 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
     setMessage('');
 
     try {
-      // Step 1: Get authentication options
-      setMessage('Requesting login options...');
-      const optionsResponse = await authAPI.getLoginOptions(email);
-      const options = optionsResponse.data;
+      setMessage('Meminta opsi login...');
+      const options = await authAPI.getLoginOptions(email);
 
-      // Validate options structure
       if (!options || !options.challenge) {
-        throw new Error('Invalid authentication options received from server');
+        throw new Error('Opsi autentikasi tidak valid dari server');
       }
 
-      // Step 2: Start authentication
-      setMessage('Please use your authenticator (Touch ID, Face ID, Windows Hello, etc.)...');
+      setMessage('Gunakan authenticator Anda (Touch ID, Face ID, Windows Hello, dll)...');
       const credential = await startAuthentication(options);
 
-      // Step 3: Verify authentication
-      setMessage('Verifying authentication...');
+      setMessage('Memverifikasi autentikasi...');
       const verifyResponse = await authAPI.verifyLogin({
         email,
         credential,
       });
 
-      setAuth(verifyResponse.data.token, verifyResponse.data.user);
-      setMessage('Login successful!');
-      onSuccess(verifyResponse.data);
+      setAuth(verifyResponse.token, verifyResponse.user);
+      setMessage('Login berhasil!');
+      onSuccess(verifyResponse);
     } catch (err) {
-      setError(err.response?.data?.message || err.message || 'Authentication failed');
+      setError(err.response?.data?.message || err.message || 'Autentikasi gagal');
       setMessage('');
     } finally {
       setLoading(false);
@@ -99,12 +91,8 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="mb-4">
-        <h3 className="text-lg font-semibold text-white mb-2">WebAuthn / FIDO2 Authentication</h3>
-        <p className="text-sm text-gray-400">Daftar langsung dengan autentikasi biometrik (Touch ID, Face ID, Windows Hello) atau security keys. Tidak perlu password!</p>
-      </div>
-      <form onSubmit={mode === 'register' ? handleRegister : handleLogin} className="space-y-4">
+    <div className="space-y-5">
+      <form onSubmit={mode === 'register' ? handleRegister : handleLogin} className="space-y-5">
         <div>
           <label htmlFor="webauthn-email" className="block text-sm font-medium text-gray-300 mb-2">
             Email
@@ -116,21 +104,33 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
             onChange={handleEmailChange}
             required
             disabled={loading}
-            className="w-full px-4 py-2.5 bg-gray-900 border border-gray-800 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            placeholder="Masukkan email"
+            className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all text-sm"
+            placeholder="Masukkan email terdaftar"
           />
         </div>
-        {error && <div className="px-4 py-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm">{error}</div>}
-        {message && <div className="px-4 py-3 bg-blue-500/10 border border-blue-500/50 rounded-lg text-blue-400 text-sm">{message}</div>}
+        {error && (
+          <div className="px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
+            {error}
+          </div>
+        )}
+        {message && (
+          <div className="px-4 py-3 bg-blue-500/[0.06] border border-blue-500/15 rounded-xl text-blue-400 text-sm">
+            {message}
+          </div>
+        )}
         <button
           type="submit"
           disabled={loading || !email}
-          className="w-full px-4 py-2.5 bg-white text-black rounded-lg font-semibold hover:bg-gray-200 transition-all transform duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+          className="w-full px-6 py-3.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-semibold text-sm transition-all disabled:opacity-50 disabled:hover:bg-blue-600 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30"
         >
-          {loading ? 'Memproses...' : mode === 'register' ? 'Daftar dengan WebAuthn' : 'Masuk dengan WebAuthn'}
+          {loading ? 'Memproses...' : mode === 'register' ? 'Daftar dengan Biometrik' : 'Verifikasi Kunci Keamanan'}
         </button>
       </form>
-      {mode === 'login' && <p className="text-xs text-gray-500 text-center mt-4">Pastikan Anda sudah mendaftar dengan WebAuthn terlebih dahulu</p>}
+      {mode === 'login' && (
+        <p className="text-sm text-gray-500 text-center">
+          Pastikan Anda sudah mendaftar dengan WebAuthn terlebih dahulu
+        </p>
+      )}
     </div>
   );
 };

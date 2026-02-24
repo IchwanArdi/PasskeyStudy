@@ -1,7 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import api from '../services/api';
 
 const Comparison = () => {
   const [selectedCategory, setSelectedCategory] = useState('security');
+  const [comparisonData, setComparisonData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchComparisonData = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get('/stats/comparison-data?viewMode=global');
+        setComparisonData(response.comparisonData);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching comparison data:', err);
+        setError(err.message || 'Gagal memuat data perbandingan');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchComparisonData();
+  }, []);
 
   const categories = [
     { id: 'security', label: 'Keamanan', icon: '🔒' },
@@ -9,107 +31,6 @@ const Comparison = () => {
     { id: 'ux', label: 'User Experience', icon: '👤' },
     { id: 'cost', label: 'Biaya', icon: '💰' },
   ];
-
-  const comparisonData = {
-    security: [
-      {
-        aspect: 'Proteksi terhadap Phishing',
-        password: { value: 'Rendah', description: 'User bisa tertipu memasukkan password di situs palsu', score: 2 },
-        webauthn: { value: 'Sangat Tinggi', description: 'Credential tidak bisa digunakan di domain lain', score: 5 },
-      },
-      {
-        aspect: 'Proteksi terhadap Brute Force',
-        password: { value: 'Sedang', description: 'Bergantung pada kompleksitas password dan rate limiting', score: 3 },
-        webauthn: { value: 'Sangat Tinggi', description: 'Tidak ada password yang bisa di-crack', score: 5 },
-      },
-      {
-        aspect: 'Data Breach Risk',
-        password: { value: 'Tinggi', description: 'Password hash bisa dicuri dan di-crack', score: 2 },
-        webauthn: { value: 'Sangat Rendah', description: 'Private key tidak pernah meninggalkan device', score: 5 },
-      },
-      {
-        aspect: 'Password Reuse',
-        password: { value: 'Tinggi', description: 'User cenderung menggunakan password yang sama', score: 2 },
-        webauthn: { value: 'Tidak Ada', description: 'Setiap situs memiliki credential unik', score: 5 },
-      },
-      {
-        aspect: 'Social Engineering',
-        password: { value: 'Rentan', description: 'User bisa di-manipulasi untuk membagikan password', score: 2 },
-        webauthn: { value: 'Sangat Rendah', description: 'Tidak ada yang bisa dibagikan', score: 5 },
-      },
-    ],
-    performance: [
-      {
-        aspect: 'Waktu Login Rata-rata',
-        password: { value: '5-10 detik', description: 'Termasuk waktu mengetik password', score: 3 },
-        webauthn: { value: '2-4 detik', description: 'Hanya sentuh sensor atau lihat kamera', score: 5 },
-      },
-      {
-        aspect: 'Kesalahan Input',
-        password: { value: 'Sering', description: 'Typo, caps lock, karakter khusus', score: 2 },
-        webauthn: { value: 'Jarang', description: 'Proses otomatis, tidak ada input manual', score: 5 },
-      },
-      {
-        aspect: 'Proses Reset Password',
-        password: { value: 'Lama', description: 'Email verification, set password baru, dll', score: 2 },
-        webauthn: { value: 'Tidak Perlu', description: 'Tidak ada password yang perlu di-reset', score: 5 },
-      },
-      {
-        aspect: 'Load Server',
-        password: { value: 'Sedang', description: 'Perlu hash verification setiap login', score: 3 },
-        webauthn: { value: 'Rendah', description: 'Cryptographic verification lebih efisien', score: 4 },
-      },
-    ],
-    ux: [
-      {
-        aspect: 'Kemudahan Penggunaan',
-        password: { value: 'Sedang', description: 'Perlu mengingat dan mengetik password', score: 3 },
-        webauthn: { value: 'Sangat Mudah', description: 'Cukup sentuh atau lihat', score: 5 },
-      },
-      {
-        aspect: 'Kemudahan Registrasi',
-        password: { value: 'Mudah', description: 'Isi form dan set password', score: 4 },
-        webauthn: { value: 'Sangat Mudah', description: 'Cukup email dan authenticator', score: 5 },
-      },
-      {
-        aspect: 'Aksesibilitas',
-        password: { value: 'Baik', description: 'Bisa digunakan di semua device', score: 4 },
-        webauthn: { value: 'Baik', description: 'Dukungan luas di browser modern', score: 4 },
-      },
-      {
-        aspect: 'Learning Curve',
-        password: { value: 'Tidak Ada', description: 'Semua orang sudah familiar', score: 5 },
-        webauthn: { value: 'Minimal', description: 'Satu kali setup, kemudian sangat mudah', score: 4 },
-      },
-      {
-        aspect: 'Multi-Device Support',
-        password: { value: 'Baik', description: 'Password bisa digunakan di mana saja', score: 4 },
-        webauthn: { value: 'Sangat Baik', description: 'Bisa register multiple credentials', score: 5 },
-      },
-    ],
-    cost: [
-      {
-        aspect: 'Biaya Development',
-        password: { value: 'Rendah', description: 'Implementasi standar sudah umum', score: 4 },
-        webauthn: { value: 'Sedang', description: 'Perlu library dan setup tambahan', score: 3 },
-      },
-      {
-        aspect: 'Biaya Maintenance',
-        password: { value: 'Tinggi', description: 'Reset password, security monitoring, dll', score: 2 },
-        webauthn: { value: 'Rendah', description: 'Minimal maintenance setelah setup', score: 4 },
-      },
-      {
-        aspect: 'Biaya Support',
-        password: { value: 'Tinggi', description: 'Banyak request reset password', score: 2 },
-        webauthn: { value: 'Rendah', description: 'Minimal support request', score: 4 },
-      },
-      {
-        aspect: 'Biaya Security Incident',
-        password: { value: 'Sangat Tinggi', description: 'Data breach bisa sangat mahal', score: 1 },
-        webauthn: { value: 'Rendah', description: 'Risiko breach jauh lebih kecil', score: 5 },
-      },
-    ],
-  };
 
   const getScoreColor = (score) => {
     if (score >= 4) return 'score-high';
@@ -123,12 +44,44 @@ const Comparison = () => {
     return 'Perlu Perbaikan';
   };
 
+  if (loading) {
+    return (
+      <div className="comparison-page" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+        <div className="spinner-border text-primary" role="status" style={{ width: '3rem', height: '3rem' }}>
+          <span className="visually-hidden">Loading data...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+     return (
+       <div className="comparison-page" style={{ padding: '2rem', textAlign: 'center' }}>
+         <div className="alert alert-danger">
+           <h3>Error Memuat Data</h3>
+           <p>{error}</p>
+         </div>
+       </div>
+     );
+  }
+
+  if (!comparisonData || comparisonData.security.length === 0) {
+    return (
+      <div className="comparison-page" style={{ padding: '2rem', textAlign: 'center' }}>
+        <div className="alert alert-warning">
+          <h3>Data Tidak Cukup (Insufficient Data)</h3>
+          <p>Belum ada log autentikasi atau respon survei yang memadai untuk melakukan perbandingan analitis.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="comparison-page">
       <div className="container">
         <div className="page-header">
           <h1>Perbandingan Password vs WebAuthn</h1>
-          <p className="page-subtitle">Analisis mendalam perbandingan antara autentikasi password tradisional dan WebAuthn/FIDO2</p>
+          <p className="page-subtitle">Analisis mendalam perbandingan antara autentikasi password tradisional dan WebAuthn/FIDO2 berdasarkan Data Agregasi Real-Time.</p>
         </div>
 
         {/* Category Tabs */}

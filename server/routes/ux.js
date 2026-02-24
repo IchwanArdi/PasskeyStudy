@@ -1,7 +1,7 @@
 import express from 'express';
 import { authenticate } from '../middleware/auth.js';
 import AuthLog from '../models/AuthLog.js';
-import { SUSSurvey, CognitiveLoad, TaskCompletion } from '../models/UXData.js';
+import { SUSSurvey, CognitiveLoad, TaskCompletion, DemographicData, UsabilitySession } from '../models/UXData.js';
 
 const router = express.Router();
 
@@ -26,17 +26,24 @@ router.post('/sus-survey', authenticate, async (req, res) => {
     // For odd-numbered questions (1,3,5,7,9): score = answer - 1
     // For even-numbered questions (2,4,6,8,10): score = 5 - answer
     // Total SUS = sum of all scores * 2.5
-    let susScore = 0;
+    let rawScore = 0;
     for (let i = 0; i < 10; i++) {
       if (i % 2 === 0) {
         // Odd-numbered (0-indexed: 0,2,4,6,8)
-        susScore += answers[i] - 1;
+        rawScore += answers[i] - 1;
       } else {
         // Even-numbered (0-indexed: 1,3,5,7,9)
-        susScore += 5 - answers[i];
+        rawScore += 5 - answers[i];
       }
     }
-    susScore = susScore * 2.5;
+    const susScore = rawScore * 2.5;
+
+    // Interpret score
+    let interpretation = '';
+    if (susScore >= 80) interpretation = 'Excellent';
+    else if (susScore >= 68) interpretation = 'Good';
+    else if (susScore >= 51) interpretation = 'OK';
+    else interpretation = 'Poor';
 
     // Store survey in database
     const survey = new SUSSurvey({
@@ -47,18 +54,6 @@ router.post('/sus-survey', authenticate, async (req, res) => {
       interpretation,
     });
     await survey.save();
-
-    // Interpret score
-    let interpretation = '';
-    if (susScore >= 80) {
-      interpretation = 'Excellent';
-    } else if (susScore >= 68) {
-      interpretation = 'Good';
-    } else if (susScore >= 51) {
-      interpretation = 'OK';
-    } else {
-      interpretation = 'Poor';
-    }
 
     res.json({
       _id: survey._id,
@@ -317,6 +312,77 @@ router.get('/task-completion-results', authenticate, async (req, res) => {
   } catch (error) {
     console.error('Get task completion results error:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+/**
+ * Submit Demographic Data
+ */
+router.post('/demographics', authenticate, async (req, res) => {
+  try {
+    const { age, gender, techExpertise, biometricExperience, occupation } = req.body;
+    
+    const demographic = await DemographicData.findOneAndUpdate(
+      { userId: req.user._id },
+      { age, gender, techExpertise, biometricExperience, occupation },
+      { upsert: true, new: true }
+    );
+
+    res.json(demographic);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+/**
+ * Manage Usability Sessions
+ */
+router.post('/session', authenticate, async (req, res) => {
+  try {
+    const { sessionId, order, tasks, status } = req.body;
+    
+    const session = await UsabilitySession.findOneAndUpdate(
+      { sessionId },
+      { userId: req.user._id, order, tasks, status },
+      { upsert: true, new: true }
+    );
+
+    res.json(session);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+/**
+ * Export Research Data as CSV
+ */
+router.get('/export-csv', authenticate, async (req, res) => {
+  try {
+    const surveys = await SUSSurvey.find().populate('userId', 'username email');
+    const cognitive = await CognitiveLoad.find().populate('userId', 'username email');
+    const tasks = await TaskCompletion.find().populate('userId', 'username email');
+    const demographics = await DemographicData.find().populate('userId', 'username email');
+
+    // Simple CSV generation
+    let csv = 'Type,User,Method,Value1,Value2,Value3,Value4,Score,Timestamp\n';
+    
+    surveys.forEach(s => {
+      csv += `SUS,${s.userId?.email || 'Unknown'},${s.method},,,,,${s.susScore},${s.createdAt}\n`;
+    });
+    
+    cognitive.forEach(c => {
+      csv += `Cognitive,${c.userId?.email || 'Unknown'},${c.method},${c.mentalEffort},${c.taskDifficulty},${c.timePressure},${c.frustration},${c.overallLoad},${c.createdAt}\n`;
+    });
+    
+    tasks.forEach(t => {
+      csv += `Task,${t.userId?.email || 'Unknown'},${t.method},${t.taskType},${t.completionTime},${t.success},${t.errors},,${t.createdAt}\n`;
+    });
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename=research-data.csv');
+    res.status(200).send(csv);
+  } catch (error) {
+    res.status(500).json({ message: 'Export failed', error: error.message });
   }
 });
 

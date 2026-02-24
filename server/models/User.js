@@ -23,6 +23,10 @@ const webauthnCredentialSchema = new mongoose.Schema({
     type: [String],
     default: [],
   },
+  nickname: {
+    type: String,
+    default: 'My Authenticator',
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -55,6 +59,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  authMethod: {
+    type: String,
+    enum: ['webauthn', 'password', 'hybrid'],
+    default: 'webauthn',
+  },
   webauthnCredentials: [webauthnCredentialSchema],
   createdAt: {
     type: Date,
@@ -64,6 +73,29 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  lastLoginIP: {
+    type: String,
+  },
+  lastLoginUA: {
+    type: String,
+  },
+  securityReputation: {
+    type: Number,
+    default: 100,
+  },
+  knownDevices: [
+    {
+      userAgent: String,
+      lastUsed: Date,
+    },
+  ],
+  backupCodes: [
+    {
+      code: String,
+      used: { type: Boolean, default: false },
+      createdAt: { type: Date, default: Date.now },
+    },
+  ],
 });
 
 // Hash password before saving
@@ -131,6 +163,39 @@ userSchema.methods.updateCredentialCounter = function (credentialID, counter) {
   return null;
 };
 
+// Method to generate recovery codes
+import crypto from 'crypto';
+
+userSchema.methods.generateRecoveryCodes = async function () {
+  const codes = [];
+  for (let i = 0; i < 8; i++) {
+    const code = crypto.randomBytes(4).toString('hex').toUpperCase();
+    codes.push(code);
+  }
+
+  this.backupCodes = codes.map((code) => ({
+    code: crypto.createHash('sha256').update(code).digest('hex'),
+    used: false,
+    createdAt: new Date(),
+  }));
+
+  await this.save();
+  return codes; // Return plain codes (only shown once)
+};
+
+// Method to verify and use a recovery code
+userSchema.methods.useRecoveryCode = async function (plainCode) {
+  const hashed = crypto.createHash('sha256').update(plainCode.toUpperCase().trim()).digest('hex');
+
+  const codeEntry = this.backupCodes.find((c) => c.code === hashed && !c.used);
+  if (!codeEntry) return false;
+
+  codeEntry.used = true;
+  await this.save();
+  return true;
+};
+
 const User = mongoose.model('User', userSchema);
 
 export default User;
+

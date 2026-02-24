@@ -33,10 +33,18 @@ const authLogSchema = new mongoose.Schema(
     errorMessage: {
       type: String,
     },
+    riskScore: {
+      type: Number,
+      default: 0,
+    },
+    riskFactors: {
+      type: [String],
+      default: [],
+    },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Index for faster queries

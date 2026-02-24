@@ -1,6 +1,7 @@
 import User from '../models/User.js';
 import AuthLog from '../models/AuthLog.js';
 import jwt from 'jsonwebtoken';
+import { calculateRiskScore } from '../utils/riskEngine.js';
 import { validationResult } from 'express-validator';
 
 const generateToken = (userId) => {
@@ -139,18 +140,46 @@ export const login = async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
+    // Assess Risk
+    const currentIP = req.ip || req.connection.remoteAddress;
+    const currentUA = req.get('user-agent');
+
+    // Get deep historical logs for ML Behavioral Profiling
+    const recentLogs = await AuthLog.find({ userId: user._id }).sort({ timestamp: -1 }).limit(20);
+
+    const { score: riskScore, factors: riskFactors } = await calculateRiskScore(user, {
+      currentIP,
+      currentUA,
+      recentLogs,
+    });
+
     // Calculate duration after password verification
     const duration = Date.now() - startTime;
     const token = generateToken(user._id);
 
-    // Log successful login
+    // Update user security profile
+    user.lastLoginIP = currentIP;
+    user.lastLoginUA = currentUA;
+
+    // Manage known devices
+    const deviceIndex = user.knownDevices.findIndex((d) => d.userAgent === currentUA);
+    if (deviceIndex > -1) {
+      user.knownDevices[deviceIndex].lastUsed = new Date();
+    } else {
+      user.knownDevices.push({ userAgent: currentUA, lastUsed: new Date() });
+    }
+    await user.save();
+
+    // Log successful login with risk info
     const authLog = await AuthLog.create({
       userId: user._id,
       method: 'password',
       duration,
       success: true,
-      ipAddress: req.ip || req.connection.remoteAddress,
-      userAgent: req.get('user-agent'),
+      ipAddress: currentIP,
+      userAgent: currentUA,
+      riskScore,
+      riskFactors,
     });
 
     console.log('Password login logged:', {
@@ -166,6 +195,8 @@ export const login = async (req, res) => {
         id: user._id,
         username: user.username,
         email: user.email,
+        riskScore,
+        riskFactors,
       },
       duration,
     });
