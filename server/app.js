@@ -110,6 +110,9 @@ app.get('/', (req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
+
+// Handle favicon requests to avoid 404 errors in logs
+app.get(['/favicon.ico', '/favicon.png'], (req, res) => res.status(204).end());
 // Rate limiting (hanya aktif di production)
 if (isProduction) {
   const globalLimiter = rateLimit({
