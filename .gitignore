@@ -1,5 +1,6 @@
-# Exclude all markdown files
+# Exclude markdown files except README
 *.md
+!README.md
 
 # Logs
 logs
