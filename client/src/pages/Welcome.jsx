@@ -8,228 +8,174 @@ import {
   Fingerprint,
   Activity,
   Zap,
-  ExternalLink,
-  Menu,
   X,
+  Copy,
+  Check,
+  Search
 } from "lucide-react";
 
 const Welcome = () => {
   const navigate = useNavigate();
   const authenticated = isAuthenticated();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const copyCommand = () => {
+    navigator.clipboard.writeText("npx create-webauthn-app@latest");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white font-sans selection:bg-blue-500/30">
+    <div className="min-h-screen bg-black text-white font-sans selection:bg-white/20 overflow-x-hidden">
+      {/* Background Elements */}
+      <div className="fixed inset-0 z-0">
+        <div className="absolute inset-0 grid-bg mask-radial opacity-20" />
+        <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-white/[0.03] rounded-full blur-[120px]" />
+      </div>
+
       {/* Header */}
-      {!authenticated && (
-        <header className="fixed top-0 left-0 right-0 z-50 bg-[#0a0a0f]/80 backdrop-blur-xl border-b border-white/[0.06]">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-            <div className="flex items-center gap-4 sm:gap-8">
-              <Link
-                to="/"
-                className="text-white font-bold text-sm sm:text-base tracking-tight flex items-center gap-2.5"
-              >
-                <div className="w-7 h-7 sm:w-8 sm:h-8 bg-blue-500/10 border border-blue-500/20 rounded-lg flex items-center justify-center shrink-0">
-                  <Shield className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-400" />
+      <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/[0.08] bg-black/50 backdrop-blur-md">
+        <div className="max-w-[1440px] mx-auto px-4 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-8">
+            <Link to="/" className="text-white font-bold tracking-tighter flex items-center gap-2">
+              <Shield className="w-5 h-5" />
+              <span>WebAuthn Research</span>
+            </Link>
+            <nav className="hidden md:flex items-center gap-6">
+              <Link to="/docs" className="text-white text-sm font-medium">Docs</Link>
+              <Link to="/about" className="text-gray-400 hover:text-white transition-colors text-sm font-medium">About</Link>
+              <a href="https://github.com/IchwanArdi/PasskeyStudy" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors text-sm font-medium">GitHub</a>
+            </nav>
+          </div>
+
+          <div className="flex items-center gap-4">
+            {!authenticated ? (
+              <>
+                <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-white/[0.05] border border-white/10 rounded-md text-gray-500 text-xs font-mono">
+                  Search docs... <span className="bg-white/10 px-1 rounded text-[10px]">Ctrl K</span>
                 </div>
-                <span className="truncate">WebAuthn Research</span>
-              </Link>
-              <nav className="hidden lg:flex items-center gap-6">
+                <Link to="/login" className="text-gray-400 hover:text-white transition-colors text-sm font-medium px-2">Log In</Link>
                 <Link
-                  to="/docs"
-                  className="text-gray-400 hover:text-white transition-colors text-sm font-medium"
+                  to="/register"
+                  className="bg-white text-black px-3 py-1.5 rounded-md text-sm font-semibold hover:bg-gray-200 transition-colors"
                 >
-                  Dokumentasi
+                  Sign Up
                 </Link>
-              </nav>
-            </div>
-
-            <div className="flex items-center gap-2 sm:gap-4">
-              <div className="hidden md:flex items-center gap-4">
-                <a
-                  href="https://github.com/IchwanArdi/PasskeyStudy"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-500 hover:text-white transition-colors p-2 hover:bg-white/5 rounded-lg"
-                  aria-label="GitHub"
-                >
-                  <Github className="w-5 h-5" />
-                </a>
-                <Link
-                  to="/login"
-                  className="text-gray-400 hover:text-white transition-colors text-sm font-medium px-4 py-2"
-                >
-                  Masuk
-                </Link>
-              </div>
+              </>
+            ) : (
               <Link
-                to="/register"
-                className="hidden sm:flex px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30"
+                to="/dashboard"
+                className="bg-white/[0.05] border border-white/10 text-white px-3 py-1.5 rounded-md text-sm font-medium hover:bg-white/10 transition-colors"
               >
-                Mulai Sekarang
+                Dashboard
               </Link>
-              
-              {/* Mobile Menu Button */}
-              <button 
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all"
-              >
-                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-              </button>
-            </div>
+            )}
           </div>
-
-          {/* Mobile Navigation Dropdown */}
-          <div className={`
-            lg:hidden absolute top-full left-0 right-0 bg-[#0a0a0f] border-b border-white/[0.06] transition-all duration-300 overflow-hidden
-            ${mobileMenuOpen ? 'max-h-96 opacity-100 py-4' : 'max-h-0 opacity-0 py-0'}
-          `}>
-            <div className="px-6 flex flex-col gap-4">
-              <Link to="/docs" className="text-gray-400 hover:text-white py-2 text-sm font-medium border-b border-white/[0.03]">Dokumentasi</Link>
-              <Link to="/login" className="text-gray-400 hover:text-white py-2 text-sm font-medium border-b border-white/[0.03]">Masuk</Link>
-              <Link to="/register" className="text-blue-400 py-2 text-sm font-semibold">Daftar Sekarang</Link>
-              <div className="pt-2 flex items-center gap-4">
-                <a href="https://github.com/IchwanArdi/PasskeyStudy" className="flex items-center gap-2 text-gray-500 text-xs">
-                  <Github className="w-4 h-4" /> Repository
-                </a>
-              </div>
-            </div>
-          </div>
-        </header>
-      )}
+        </div>
+      </header>
 
       {/* Hero Section */}
-      <section className="min-h-screen flex flex-col items-center justify-center px-6 relative pt-16">
-        {/* Background gradient */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-blue-500/[0.04] rounded-full blur-[120px]" />
-        </div>
-
-        <div className="max-w-4xl mx-auto text-center relative z-10 px-4">
-          <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-500/[0.08] border border-blue-500/20 rounded-full text-blue-400 text-[10px] sm:text-xs font-semibold tracking-wide mb-6 sm:mb-8">
-            <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-            Riset Autentikasi Next-Gen
-          </div>
-
-          <h1 className="text-3xl sm:text-5xl md:text-7xl font-extrabold mb-4 sm:mb-6 tracking-tight leading-[1.2] sm:leading-[1.1]">
-            Evolusi{" "}
-            <span className="bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">
-              Identitas Digital.
-            </span>
+      <section className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6 pt-24 pb-12">
+        <div className="max-w-5xl mx-auto text-center">
+          <h1 className="text-5xl sm:text-7xl md:text-8xl font-black mb-8 tracking-tighter leading-none animate-fade-in-up">
+            The Biometric <br />
+            <span className="text-white/40">Identity Framework</span>
           </h1>
 
-          <p className="text-sm sm:text-lg md:text-xl text-gray-400 mb-8 sm:mb-12 max-w-2xl mx-auto leading-relaxed">
-            Studi empiris tentang ketahanan WebAuthn dan FIDO2. Implementasi
-            keamanan biometrik untuk mengeliminasi kerentanan berbasis password.
+          <p className="text-lg sm:text-xl text-gray-400 mb-12 max-w-2xl mx-auto leading-relaxed">
+            Eliminating passwords with high-quality <span className="text-white font-medium">WebAuthn implementations</span>. 
+            Empowering developers with the power of FIDO2 components.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center w-full max-w-xs sm:max-w-none mx-auto">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
             {!authenticated ? (
               <>
                 <button
                   onClick={() => navigate("/register")}
-                  className="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2.5 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 hover:-translate-y-0.5"
+                  className="w-full sm:w-auto px-10 py-4 bg-white text-black rounded-lg font-bold text-base hover:bg-gray-200 transition-all shadow-xl shadow-white/5"
                 >
-                  Mulai Penelitian <ArrowRight className="w-4 h-4" />
+                  Get Started
                 </button>
                 <Link
                   to="/docs"
-                  className="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 bg-white/[0.04] border border-white/10 text-white rounded-xl font-semibold text-sm hover:bg-white/[0.08] hover:border-white/15 transition-all text-center"
+                  className="w-full sm:w-auto px-10 py-4 bg-transparent border border-white/20 text-white rounded-lg font-bold text-base hover:bg-white/5 transition-all text-center"
                 >
-                  Baca Dokumentasi
+                  Learn WebAuthn
                 </Link>
               </>
             ) : (
               <button
                 onClick={() => navigate("/dashboard")}
-                className="w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2.5 shadow-lg shadow-blue-500/20"
+                className="w-full sm:w-auto px-10 py-4 bg-white text-black rounded-lg font-bold text-base hover:bg-gray-200 transition-all"
               >
-                Buka Dashboard <Shield className="w-4 h-4" />
+                Go to Dashboard
               </button>
             )}
           </div>
+
+          {/* Command Prompt style snippet */}
+          <div 
+            onClick={copyCommand}
+            className="group relative cursor-pointer inline-flex items-center gap-3 px-6 py-3 bg-white/[0.03] border border-white/10 rounded-full text-gray-400 hover:text-white hover:border-white/20 transition-all"
+          >
+            <span className="text-sm font-mono flex items-center gap-2">
+              <span className="text-white/40">▲</span> ~ npx create-webauthn-app@latest
+            </span>
+            {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />}
+          </div>
         </div>
+      </section>
 
         {/* Feature Grid */}
-        <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-20 sm:mt-32 w-full px-4">
-          <div className="glass-card rounded-2xl p-6 sm:p-8 hover:border-blue-500/20 transition-all duration-300 group glow-blue-hover">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-500/10 border border-blue-500/15 rounded-xl flex items-center justify-center mb-5 sm:mb-6 group-hover:bg-blue-500/15 transition-colors">
-              <Fingerprint className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400" />
-            </div>
-            <h3 className="text-base sm:text-lg font-bold mb-2 sm:mb-3">Presisi Biometrik</h3>
-            <p className="text-gray-500 text-xs sm:text-sm leading-relaxed">
-              Implementasi kriptografi kunci publik berbasis hardware untuk
-              memverifikasi identitas tanpa berbagi data sensitif.
+        <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-1 px-4 mt-20 border-y border-white/[0.08]">
+          <div className="p-8 md:p-12 border-x border-white/[0.08] hover:bg-white/[0.02] transition-colors">
+            <h3 className="text-xl font-bold mb-4">Biometric Precision</h3>
+            <p className="text-gray-400 text-sm leading-relaxed">
+              Implementation of hardware-backed public key cryptography to verify identity without sharing sensitive data.
             </p>
           </div>
 
-          <div className="glass-card rounded-2xl p-6 sm:p-8 hover:border-purple-500/20 transition-all duration-300 group">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-500/10 border border-purple-500/15 rounded-xl flex items-center justify-center mb-5 sm:mb-6 group-hover:bg-purple-500/15 transition-colors">
-              <Activity className="w-5 h-5 sm:w-6 sm:h-6 text-purple-400" />
-            </div>
-            <h3 className="text-base sm:text-lg font-bold mb-2 sm:mb-3">Analisis Risiko</h3>
-            <p className="text-gray-500 text-xs sm:text-sm leading-relaxed">
-              Analisis pola perilaku secara real-time untuk mendeteksi dan
-              memitigasi upaya phishing yang canggih.
+          <div className="p-8 md:p-12 border-x border-white/[0.08] hover:bg-white/[0.02] transition-colors">
+            <h3 className="text-xl font-bold mb-4">Risk Analysis</h3>
+            <p className="text-gray-400 text-sm leading-relaxed">
+              Real-time behavior pattern analysis to detect and mitigate sophisticated phishing attempts.
             </p>
           </div>
 
-          <div className="glass-card rounded-2xl p-6 sm:p-8 hover:border-emerald-500/20 transition-all duration-300 group sm:col-span-2 md:col-span-1">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-500/10 border border-emerald-500/15 rounded-xl flex items-center justify-center mb-5 sm:mb-6 group-hover:bg-emerald-500/15 transition-colors">
-              <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-400" />
-            </div>
-            <h3 className="text-base sm:text-lg font-bold mb-2 sm:mb-3">Latensi Instan</h3>
-            <p className="text-gray-500 text-xs sm:text-sm leading-relaxed">
-              Alur onboarding tanpa hambatan yang dirancang untuk mengungguli
-              sistem password tradisional dalam kecepatan.
+          <div className="p-8 md:p-12 border-x border-white/[0.08] hover:bg-white/[0.02] transition-colors">
+            <h3 className="text-xl font-bold mb-4">Instant Latency</h3>
+            <p className="text-gray-400 text-sm leading-relaxed">
+              Seamless onboarding flows designed to outperform traditional password systems in speed and efficiency.
             </p>
           </div>
         </div>
-      </section>
-
       {/* Trust Stats */}
-      <section className="py-16 sm:py-24 px-6 border-t border-white/[0.04]">
-        <div className="max-w-5xl mx-auto">
-          <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-            <div className="text-center group p-4 sm:p-6 rounded-2xl hover:bg-white/[0.02] transition-all border border-transparent hover:border-white/[0.05]">
-              <span className="block text-2xl sm:text-3xl md:text-4xl font-extrabold text-white mb-2 sm:mb-3">
-                99.9%
-              </span>
-              <span className="text-[10px] sm:text-xs font-semibold text-gray-500 group-hover:text-blue-400 uppercase tracking-widest transition-colors">
-                Ketahanan Phishing
-              </span>
+      <section className="relative z-10 py-24 px-6 bg-black border-t border-white/[0.08]">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="text-center">
+              <span className="block text-4xl font-black text-white mb-2">99.9%</span>
+              <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Phishing Resistant</span>
             </div>
-            <div className="text-center group p-4 sm:p-6 rounded-2xl hover:bg-white/[0.02] transition-all border border-transparent hover:border-white/[0.05]">
-              <span className="block text-2xl sm:text-3xl md:text-4xl font-extrabold text-white mb-2 sm:mb-3">
-                Zero
-              </span>
-              <span className="text-[10px] sm:text-xs font-semibold text-gray-500 group-hover:text-blue-400 uppercase tracking-widest transition-colors">
-                Shared Secrets
-              </span>
+            <div className="text-center">
+              <span className="block text-4xl font-black text-white mb-2">Zero</span>
+              <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Shared Secrets</span>
             </div>
-            <div className="text-center group p-4 sm:p-6 rounded-2xl hover:bg-white/[0.02] transition-all border border-transparent hover:border-white/[0.05]">
-              <span className="block text-2xl sm:text-3xl md:text-4xl font-extrabold text-white mb-2 sm:mb-3">
-                W3C
-              </span>
-              <span className="text-[10px] sm:text-xs font-semibold text-gray-500 group-hover:text-blue-400 uppercase tracking-widest transition-colors">
-                Standar Tersertifikasi
-              </span>
+            <div className="text-center">
+              <span className="block text-4xl font-black text-white mb-2">W3C</span>
+              <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Certified Standard</span>
             </div>
-            <div className="text-center group p-4 sm:p-6 rounded-2xl hover:bg-white/[0.02] transition-all border border-transparent hover:border-white/[0.05]">
-              <span className="block text-2xl sm:text-3xl md:text-4xl font-extrabold text-white mb-2 sm:mb-3">
-                FIDO2
-              </span>
-              <span className="text-[10px] sm:text-xs font-semibold text-gray-500 group-hover:text-blue-400 uppercase tracking-widest transition-colors">
-                Stack Terstandardisasi
-              </span>
+            <div className="text-center">
+              <span className="block text-4xl font-black text-white mb-2">FIDO2</span>
+              <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Global Stack</span>
             </div>
           </div>
         </div>
       </section>
 
-      <footer className="py-10 border-t border-white/[0.04] text-center">
-        <p className="text-xs text-gray-600 font-medium">
-          © {new Date().getFullYear()} WebAuthn Academic Research Framework
+      <footer className="relative z-10 py-12 border-t border-white/[0.08] text-center bg-black">
+        <p className="text-xs text-gray-500 font-medium tracking-tight">
+          © {new Date().getFullYear()} WebAuthn Academic Research Framework. Built for the modern web.
         </p>
       </footer>
     </div>

@@ -2,14 +2,14 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import WebAuthnAuth from '../components/WebAuthnAuth';
 import { toast } from 'react-toastify';
-import { Shield, Github, Fingerprint, CheckCircle } from 'lucide-react';
+import { Shield, Github, Fingerprint, CheckCircle, Search, Download, Copy } from 'lucide-react';
 
 const Register = () => {
   const navigate = useNavigate();
   const [showRecoveryCodes, setShowRecoveryCodes] = useState(false);
   const [recoveryCodes, setRecoveryCodes] = useState([]);
 
-  const handleSuccess = async (response) => {
+  const handleSuccess = async () => {
     toast.success('Registrasi berhasil!');
 
     // Try to generate recovery codes after registration
@@ -63,28 +63,33 @@ const Register = () => {
   // Show recovery codes after registration
   if (showRecoveryCodes) {
     return (
-      <div className="min-h-screen bg-[#0a0a0f] text-white selection:bg-blue-500/30 font-sans flex items-center justify-center px-6">
-        <div className="w-full max-w-lg animate-fade-in-up">
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-emerald-500/10 border border-emerald-500/15 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <CheckCircle className="w-8 h-8 text-emerald-400" />
+      <div className="min-h-screen bg-black text-white selection:bg-white/20 font-sans flex items-center justify-center px-6 relative overflow-hidden">
+        {/* Background Elements */}
+        <div className="fixed inset-0 z-0">
+          <div className="absolute inset-0 grid-bg mask-radial opacity-20" />
+        </div>
+
+        <div className="relative z-10 w-full max-w-xl animate-fade-in-up">
+          <div className="text-center mb-10">
+            <div className="w-16 h-16 bg-white/[0.03] border border-white/[0.08] rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <CheckCircle className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-2xl font-bold tracking-tight mb-3">Registrasi Berhasil!</h1>
-            <p className="text-gray-500 text-base">Simpan kode pemulihan di bawah ini dengan aman</p>
+            <h1 className="text-4xl font-black tracking-tighter mb-4">Account Created</h1>
+            <p className="text-gray-400 text-sm">Save these recovery codes in a secure place</p>
           </div>
 
-          <div className="glass-card rounded-2xl p-8">
-            <div className="p-4 bg-amber-500/[0.06] border border-amber-500/15 rounded-xl mb-6">
-              <p className="text-sm text-amber-400 font-semibold mb-1">⚠ Penting</p>
-              <p className="text-sm text-gray-400 leading-relaxed">
-                Kode ini adalah <b>satu-satunya cara</b> untuk memulihkan akun Anda jika kehilangan perangkat. Setiap kode hanya bisa digunakan satu kali.
+          <div className="bg-white/[0.02] border border-white/[0.08] rounded-2xl p-8 backdrop-blur-sm">
+            <div className="p-4 bg-white/[0.03] border border-white/[0.06] rounded-xl mb-8">
+              <p className="text-xs font-bold text-white uppercase tracking-widest mb-2">⚠ Warning</p>
+              <p className="text-xs text-gray-500 leading-relaxed">
+                These codes are the <b>only way</b> to recover your account if you lose your device. Each code can only be used once.
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 mb-6">
+            <div className="grid grid-cols-2 gap-2 mb-8">
               {recoveryCodes.map((code, i) => (
-                <div key={i} className="p-3 bg-white/[0.03] border border-white/[0.06] rounded-xl text-center">
-                  <span className="font-mono text-sm font-bold tracking-widest text-white">{code}</span>
+                <div key={i} className="p-3 bg-white/[0.03] border border-white/[0.06] rounded-lg text-center font-mono text-xs tracking-widest text-white/80">
+                  {code}
                 </div>
               ))}
             </div>
@@ -92,23 +97,23 @@ const Register = () => {
             <div className="flex gap-3 mb-6">
               <button
                 onClick={handleCopyCodes}
-                className="flex-1 px-4 py-3 bg-white/[0.06] border border-white/[0.08] text-white rounded-xl text-sm font-semibold hover:bg-white/10 transition-all"
+                className="flex-1 px-4 py-3 bg-white/[0.05] border border-white/10 text-white rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-white/10 transition-all flex items-center justify-center gap-2"
               >
-                📋 Salin Semua
+                <Copy className="w-3 h-3" /> Copy All
               </button>
               <button
                 onClick={handleDownloadCodes}
-                className="flex-1 px-4 py-3 bg-white/[0.06] border border-white/[0.08] text-white rounded-xl text-sm font-semibold hover:bg-white/10 transition-all"
+                className="flex-1 px-4 py-3 bg-white/[0.05] border border-white/10 text-white rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-white/10 transition-all flex items-center justify-center gap-2"
               >
-                📥 Unduh File
+                <Download className="w-3 h-3" /> Download
               </button>
             </div>
 
             <button
               onClick={handleDismissCodes}
-              className="w-full px-6 py-3.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-semibold text-sm transition-all shadow-lg shadow-blue-500/20"
+              className="w-full px-6 py-4 bg-white text-black rounded-lg font-bold text-sm hover:bg-gray-200 transition-all shadow-xl shadow-white/5"
             >
-              Saya Sudah Menyimpan → Lanjut ke Dashboard
+              I've saved them → Go to Dashboard
             </button>
           </div>
         </div>
@@ -117,58 +122,66 @@ const Register = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white selection:bg-blue-500/30 font-sans">
+    <div className="min-h-screen bg-black text-white selection:bg-white/20 font-sans relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="fixed inset-0 z-0">
+        <div className="absolute inset-0 grid-bg mask-radial opacity-20" />
+      </div>
+
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-[#0a0a0f]/80 backdrop-blur-xl border-b border-white/[0.06]">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link to="/" className="text-white font-bold text-sm tracking-tight flex items-center gap-2.5">
-            <div className="w-7 h-7 bg-blue-500/10 border border-blue-500/20 rounded-lg flex items-center justify-center">
-              <Shield className="w-3.5 h-3.5 text-blue-400" />
-            </div>
-            WebAuthn Research
-          </Link>
+      <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/[0.08] bg-black/50 backdrop-blur-md">
+        <div className="max-w-[1440px] mx-auto px-4 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-8">
+            <Link to="/" className="text-white font-bold tracking-tighter flex items-center gap-2">
+              <Shield className="w-5 h-5" />
+              <span>WebAuthn Research</span>
+            </Link>
+            <nav className="hidden md:flex items-center gap-6">
+              <Link to="/docs" className="text-gray-400 hover:text-white transition-colors text-sm font-medium">Docs</Link>
+              <Link to="/about" className="text-gray-400 hover:text-white transition-colors text-sm font-medium">About</Link>
+              <a href="https://github.com/IchwanArdi/PasskeyStudy" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors text-sm font-medium">GitHub</a>
+            </nav>
+          </div>
+
           <div className="flex items-center gap-4">
-            <a href="https://github.com/IchwanArdi/PasskeyStudy" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white transition-colors p-2 hover:bg-white/5 rounded-lg">
-              <Github className="w-5 h-5" />
-            </a>
-            <Link to="/login" className="px-5 py-2.5 bg-white/[0.06] hover:bg-white/10 text-white rounded-xl text-sm font-semibold transition-all border border-white/10">
-              Masuk
+            <Link to="/login" className="bg-white text-black px-3 py-1.5 rounded-md text-sm font-semibold hover:bg-gray-200 transition-colors">
+              Log In
             </Link>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <div className="flex flex-col items-center justify-center min-h-screen px-6 pt-16">
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-6 pt-16">
         <div className="w-full max-w-md animate-fade-in-up">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold tracking-tight mb-3">Buat Akun Baru</h1>
-            <p className="text-gray-500 text-base">Daftar menggunakan autentikasi biometrik passwordless</p>
+          <div className="text-center mb-10">
+            <h1 className="text-4xl sm:text-5xl font-black tracking-tighter mb-4">Create Account</h1>
+            <p className="text-gray-400 text-sm">Join the passwordless revolution</p>
           </div>
 
-          <div className="glass-card rounded-2xl p-8 glow-blue">
-            <div className="flex items-center gap-3 p-4 bg-blue-500/[0.06] border border-blue-500/15 rounded-xl mb-8">
-              <Shield className="w-5 h-5 text-blue-400 shrink-0" />
-              <p className="text-sm text-gray-400 leading-relaxed">
-                Akun Anda dilindungi oleh <span className="text-blue-400 font-semibold">kriptografi kunci publik</span> — tidak ada password yang perlu diingat.
+          <div className="bg-white/[0.02] border border-white/[0.08] rounded-2xl p-8 backdrop-blur-sm">
+            <div className="flex items-center gap-3 p-4 bg-white/[0.03] border border-white/[0.06] rounded-xl mb-8">
+              <Shield className="w-5 h-5 text-gray-400 shrink-0" />
+              <p className="text-xs text-gray-500 leading-relaxed">
+                Your account is secured by <span className="text-white font-semibold">public key cryptography</span>. No passwords, ever.
               </p>
             </div>
 
             <WebAuthnAuth mode="register" onSuccess={handleSuccess} />
 
-            <div className="mt-8 pt-6 border-t border-white/[0.06] text-center">
+            <div className="mt-10 pt-6 border-t border-white/[0.08] text-center">
               <p className="text-sm text-gray-500">
-                Sudah punya akun?{' '}
-                <Link to="/login" className="text-blue-400 hover:text-blue-300 transition-colors font-semibold">
-                  Masuk
+                Already have an account?{' '}
+                <Link to="/login" className="text-white hover:underline transition-colors font-semibold">
+                  Log In
                 </Link>
               </p>
             </div>
           </div>
 
-          <div className="mt-6 text-center">
-            <Link to="/" className="text-gray-600 hover:text-gray-400 text-sm font-medium transition-colors inline-flex items-center gap-1">
-              ← Kembali ke Beranda
+          <div className="mt-8 text-center">
+            <Link to="/" className="text-gray-600 hover:text-white text-xs font-bold uppercase tracking-widest transition-colors inline-flex items-center gap-2">
+              ← Back to Home
             </Link>
           </div>
         </div>

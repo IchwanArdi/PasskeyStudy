@@ -1,20 +1,40 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { BookOpen, Settings, Lock, Shield, Key, BarChart3, Code, Menu, X, Github, CheckCircle, LogOut, User, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { BookOpen, Settings, Lock, Shield, Key, BarChart3, Code, Menu, X, Github, CheckCircle, LogOut, User, PanelLeftClose, PanelLeftOpen, ExternalLink } from 'lucide-react';
 import { isAuthenticated, clearAuth } from '../utils/auth';
 
 const sections = [
-  { id: 'introduction', title: 'Pengantar', icon: BookOpen },
-  { id: 'installation', title: 'Instalasi', icon: Settings },
-  { id: 'user-guide', title: 'Panduan Penggunaan', icon: BookOpen },
-  { id: 'authentication', title: 'Autentikasi', icon: Lock },
-  { id: 'webauthn', title: 'WebAuthn / FIDO2', icon: Shield },
-  { id: 'password', title: 'Password Auth', icon: Key },
-  { id: 'dashboard', title: 'Dashboard', icon: BarChart3 },
-  { id: 'cost-analysis', title: 'Cost Analysis', icon: BarChart3 },
-  { id: 'compatibility', title: 'Compatibility', icon: Settings },
-  { id: 'methodology', title: 'Metodologi Analisis', icon: BarChart3 },
-  { id: 'api', title: 'Referensi API', icon: Code },
+  { 
+    group: 'Getting Started',
+    items: [
+      { id: 'introduction', title: 'Introduction', icon: BookOpen },
+      { id: 'installation', title: 'Installation', icon: Settings },
+      { id: 'user-guide', title: 'User Guide', icon: BookOpen },
+    ]
+  },
+  {
+    group: 'Core Concepts',
+    items: [
+      { id: 'authentication', title: 'Authentication Flow', icon: Lock },
+      { id: 'webauthn', title: 'WebAuthn / FIDO2', icon: Shield },
+      { id: 'password', title: 'Password Systems', icon: Key },
+    ]
+  },
+  {
+    group: 'Analytics',
+    items: [
+      { id: 'dashboard', title: 'Dashboard Metrics', icon: BarChart3 },
+      { id: 'cost-analysis', title: 'Cost Analysis', icon: BarChart3 },
+      { id: 'compatibility', title: 'Compatibility', icon: Settings },
+      { id: 'methodology', title: 'Methodology', icon: BarChart3 },
+    ]
+  },
+  {
+    group: 'Resources',
+    items: [
+      { id: 'api', title: 'API Reference', icon: Code },
+    ]
+  }
 ];
 
 const onPageSections = {
@@ -135,134 +155,97 @@ const Documentation = () => {
   }, [activeSection]);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white flex selection:bg-blue-500/30 font-sans relative">
-      {/* Mobile Sidebar Backdrop */}
-      {sidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
-      {/* Sidebar */}
-      <aside
-        className={`
-        ${sidebarOpen ? 'w-72 translate-x-0' : 'w-0 -translate-x-full lg:w-20 lg:translate-x-0'} 
-        fixed left-0 top-0 bottom-0 bg-[#0a0a0f] border-r border-white/[0.06] overflow-hidden transition-all duration-300 z-50 flex flex-col
-      `}
-      >
-        <div className="p-6 flex-1 overflow-y-auto">
-          <div className="flex items-center justify-between mb-10">
-            <Link to="/" className="flex items-center gap-2.5 text-white font-bold text-sm tracking-tight">
-              <div className="w-7 h-7 bg-blue-500/10 border border-blue-500/20 rounded-lg flex items-center justify-center shrink-0">
-                <Shield className="w-3.5 h-3.5 text-blue-400" />
-              </div>
-              {sidebarOpen && <span>Dokumentasi</span>}
+    <div className="min-h-screen bg-black text-white selection:bg-white/20 font-sans">
+      {/* Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/[0.08] bg-black/50 backdrop-blur-md">
+        <div className="max-w-[1440px] mx-auto px-4 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-8">
+            <Link to="/" className="text-white font-bold tracking-tighter flex items-center gap-2">
+              <Shield className="w-5 h-5" />
+              <span>WebAuthn Research</span>
             </Link>
-            {sidebarOpen && (
-              <button
-                onClick={() => setSidebarOpen(false)}
-                className="p-1.5 text-gray-500 hover:text-white hover:bg-white/5 rounded-lg transition-all lg:flex hidden"
-                title="Collapse Sidebar"
-              >
-                <PanelLeftClose className="w-4 h-4" />
-              </button>
-            )}
+            <nav className="hidden md:flex items-center gap-6">
+              <Link to="/docs" className="text-white text-sm font-medium">Docs</Link>
+              <Link to="/about" className="text-gray-400 hover:text-white transition-colors text-sm font-medium">About</Link>
+              <a href="https://github.com/IchwanArdi/PasskeyStudy" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors text-sm font-medium">GitHub</a>
+            </nav>
           </div>
 
-          <nav className="space-y-1">
-            {sections.map((section) => {
-              const Icon = section.icon;
-              const isActive = activeSection === section.id;
-              return (
-                <button
-                  key={section.id}
-                  onClick={() => {
-                    setActiveSection(section.id);
-                    if (window.innerWidth < 1024) setSidebarOpen(false);
-                  }}
-                  className={`w-full flex items-center ${sidebarOpen ? 'gap-3 px-4' : 'justify-center'} py-2.5 rounded-xl text-sm font-medium transition-all ${
-                    isActive ? 'bg-blue-500/10 text-blue-400 border border-blue-500/15' : 'text-gray-500 hover:text-white hover:bg-white/[0.04]'
-                  }`}
-                  title={section.title}
-                >
-                  <Icon className="w-4 h-4 shrink-0" />
-                  {sidebarOpen && <span>{section.title}</span>}
-                </button>
-              );
-            })}
-          </nav>
+          <div className="flex items-center gap-4">
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-white/[0.05] border border-white/10 rounded-md text-gray-500 text-xs font-mono">
+              Search docs... <span className="bg-white/10 px-1 rounded text-[10px]">Ctrl K</span>
+            </div>
+            <Link
+              to="/login"
+              className="bg-white text-black px-3 py-1.5 rounded-md text-sm font-semibold hover:bg-gray-200 transition-colors"
+            >
+              Log In
+            </Link>
+          </div>
         </div>
+      </header>
 
-        <div className="p-6 border-t border-white/[0.06]">
-          <a href="https://github.com/IchwanArdi/PasskeyStudy" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-gray-500 hover:text-white transition-colors p-2 hover:bg-white/5 rounded-lg">
-            <Github className="w-5 h-5" />
-            {sidebarOpen && <span className="text-sm font-medium">Repository</span>}
-          </a>
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'lg:ml-72' : 'ml-0 lg:ml-20'}`}>
-        <header className="sticky top-0 z-30 bg-[#0a0a0f]/80 backdrop-blur-xl border-b border-white/[0.06]">
-          <div className="max-w-7xl mx-auto px-4 sm:px-8 h-16 flex items-center justify-between">
-            <div className="flex items-center gap-3 sm:gap-6">
-              {!sidebarOpen && (
-                <button
-                  onClick={() => setSidebarOpen(true)}
-                  className="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all hidden lg:flex"
-                  title="Expand Sidebar"
-                >
-                  <PanelLeftOpen className="w-5 h-5" />
-                </button>
-              )}
-              {/* Mobile Menu Toggle */}
-              <button
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all lg:hidden"
-              >
-                {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              </button>
-              
-              <div className="flex items-center gap-2 text-sm font-medium min-w-0">
-                <span className="text-gray-500 hidden xs:inline">Dokumentasi</span>
-                <span className="text-gray-700 hidden xs:inline">/</span>
-                <span className="text-blue-400 capitalize truncate">{activeSection.replace('-', ' ')}</span>
+      <div className="max-w-[1440px] mx-auto flex pt-14">
+        {/* Left Sidebar */}
+        <aside className={`
+          fixed lg:sticky top-14 h-[calc(100vh-3.5rem)] w-64 border-r border-white/[0.08] bg-black overflow-y-auto z-40 lg:z-auto transition-transform duration-300
+          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        `}>
+          <div className="p-6">
+            {/* Context Switcher Mock */}
+            <div className="mb-8 p-3 bg-white/[0.03] border border-white/[0.08] rounded-lg flex items-center justify-between cursor-pointer hover:border-white/20 transition-all">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-blue-500/10 rounded flex items-center justify-center">
+                  <BookOpen className="w-4 h-4 text-blue-400" />
+                </div>
+                <div>
+                  <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Research Docs</div>
+                  <div className="text-xs font-semibold">v1.0.0</div>
+                </div>
               </div>
+              <Settings className="w-3 h-3 text-gray-600" />
             </div>
 
-            <div className="flex items-center gap-4">
-              {!authenticated ? (
-                <>
-                  <Link to="/" className="text-gray-400 hover:text-white text-sm font-medium transition-colors">
-                    Beranda
-                  </Link>
-                  <Link to="/register" className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-blue-500/20">
-                    Mulai
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <Link to="/dashboard" className="text-gray-400 hover:text-white text-sm font-medium transition-colors">
-                    Dashboard
-                  </Link>
-                  <Link to="/profile" className="flex items-center gap-2 px-2 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all">
-                    <User className="w-4 h-4" />
-                    <span className="hidden sm:inline">Profil</span>
-                  </Link>
-                  <button onClick={handleLogout} className="flex items-center gap-2 px-2 py-2 rounded-lg text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all">
-                    <LogOut className="w-4 h-4" />
-                    <span className="hidden sm:inline">Keluar</span>
-                  </button>
-                </>
-              )}
-            </div>
+            <nav className="space-y-8">
+              {sections.map((group) => (
+                <div key={group.group}>
+                  <h4 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 ml-2">{group.group}</h4>
+                  <div className="space-y-1">
+                    {group.items.map((item) => {
+                      const isActive = activeSection === item.id;
+                      return (
+                        <button
+                          key={item.id}
+                          onClick={() => {
+                            setActiveSection(item.id);
+                            if (window.innerWidth < 1024) setSidebarOpen(false);
+                          }}
+                          className={`w-full flex items-center gap-3 px-3 py-1.5 rounded-md text-sm transition-colors text-left
+                            ${isActive ? 'text-white font-semibold bg-white/[0.05]' : 'text-gray-400 hover:text-white hover:bg-white/[0.02]'}
+                          `}
+                        >
+                          {item.title}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </nav>
           </div>
-        </header>
+        </aside>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8 sm:py-12 flex flex-col lg:flex-row gap-8 lg:gap-12">
-          {/* Main Content Area */}
-          <div className="flex-1 max-w-4xl min-w-0">
+        {/* Main Content Area */}
+        <main className="flex-1 min-w-0 flex flex-col lg:flex-row">
+          <div className="flex-1 px-6 lg:px-12 py-10 max-w-4xl">
+            {/* Mobile Nav Toggle */}
+            <button 
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="lg:hidden mb-6 flex items-center gap-2 text-gray-400 text-sm font-medium"
+            >
+              {sidebarOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+              Menu
+            </button>
             {activeSection === 'introduction' && (
               <div id="introduction" className="space-y-8 sm:space-y-10 animate-fade-in-up">
                 <div className="space-y-4">
@@ -270,7 +253,7 @@ const Documentation = () => {
                     <BookOpen className="w-3 h-3" />
                     Fondasi Penelitian
                   </div>
-                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">Pengantar</h1>
+                  <h1 className="text-4xl sm:text-5xl font-black tracking-tighter mb-4 animate-fade-in-up">Introduction</h1>
                   <p className="text-lg text-gray-400 leading-relaxed max-w-2xl">
                     Framework autentikasi dengan ketahanan tinggi yang dirancang untuk analisis empiris standar WebAuthn dan FIDO2.
                   </p>
@@ -305,7 +288,7 @@ const Documentation = () => {
                     <Shield className="w-3 h-3" />
                     Security Research
                   </div>
-                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">Threat Model</h1>
+                  <h1 className="text-4xl sm:text-5xl font-black tracking-tighter mb-4">Threat Model</h1>
                   <p className="text-lg text-gray-400 leading-relaxed max-w-2xl">
                     Analisis formal terhadap vektor serangan dan bagaimana arsitektur WebAuthn memitigasi risiko keamanan pada aplikasi web modern.
                   </p>
@@ -391,7 +374,7 @@ const Documentation = () => {
                     <Settings className="w-3 h-3" />
                     Setup & Deploy
                   </div>
-                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">Instalasi</h1>
+                  <h1 className="text-4xl sm:text-5xl font-black tracking-tighter mb-4">Installation</h1>
                   <p className="text-lg text-gray-400 leading-relaxed max-w-2xl">
                     Panduan lengkap untuk mengatur dan menjalankan lingkungan proyek WebAuthn secara lokal.
                   </p>
@@ -450,7 +433,7 @@ const Documentation = () => {
                     <Lock className="w-3 h-3" />
                     Core System
                   </div>
-                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">Autentikasi</h1>
+                  <h1 className="text-4xl sm:text-5xl font-black tracking-tighter mb-4">Authentication</h1>
                   <p className="text-lg text-gray-400 leading-relaxed max-w-2xl">
                     Arsitektur unik yang sepenuhnya meniadakan penggunaan password demi keamanan cryptografis kunci publik.
                   </p>
@@ -487,7 +470,7 @@ const Documentation = () => {
                     <Shield className="w-3 h-3" />
                     FIDO2 Protocol
                   </div>
-                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">WebAuthn / FIDO2</h1>
+                  <h1 className="text-4xl sm:text-5xl font-black tracking-tighter mb-4">WebAuthn / FIDO2</h1>
                   <p className="text-lg text-gray-400 leading-relaxed max-w-2xl">
                     Implementasi standar W3C Web Authentication API menggunakan @simplewebauthn.
                   </p>
@@ -530,7 +513,7 @@ const Documentation = () => {
                     <Key className="w-3 h-3" />
                     Legacy Base
                   </div>
-                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">Password Auth</h1>
+                  <h1 className="text-4xl sm:text-5xl font-black tracking-tighter mb-4">Password Systems</h1>
                   <p className="text-lg text-gray-400 leading-relaxed max-w-2xl">
                     Penjelasan metrik dan implementasi simulasi password. Sistem login password yang sesungguhnya telah dihapus sepenuhnya dari aplikasi.
                   </p>
@@ -557,7 +540,7 @@ const Documentation = () => {
                     <BarChart3 className="w-3 h-3" />
                     Analytics
                   </div>
-                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">Dashboard & Metrik</h1>
+                  <h1 className="text-4xl sm:text-5xl font-black tracking-tighter mb-4">Dashboard & Metrics</h1>
                   <p className="text-lg text-gray-400 leading-relaxed max-w-2xl">
                     Sistem analitik komprehensif untuk memantau aktivitas autentikasi, latensi performa, survei kemudahan penggunaan (UX), dan penilaian keamanan.
                   </p>
@@ -588,7 +571,7 @@ const Documentation = () => {
                     <BarChart3 className="w-3 h-3" />
                     Financial Study
                   </div>
-                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">Analisis Biaya (Cost)</h1>
+                  <h1 className="text-4xl sm:text-5xl font-black tracking-tighter mb-4">Cost Analysis</h1>
                   <p className="text-lg text-gray-400 leading-relaxed max-w-2xl">
                     Perbandingan empiris antara biaya ekonomi untuk memelihara Autentikasi Password vs WebAuthn.
                   </p>
@@ -619,7 +602,7 @@ const Documentation = () => {
                     <Settings className="w-3 h-3" />
                     Environment
                   </div>
-                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">Kompatibilitas Sistem</h1>
+                  <h1 className="text-4xl sm:text-5xl font-black tracking-tighter mb-4">System Compatibility</h1>
                   <p className="text-lg text-gray-400 leading-relaxed max-w-2xl">
                     Pemeriksaan matrik kompatibilitas lintas perangkat terhadap kapabilitas modern WebAuthn API.
                   </p>
@@ -650,7 +633,7 @@ const Documentation = () => {
                     <BookOpen className="w-3 h-3" />
                     Tutorial
                   </div>
-                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">Panduan Penggunaan</h1>
+                  <h1 className="text-4xl sm:text-5xl font-black tracking-tighter mb-4">User Guide</h1>
                   <p className="text-lg text-gray-400 leading-relaxed max-w-2xl">
                     Petunjuk langkah-demi-langkah tentang cara menggunakan semua fitur yang tersedia di dalam aplikasi penelitian web ini.
                   </p>
@@ -702,7 +685,7 @@ const Documentation = () => {
                     <BarChart3 className="w-3 h-3" />
                     How It Works
                   </div>
-                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">Metodologi Analisis</h1>
+                  <h1 className="text-4xl sm:text-5xl font-black tracking-tighter mb-4">Analysis Methodology</h1>
                   <p className="text-lg text-gray-400 leading-relaxed max-w-2xl">
                     Bagaimana metrik Dashboard dihitung di belakang layar menggunakan data nyata dari koleksi database MongoDB.
                   </p>
@@ -748,7 +731,7 @@ const Documentation = () => {
                     <Code className="w-3 h-3" />
                     Reference
                   </div>
-                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">Referensi API</h1>
+                  <h1 className="text-4xl sm:text-5xl font-black tracking-tighter mb-4">API Reference</h1>
                   <p className="text-lg text-gray-400 leading-relaxed max-w-2xl">
                     Daftar referensi lengkap rute endpoint backend.
                   </p>
@@ -784,9 +767,6 @@ const Documentation = () => {
                       <span className="text-sm text-gray-500">Validasi Kriptografi Kunci FIDO2</span>
                     </div>
                   </div>
-                </div>
-
-                <div id="stats-api" className="space-y-4 pt-8 border-t border-white/[0.06]">
                   <h2 className="text-xl font-bold text-white">Stats API</h2>
                   <div className="space-y-3">
                     <div className="p-4 bg-white/[0.02] border border-white/[0.06] rounded-xl flex items-center justify-between">
@@ -810,19 +790,18 @@ const Documentation = () => {
 
           </div>
 
-          {/* Right Sidebar */}
+          {/* Right Sidebar (Table of Contents) */}
           {currentOnPage.length > 0 && (
-            <aside className="hidden xl:block w-56 shrink-0">
-              <div className="sticky top-24">
-                <h3 className="text-xs font-semibold text-gray-600 mb-4">Dalam bagian ini</h3>
-                <nav className="space-y-0.5">
+            <aside className="hidden xl:block w-64 pt-10 sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto">
+              <div className="px-6">
+                <h5 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-4">On this page</h5>
+                <nav className="space-y-3">
                   {currentOnPage.map((item) => (
                     <a
                       key={item.id}
                       href={`#${item.id}`}
                       onClick={(e) => {
                         e.preventDefault();
-                        setActiveOnPage(item.id);
                         const element = document.getElementById(item.id);
                         if (element) {
                           const headerOffset = 80;
@@ -831,17 +810,30 @@ const Documentation = () => {
                           window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
                         }
                       }}
-                      className={`block px-4 py-2 text-sm font-medium rounded-lg transition-all ${activeOnPage === item.id ? 'text-blue-400 bg-blue-500/10 border-l-2 border-blue-400' : 'text-gray-500 hover:text-white hover:bg-white/[0.04]'}`}
+                      className={`block text-xs font-medium transition-colors ${
+                        activeOnPage === item.id ? 'text-blue-400' : 'text-gray-500 hover:text-white'
+                      }`}
                     >
                       {item.title}
                     </a>
                   ))}
                 </nav>
+                
+                <div className="mt-8 pt-8 border-t border-white/[0.08]">
+                  <a 
+                    href="https://github.com/IchwanArdi/PasskeyStudy" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-[11px] font-bold text-gray-500 hover:text-white transition-colors uppercase tracking-widest"
+                  >
+                    Edit this page on GitHub <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
               </div>
             </aside>
           )}
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 };
