@@ -368,6 +368,6 @@ Proyek ini dilisensikan di bawah [MIT License](LICENSE).
 ---
 
 <p align="center">
-  Dibuat dengan ❤️ untuk penelitian skripsi<br/>
+  Dibuat dengan ❤️<br/>
   <strong>WebAuthn Passwordless Authentication Research Platform</strong>
 </p>
