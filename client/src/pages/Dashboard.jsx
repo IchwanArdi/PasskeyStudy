@@ -9,6 +9,7 @@ import { Download, MessageSquare, Lightbulb, BarChart3, Key, Shield, Menu, User,
 import SecurityAnalysisTab from '../components/SecurityAnalysisTab';
 import UXResearchTab from '../components/UXResearchTab';
 import PerformanceTab from '../components/PerformanceTab';
+import MetricInfoButton from '../components/MetricInfoButton';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -236,7 +237,14 @@ const Dashboard = () => {
                 {/* Stats Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div className="glass-card rounded-2xl p-6 hover:border-blue-500/20 transition-all group glow-blue-hover">
-                    <p className="text-xs font-semibold text-gray-500 mb-3 group-hover:text-blue-400 transition-colors">Total Sesi</p>
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-xs font-semibold text-gray-500 group-hover:text-blue-400 transition-colors">Total Sesi</p>
+                      <MetricInfoButton
+                        title="Total Sesi Autentikasi"
+                        description="Jumlah total percobaan autentikasi (login) yang tercatat oleh sistem, baik yang berhasil maupun gagal. Metrik ini mencakup semua metode autentikasi: password tradisional dan WebAuthn/FIDO2."
+                        relevance="Dalam penelitian, total sesi menunjukkan volume data empiris yang terkumpul. Semakin banyak sesi, semakin valid secara statistik perbandingan antara metode password dan WebAuthn. Data ini digunakan untuk menghitung success rate, average latency, dan risk score masing-masing metode."
+                      />
+                    </div>
                     <p className="text-3xl font-bold">{stats.totalLogins}</p>
                     <div className="mt-4 pt-3 border-t border-white/[0.06] flex justify-between items-center text-xs text-gray-600">
                       <span>Data Historis</span>
@@ -244,7 +252,14 @@ const Dashboard = () => {
                     </div>
                   </div>
                   <div className="glass-card rounded-2xl p-6 hover:border-blue-500/20 transition-all group glow-blue-hover">
-                    <p className="text-xs font-semibold text-gray-500 mb-3 group-hover:text-blue-400 transition-colors">Rasio WebAuthn</p>
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-xs font-semibold text-gray-500 group-hover:text-blue-400 transition-colors">Rasio WebAuthn</p>
+                      <MetricInfoButton
+                        title="Rasio Adopsi WebAuthn"
+                        description="Persentase sesi login yang menggunakan WebAuthn/FIDO2 dibandingkan total seluruh sesi login. Dihitung dengan rumus: (jumlah login WebAuthn ÷ total login) × 100%."
+                        relevance="Rasio adopsi menunjukkan seberapa besar penerimaan pengguna terhadap autentikasi passwordless. Dalam konteks FIDO Alliance, target adopsi yang tinggi mengindikasikan bahwa WebAuthn lebih user-friendly dan dipercaya oleh pengguna dibanding password tradisional. Metrik ini penting untuk mengukur efektivitas implementasi."
+                      />
+                    </div>
                     <p className="text-3xl font-bold">{stats.webauthnRatio}%</p>
                     <div className="mt-4 pt-3 border-t border-white/[0.06] flex justify-between items-center text-xs text-gray-600">
                       <span>Tingkat Adopsi</span>
@@ -252,7 +267,14 @@ const Dashboard = () => {
                     </div>
                   </div>
                   <div className="glass-card rounded-2xl p-6 hover:border-blue-500/20 transition-all group glow-blue-hover">
-                    <p className="text-xs font-semibold text-gray-500 mb-3 group-hover:text-blue-400 transition-colors">Skor Risiko Rata-rata</p>
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-xs font-semibold text-gray-500 group-hover:text-blue-400 transition-colors">Skor Risiko Rata-rata</p>
+                      <MetricInfoButton
+                        title="Skor Risiko (Risk Score)"
+                        description="Skor yang dihitung oleh Risk Engine menggunakan analisis behavioral profiling berbasis Z-Score. Faktor yang dianalisis: (1) Analisis temporal — apakah waktu login konsisten dengan pola historis, (2) Device fingerprinting — apakah user agent/perangkat dikenali, (3) Analisis IP — apakah alamat IP stabil atau berubah-ubah, (4) Deteksi brute force — apakah ada pola percobaan login gagal beruntun. Skor 0 = aman, skor tinggi = berisiko."
+                        relevance="Risk Engine adalah implementasi adaptive authentication yang melengkapi WebAuthn. Meskipun WebAuthn secara inheren lebih aman (karena menggunakan public-key cryptography), risk scoring tetap penting untuk mendeteksi anomali seperti credential theft dari perangkat yang dicuri. Ini adalah defense-in-depth layer di atas FIDO2."
+                      />
+                    </div>
                     <p className="text-3xl font-bold text-blue-400">{stats.avgRiskScore}</p>
                     <div className="mt-4 pt-3 border-t border-white/[0.06] flex justify-between items-center text-xs text-gray-600">
                       <span>Analisis ML</span>
@@ -260,7 +282,14 @@ const Dashboard = () => {
                     </div>
                   </div>
                   <div className="glass-card rounded-2xl p-6 hover:border-blue-500/20 transition-all group glow-blue-hover">
-                    <p className="text-xs font-semibold text-gray-500 mb-3 group-hover:text-blue-400 transition-colors">Node Aktif</p>
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-xs font-semibold text-gray-500 group-hover:text-blue-400 transition-colors">Node Aktif</p>
+                      <MetricInfoButton
+                        title="Node Aktif (Unique IPs)"
+                        description="Jumlah alamat IP unik yang tercatat melakukan autentikasi. Setiap IP merepresentasikan satu 'node' atau sumber akses yang berbeda."
+                        relevance="Dalam konteks keamanan WebAuthn, diversitas IP menunjukkan sebaran geografis pengguna. WebAuthn dengan origin binding memastikan bahwa credential hanya valid untuk domain spesifik (RP ID), sehingga meskipun diakses dari banyak IP berbeda, keamanan tetap terjaga — berbeda dengan password yang rentan dicuri dari mana saja."
+                      />
+                    </div>
                     <p className="text-3xl font-bold">{stats.uniqueIPs}</p>
                     <div className="mt-4 pt-3 border-t border-white/[0.06] flex justify-between items-center text-xs text-gray-600">
                       <span>Entitas Unik</span>
@@ -272,13 +301,27 @@ const Dashboard = () => {
                 {/* Charts */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   <div className="lg:col-span-2 glass-card rounded-2xl p-6">
-                    <h3 className="text-sm font-semibold mb-6">Ketahanan Autentikasi dari Waktu ke Waktu</h3>
+                    <div className="flex items-center gap-2 mb-6">
+                      <h3 className="text-sm font-semibold">Ketahanan Autentikasi dari Waktu ke Waktu</h3>
+                      <MetricInfoButton
+                        title="Ketahanan Autentikasi (Timeline)"
+                        description="Grafik time-series yang menampilkan jumlah percobaan autentikasi dari waktu ke waktu, dipisahkan berdasarkan metode (WebAuthn vs Password) dan status (berhasil vs gagal). Pola temporal ini membantu mengidentifikasi tren adopsi dan potensi serangan."
+                        relevance="Dengan mengamati pola temporal, peneliti dapat melihat: (1) Apakah adopsi WebAuthn meningkat seiring waktu, (2) Apakah ada spike kegagalan yang mengindikasikan serangan, (3) Perbandingan reliabilitas kedua metode. Data ini mendukung analisis longitudinal dalam skripsi."
+                      />
+                    </div>
                     <div className="h-[350px]">
                       <ActivityOverTimeChart data={stats.activityOverTime} />
                     </div>
                   </div>
                   <div className="glass-card rounded-2xl p-6">
-                    <h3 className="text-sm font-semibold mb-6">Distribusi</h3>
+                    <div className="flex items-center gap-2 mb-6">
+                      <h3 className="text-sm font-semibold">Distribusi</h3>
+                      <MetricInfoButton
+                        title="Distribusi Error & Metode"
+                        description="Diagram yang menunjukkan proporsi berbagai jenis error dan distribusi metode autentikasi. Mencakup breakdown error seperti: invalid credentials, timeout, user cancelled, dan server errors."
+                        relevance="Distribusi error berbeda secara fundamental antara password dan WebAuthn. Password rentan terhadap 'invalid credential' errors (salah ketik/lupa), sedangkan WebAuthn lebih sering mengalami 'user cancelled' (pengguna membatalkan biometrik) atau 'timeout'. Perbedaan ini menunjukkan bahwa nature kegagalan WebAuthn lebih bersifat user-initiated, bukan security failure."
+                      />
+                    </div>
                     <div className="h-[350px]">
                       <ErrorDistributionChart data={stats.errorDistribution} />
                     </div>
@@ -288,7 +331,14 @@ const Dashboard = () => {
                 {/* Success Rate */}
                 <div className="glass-card rounded-2xl p-6">
                   <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-sm font-semibold">Perbandingan Tingkat Keberhasilan</h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-sm font-semibold">Perbandingan Tingkat Keberhasilan</h3>
+                      <MetricInfoButton
+                        title="Success Rate Comparison"
+                        description="Perbandingan persentase keberhasilan login antara WebAuthn/FIDO2 dan Password. Success rate dihitung: (login berhasil ÷ total percobaan) × 100% untuk masing-masing metode."
+                        relevance="WebAuthn umumnya memiliki success rate lebih tinggi karena: (1) Tidak perlu mengingat password — menghilangkan human error, (2) Verifikasi biometrik lebih intuitif, (3) Tidak ada masalah 'lupa password'. Namun, bisa lebih rendah jika pengguna belum familiar dengan WebAuthn atau perangkat tidak kompatibel. Data ini krusial untuk membuktikan hipotesis usability di skripsi."
+                      />
+                    </div>
                     <div className="flex gap-4 text-xs font-medium text-gray-500">
                       <span className="flex items-center gap-1.5">
                         <div className="w-2.5 h-2.5 rounded-sm bg-blue-500" /> WebAuthn

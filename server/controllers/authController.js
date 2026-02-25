@@ -1,12 +1,8 @@
 import User from '../models/User.js';
 import AuthLog from '../models/AuthLog.js';
-import jwt from 'jsonwebtoken';
 import { calculateRiskScore } from '../utils/riskEngine.js';
 import { validationResult } from 'express-validator';
-
-const generateToken = (userId) => {
-  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '7d' });
-};
+import { generateToken } from '../utils/tokenHelper.js';
 
 export const register = async (req, res) => {
   try {
@@ -180,12 +176,6 @@ export const login = async (req, res) => {
       userAgent: currentUA,
       riskScore,
       riskFactors,
-    });
-
-    console.log('Password login logged:', {
-      userId: user._id.toString(),
-      duration,
-      logId: authLog._id,
     });
 
     res.json({

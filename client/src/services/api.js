@@ -51,6 +51,14 @@ export const userAPI = {
   getProfile: () => api.get("/user/me"),
   updateProfile: (data) => api.put("/user/me", data),
   getCredentials: () => api.get("/user/credentials"),
+  deleteCredential: (credentialID) =>
+    api.delete(`/user/credentials/${encodeURIComponent(credentialID)}`),
+  updateNickname: (credentialID, nickname) =>
+    api.put(`/user/credentials/${encodeURIComponent(credentialID)}/nickname`, {
+      nickname,
+    }),
+  addDeviceOptions: () => api.post("/user/credentials/add-options"),
+  addDeviceVerify: (data) => api.post("/user/credentials/add-verify", data),
 };
 
 // Stats API

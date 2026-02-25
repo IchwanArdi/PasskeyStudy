@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { uxAPI } from '../services/api';
 import { Lightbulb, Brain, Target, CheckCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { toast } from 'react-toastify';
+import MetricInfoButton from './MetricInfoButton';
 
 const UXResearchTab = ({ uxData, loadingUX, setUxData }) => {
   const [showSUSForm, setShowSUSForm] = useState(false);
@@ -66,6 +67,11 @@ const UXResearchTab = ({ uxData, loadingUX, setUxData }) => {
           <div className="flex items-center gap-2.5">
             <Target className="w-5 h-5 text-blue-400" />
             <h3 className="text-sm font-semibold">System Usability Scale (SUS)</h3>
+            <MetricInfoButton
+              title="System Usability Scale (SUS)"
+              description="SUS adalah standardized questionnaire yang dikembangkan oleh John Brooke (1986) untuk mengukur usability subjektif dari sebuah sistem. Terdiri dari 10 pertanyaan dengan skala Likert 1-5. Skor akhir dihitung 0-100 dengan interpretasi: Excellent (>80.3), Good (68-80.3), OK (51-68), Poor (25.1-51), Worst Imaginable (<25.1). SUS telah divalidasi secara akademis dan digunakan secara luas dalam penelitian HCI."
+              relevance="Dalam skripsi ini, SUS digunakan untuk membandingkan usability persepsi pengguna antara password dan WebAuthn. Hipotesis: WebAuthn memiliki skor SUS lebih tinggi karena proses login lebih sederhana (tap/biometrik vs ketik password). Hasil SUS dapat digunakan sebagai bukti kuantitatif bahwa passwordless authentication meningkatkan user experience."
+            />
           </div>
           <button
             onClick={() => setShowSUSForm(!showSUSForm)}
@@ -173,6 +179,11 @@ const UXResearchTab = ({ uxData, loadingUX, setUxData }) => {
         <div className="flex items-center gap-2.5 mb-8">
           <Brain className="w-5 h-5 text-purple-400" />
           <h3 className="text-sm font-semibold">Distribusi Beban Kognitif</h3>
+          <MetricInfoButton
+            title="Distribusi Beban Kognitif (NASA-TLX)"
+            description="Metrik beban kognitif mengukur seberapa besar usaha mental yang dibutuhkan pengguna saat melakukan autentikasi. Terdiri dari 4 dimensi: (1) Usaha Mental — konsentrasi yang diperlukan, (2) Kesulitan Tugas — persepsi tingkat kesulitan, (3) Tekanan Waktu — perasaan terburu-buru, (4) Frustrasi — tingkat ketidakpuasan. Skala 1-7, semakin rendah semakin baik."
+            relevance="WebAuthn diharapkan memiliki beban kognitif lebih rendah karena: (1) Tidak perlu mengingat password — menghilangkan memory load, (2) Biometrik bersifat otomatis — tidak perlu berpikir 'apa password saya?', (3) Login lebih cepat — mengurangi tekanan waktu, (4) Tidak ada frustrasi 'lupa password'. Impedansi Kognitif Kumulatif adalah total beban dari semua dimensi — semakin rendah, semakin baik UX-nya."
+          />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
@@ -223,6 +234,11 @@ const UXResearchTab = ({ uxData, loadingUX, setUxData }) => {
         <div className="flex items-center gap-2.5 mb-8">
           <CheckCircle className="w-5 h-5 text-emerald-400" />
           <h3 className="text-sm font-semibold">Efisiensi Eksekusi Tugas</h3>
+          <MetricInfoButton
+            title="Efisiensi Eksekusi Tugas"
+            description="Pengukuran objektif performa autentikasi berdasarkan: (1) Latensi Rata-rata — waktu dari mulai login hingga selesai (dalam milidetik), (2) Tingkat Keberhasilan — persentase percobaan login yang berhasil pada percobaan pertama. Data ini dikumpulkan secara otomatis dari setiap sesi autentikasi."
+            relevance="Metrik ini memberikan bukti empiris objektif (bukan subjektif seperti SUS) tentang efisiensi WebAuthn. Meskipun WebAuthn membutuhkan 2 round-trips (options + verify) vs 1 round-trip password, total waktu end-to-end bisa lebih cepat karena pengguna tidak perlu mengetik password. Tingkat keberhasilan WebAuthn juga cenderung lebih tinggi karena menghilangkan human error (typos, capslock, lupa password)."
+          />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">

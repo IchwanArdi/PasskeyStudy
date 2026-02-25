@@ -15,6 +15,7 @@ import costRoutes from './routes/cost.js';
 import compatibilityRoutes from './routes/compatibility.js';
 import recoveryRoutes from './routes/recovery.js';
 import performanceRoutes from './routes/performance.js';
+import rateLimit from 'express-rate-limit';
 
 // Create Express app
 const app = express();
@@ -109,6 +110,28 @@ app.get('/', (req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
+// Rate limiting (hanya aktif di production)
+if (isProduction) {
+  const globalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 menit
+    max: 300, // Maks 300 request per IP per window
+    message: { message: 'Terlalu banyak request, coba lagi nanti.' },
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+
+  const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 menit
+    max: 30, // Maks 30 percobaan auth per IP
+    message: { message: 'Terlalu banyak percobaan autentikasi. Silakan coba lagi nanti.' },
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+
+  app.use(globalLimiter);
+  app.use('/api/auth', authLimiter);
+  app.use('/auth', authLimiter);
+}
 
 // Routes - support both /api/* and /* for backward compatibility
 app.use('/api/auth', authRoutes);

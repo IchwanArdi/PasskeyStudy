@@ -1,11 +1,7 @@
 import User from '../models/User.js';
 import AuthLog from '../models/AuthLog.js';
-import jwt from 'jsonwebtoken';
 import { getRegistrationOptions, verifyRegistration } from '../utils/webauthn.js';
-
-const generateToken = (userId, expiresIn = '7d') => {
-  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn });
-};
+import { generateToken } from '../utils/tokenHelper.js';
 
 // Store challenges temporarily
 const recoveryChallenges = new Map();

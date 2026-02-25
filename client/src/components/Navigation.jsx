@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { isAuthenticated, clearAuth } from '../utils/auth';
 import { toast } from 'react-toastify';
-import { Shield, Menu, X, LogOut, User, BarChart3, BookOpen } from 'lucide-react';
+import { Shield, Menu, X, LogOut, User, BarChart3, BookOpen, Key } from 'lucide-react';
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -57,6 +57,13 @@ const Navigation = () => {
             <User className="w-4 h-4" />
             Profil
           </Link>
+          <Link
+            to="/manage-devices"
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${isActive('/manage-devices') ? 'text-blue-400 bg-blue-500/10' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+          >
+            <Key className="w-4 h-4" />
+            Perangkat
+          </Link>
           <button
             onClick={handleLogout}
             className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all"
@@ -99,6 +106,14 @@ const Navigation = () => {
             >
               <BookOpen className="w-5 h-5" />
               Dokumentasi
+            </Link>
+            <Link
+              to="/manage-devices"
+              onClick={() => setIsMenuOpen(false)}
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${isActive('/manage-devices') ? 'text-blue-400 bg-blue-500/10' : 'text-gray-400 hover:bg-white/5'}`}
+            >
+              <Key className="w-5 h-5" />
+              Kelola Perangkat
             </Link>
             <div className="pt-4 border-t border-white/[0.06]">
               <button

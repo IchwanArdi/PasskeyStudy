@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 
 const webauthnCredentialSchema = new mongoose.Schema({
   credentialID: {
@@ -30,6 +31,10 @@ const webauthnCredentialSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
+  },
+  lastUsed: {
+    type: Date,
+    default: null,
   },
 });
 
@@ -163,9 +168,28 @@ userSchema.methods.updateCredentialCounter = function (credentialID, counter) {
   return null;
 };
 
-// Method to generate recovery codes
-import crypto from 'crypto';
+// Method to remove a WebAuthn credential
+userSchema.methods.removeWebAuthnCredential = async function (credentialID) {
+  const index = this.webauthnCredentials.findIndex(
+    (cred) => cred.credentialID === credentialID
+  );
 
+  if (index === -1) {
+    throw new Error('Credential tidak ditemukan');
+  }
+
+  // Prevent deleting last credential for WebAuthn-only users
+  if (!this.password && this.webauthnCredentials.length <= 1) {
+    throw new Error(
+      'Tidak dapat menghapus credential terakhir. Tambahkan perangkat lain terlebih dahulu.'
+    );
+  }
+
+  this.webauthnCredentials.splice(index, 1);
+  return this.save();
+};
+
+// Method to generate recovery codes
 userSchema.methods.generateRecoveryCodes = async function () {
   const codes = [];
   for (let i = 0; i < 8; i++) {

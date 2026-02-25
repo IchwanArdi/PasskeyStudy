@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { securityAPI } from '../services/api';
 import { Shield, TrendingUp, Activity } from 'lucide-react';
 import { toast } from 'react-toastify';
+import MetricInfoButton from './MetricInfoButton';
 
 const SecurityAnalysisTab = ({ securityData, loadingSecurity }) => {
   const [runningBruteForce, setRunningBruteForce] = useState(false);
@@ -47,6 +48,11 @@ const SecurityAnalysisTab = ({ securityData, loadingSecurity }) => {
         <div className="flex items-center gap-2.5 mb-8">
           <Shield className="w-5 h-5 text-blue-400" />
           <h3 className="text-sm font-semibold">Benchmark Ketahanan</h3>
+          <MetricInfoButton
+            title="Benchmark Ketahanan Keamanan"
+            description="Skor benchmark keamanan yang membandingkan ketahanan WebAuthn/FIDO2 vs Password terhadap berbagai vektor serangan. Skor dihitung berdasarkan: ketahanan phishing, imunitas brute force, dan kekuatan kriptografi. Rating: Excellent (90-100), Good (70-89), Fair (50-69), Poor (<50)."
+            relevance="Benchmark ini mengimplementasikan kriteria evaluasi keamanan berdasarkan NIST SP 800-63B (Digital Identity Guidelines). WebAuthn mendapatkan skor tinggi karena: (1) Menggunakan public-key cryptography alih-alih shared secrets, (2) Challenge-response protocol yang mencegah replay attacks, (3) Origin-bound credentials yang mencegah phishing. Password mendapatkan skor rendah karena bersifat 'something you know' yang dapat dicuri, dilupakan, atau ditebak."
+          />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
@@ -63,7 +69,13 @@ const SecurityAnalysisTab = ({ securityData, loadingSecurity }) => {
             <div className="space-y-4 pt-4">
               <div>
                 <div className="flex justify-between text-sm font-medium text-gray-500 mb-2">
-                  <span>Ketahanan Phishing</span>
+                  <span className="flex items-center gap-1">Ketahanan Phishing
+                    <MetricInfoButton
+                      title="Ketahanan Phishing"
+                      description="Persentase ketahanan metode autentikasi terhadap serangan phishing. Phishing adalah serangan di mana penyerang membuat situs palsu untuk mencuri kredensial pengguna."
+                      relevance="WebAuthn secara desain IMUN terhadap phishing karena menggunakan origin binding: private key hanya merespon challenge dari domain yang terdaftar (RP ID). Jika pengguna diarahkan ke 'fake-bank.com', authenticator menolak karena domain tidak cocok dengan 'real-bank.com'. Skor 100% untuk WebAuthn menunjukkan perlindungan kriptografis, bukan sekadar deteksi heuristik."
+                    />
+                  </span>
                   <span className="text-white">{securityData.securityScore.webauthn.phishingResistance}%</span>
                 </div>
                 <div className="w-full bg-white/[0.04] rounded-full h-2">
@@ -72,7 +84,13 @@ const SecurityAnalysisTab = ({ securityData, loadingSecurity }) => {
               </div>
               <div>
                 <div className="flex justify-between text-sm font-medium text-gray-500 mb-2">
-                  <span>Imunitas Brute Force</span>
+                  <span className="flex items-center gap-1">Imunitas Brute Force
+                    <MetricInfoButton
+                      title="Imunitas Brute Force"
+                      description="Persentase ketahanan terhadap serangan brute force, yaitu percobaan menebak credential secara berulang dengan semua kemungkinan kombinasi."
+                      relevance="Password rentan terhadap brute force karena keyspace-nya terbatas (misal: 8 karakter alfanumerik = 2.8 triliun kombinasi, bisa dipecahkan dalam hitungan jam). WebAuthn imun 100% karena menggunakan kunci kriptografi 256-bit (2^256 kemungkinan = secara komputasi mustahil). Selain itu, private key tidak pernah meninggalkan authenticator, sehingga tidak ada yang bisa di-brute-force dari sisi server."
+                    />
+                  </span>
                   <span className="text-white">{securityData.securityScore.webauthn.bruteForceResistance}%</span>
                 </div>
                 <div className="w-full bg-white/[0.04] rounded-full h-2">
@@ -128,6 +146,11 @@ const SecurityAnalysisTab = ({ securityData, loadingSecurity }) => {
             <div className="flex items-center gap-2.5">
               <Activity className="w-5 h-5 text-purple-400" />
               <h3 className="text-sm font-semibold">Vektor Serangan</h3>
+              <MetricInfoButton
+                title="Simulasi Vektor Serangan"
+                description="Simulasi brute force attack terhadap kedua metode autentikasi. Sistem menguji berapa percobaan yang diperlukan, kecepatan serangan, dan tingkat ketahanan. Simulasi ini bersifat aman (tidak benar-benar membobol akun) dan bertujuan edukatif."
+                relevance="Simulasi ini mendemonstrasikan perbedaan fundamental: serangan brute force terhadap password mencoba kombinasi string (feasible), sedangkan terhadap WebAuthn harus memecahkan ECDSA P-256 atau RSA-2048 (infeasible). Durasi dan jumlah percobaan yang ditampilkan membuktikan secara empiris bahwa WebAuthn secara kriptografis lebih kuat."
+              />
             </div>
             <div className="flex gap-2">
               <button
@@ -180,6 +203,11 @@ const SecurityAnalysisTab = ({ securityData, loadingSecurity }) => {
           <div className="flex items-center gap-2.5 mb-6">
             <Shield className="w-5 h-5 text-emerald-400" />
             <h3 className="text-sm font-semibold">Verifikasi Origin Binding</h3>
+            <MetricInfoButton
+              title="Origin Binding Verification"
+              description="Pemeriksaan mekanisme keamanan inti WebAuthn yang mengikat credential ke origin (domain) tertentu. Tiga aspek yang diperiksa: (1) Man-in-the-Middle resistance — apakah komunikasi aman dari penyadapan, (2) Channel Binding — apakah session TLS terikat ke autentikasi, (3) Credential Scoping — apakah credential hanya valid untuk domain terdaftar."
+              relevance="Origin binding adalah fitur fundamental FIDO2 yang membedakannya dari password. Setiap credential (public-private key pair) secara kriptografis terikat ke Relying Party ID (rpID = domain). Ini berarti credential yang dibuat di 'bank.com' sama sekali tidak bisa digunakan di 'evil-bank.com'. Mekanisme ini menghilangkan seluruh kelas serangan phishing dan MitM yang masih efektif terhadap password."
+            />
           </div>
 
           <div className="space-y-1">

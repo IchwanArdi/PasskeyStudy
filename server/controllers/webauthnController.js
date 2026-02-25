@@ -1,14 +1,11 @@
 import User from '../models/User.js';
 import AuthLog from '../models/AuthLog.js';
-import jwt from 'jsonwebtoken';
 import { getRegistrationOptions, verifyRegistration, getAuthenticationOptions, verifyAuthentication } from '../utils/webauthn.js';
 import { calculateRiskScore } from '../utils/riskEngine.js';
+import { generateToken } from '../utils/tokenHelper.js';
 
-const generateToken = (userId) => {
-  return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '7d' });
-};
-
-// Store challenges temporarily (in production, use Redis)
+// Store challenges temporarily
+// NOTE: Untuk production multi-instance, gunakan Redis atau MongoDB TTL collection
 const challenges = new Map();
 
 export const getRegisterOptions = async (req, res) => {
@@ -295,14 +292,6 @@ export const verifyLogin = async (req, res) => {
   try {
     const { email, credential } = req.body;
 
-    console.log('verifyLogin called:', {
-      hasEmail: !!email,
-      hasCredential: !!credential,
-      credentialKeys: credential ? Object.keys(credential) : null,
-      credentialId: credential?.id,
-      credentialResponse: credential?.response ? Object.keys(credential.response) : null,
-    });
-
     if (!email || !credential) {
       return res.status(400).json({ message: 'Email and credential are required' });
     }
@@ -363,15 +352,6 @@ export const verifyLogin = async (req, res) => {
     // Normalize credentialID for comparison (ensure it's a string)
     const normalizedCredentialID = typeof credentialID === 'string' ? credentialID : credentialID.toString();
 
-    // Log all stored credential IDs for debugging
-    console.log('Searching for credential:', {
-      requestedCredentialID: normalizedCredentialID.substring(0, 20) + '...',
-      storedCredentialIDs: user.webauthnCredentials.map((cred) => ({
-        id: cred.credentialID?.substring(0, 20) + '...',
-        hasCounter: cred.counter !== undefined,
-        counter: cred.counter,
-      })),
-    });
 
     // Find credential - try exact match first, then try to match by converting both to same format
     let userCredential = user.webauthnCredentials.find((cred) => {
@@ -429,21 +409,15 @@ export const verifyLogin = async (req, res) => {
       return res.status(400).json({ message: 'Credential data is incomplete' });
     }
 
-    // Log credential data for debugging
-    console.log('User credential found:', {
-      credentialID: userCredential.credentialID?.substring(0, 20) + '...',
-      hasPublicKey: !!userCredential.credentialPublicKey,
-      publicKeyLength: userCredential.credentialPublicKey?.length,
-      counter: userCredential.counter,
-      counterType: typeof userCredential.counter,
-      credentialKeys: Object.keys(userCredential),
-    });
 
     const verification = await verifyAuthentication(credential, expectedChallenge, user, userCredential);
 
     if (verification.verified) {
       // Update credential counter
       await user.updateCredentialCounter(userCredential.credentialID, verification.newCounter);
+
+      // Update lastUsed timestamp on the credential
+      userCredential.lastUsed = new Date();
 
       // Clear challenge
       challenges.delete(user._id.toString());
@@ -486,12 +460,6 @@ export const verifyLogin = async (req, res) => {
         userAgent: currentUA,
         riskScore,
         riskFactors,
-      });
-
-      console.log('WebAuthn login logged:', {
-        userId: user._id.toString(),
-        duration,
-        logId: authLog._id,
       });
 
       res.json({

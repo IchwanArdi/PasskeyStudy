@@ -39,14 +39,6 @@ export const getRegistrationOptions = async (user) => {
       return excludeDescriptor;
     });
 
-    console.log('Generating registration options:', {
-      rpName,
-      rpID,
-      origin,
-      userEmail: user.email,
-      excludeCredentialsCount: excludeCredentials.length,
-    });
-
     const options = await generateRegistrationOptions({
       rpName,
       rpID,
@@ -65,12 +57,6 @@ export const getRegistrationOptions = async (user) => {
       supportedAlgorithmIDs: [-7, -257],
     });
 
-    console.log('Registration options generated:', {
-      challenge: options.challenge ? 'present' : 'missing',
-      rp: options.rp,
-      user: options.user,
-    });
-
     return options;
   } catch (error) {
     console.error('Error generating registration options:', error);
@@ -83,14 +69,6 @@ export const verifyRegistration = async (body, expectedChallenge, user) => {
     // Get origin from response if available, otherwise use configured origin
     const responseOrigin = body.response?.clientExtensionResults?.appid || body.response?.clientExtensionResults?.credProps?.rk ? origin : origin;
 
-    // Log for debugging
-    console.log('Verifying registration...', {
-      expectedOrigin: origin,
-      responseOrigin: body.response?.clientExtensionResults,
-      expectedRPID: rpID,
-      hasResponse: !!body.response,
-      challengeLength: expectedChallenge?.length,
-    });
 
     const verification = await verifyRegistrationResponse({
       response: body,
@@ -100,10 +78,6 @@ export const verifyRegistration = async (body, expectedChallenge, user) => {
       requireUserVerification: false, // Set to false to be more flexible
     });
 
-    console.log('Verification result:', {
-      verified: verification.verified,
-      hasRegistrationInfo: !!verification.registrationInfo,
-    });
 
     if (!verification.verified) {
       throw new Error('Verification failed: not verified');
@@ -112,35 +86,6 @@ export const verifyRegistration = async (body, expectedChallenge, user) => {
     if (!verification.registrationInfo) {
       throw new Error('Verification failed: no registration info');
     }
-
-    // Log registrationInfo structure for debugging
-    console.log('Registration info structure:', {
-      hasCredentialID: !!verification.registrationInfo.credentialID,
-      hasCredentialPublicKey: !!verification.registrationInfo.credentialPublicKey,
-      hasCredential: !!verification.registrationInfo.credential,
-      hasCounter: verification.registrationInfo.counter !== undefined,
-      keys: Object.keys(verification.registrationInfo),
-      credentialIDType: typeof verification.registrationInfo.credentialID,
-      credentialIDIsUint8Array: verification.registrationInfo.credentialID instanceof Uint8Array,
-    });
-
-    // Log credential structure if it exists
-    if (verification.registrationInfo.credential) {
-      console.log('Credential structure:', {
-        keys: Object.keys(verification.registrationInfo.credential),
-        hasPublicKey: !!verification.registrationInfo.credential.publicKey,
-        publicKeyType: typeof verification.registrationInfo.credential.publicKey,
-        publicKeyIsBuffer: verification.registrationInfo.credential.publicKey instanceof Buffer,
-        publicKeyIsUint8Array: verification.registrationInfo.credential.publicKey instanceof Uint8Array,
-      });
-    }
-
-    // Also check if credentialID is in the response body
-    console.log('Response body structure:', {
-      hasId: !!body.id,
-      hasRawId: !!body.rawId,
-      responseKeys: Object.keys(body),
-    });
 
     // Get credentialID from body (it's always there in base64url format)
     let credentialID = body.id || body.rawId;
@@ -154,48 +99,14 @@ export const verifyRegistration = async (body, expectedChallenge, user) => {
       // Newer structure: credential is an object with publicKey
       credentialPublicKey = verification.registrationInfo.credential.publicKey;
       counter = verification.registrationInfo.credential.counter || 0;
-      console.log('Using credential from registrationInfo.credential');
     } else if (verification.registrationInfo.credentialPublicKey) {
-      // Older structure: direct credentialPublicKey
       credentialPublicKey = verification.registrationInfo.credentialPublicKey;
       counter = verification.registrationInfo.counter || 0;
-      console.log('Using credentialPublicKey from registrationInfo.credentialPublicKey');
     } else {
-      // Try to extract from attestationObject if available
-      console.log('Attempting to extract from attestationObject');
-      // This is a fallback - usually credential should be available
       throw new Error('credentialPublicKey not found in registrationInfo');
     }
 
-    // Check if credentialID exists
     if (!credentialID) {
-      console.error('credentialID is undefined or null');
-      console.error(
-        'Full registrationInfo:',
-        JSON.stringify(
-          verification.registrationInfo,
-          (key, value) => {
-            if (value instanceof Uint8Array) {
-              return `Uint8Array(${value.length})`;
-            }
-            return value;
-          },
-          2
-        )
-      );
-      console.error(
-        'Full body:',
-        JSON.stringify(
-          body,
-          (key, value) => {
-            if (value instanceof Uint8Array) {
-              return `Uint8Array(${value.length})`;
-            }
-            return value;
-          },
-          2
-        )
-      );
       throw new Error('Verification failed: credentialID is missing from registration info and response body');
     }
 
@@ -262,14 +173,6 @@ export const verifyRegistration = async (body, expectedChallenge, user) => {
     }
     // For platform authenticators, leave transports empty so browser can use any platform authenticator
 
-    console.log('Credential data to save:', {
-      credentialID: credentialIDString.substring(0, 20) + '...',
-      hasPublicKey: !!credentialPublicKeyString,
-      counter: finalCounter,
-      deviceType,
-      transports,
-    });
-
     return {
       credentialID: credentialIDString,
       credentialPublicKey: credentialPublicKeyString,
@@ -278,12 +181,7 @@ export const verifyRegistration = async (body, expectedChallenge, user) => {
       transports,
     };
   } catch (error) {
-    console.error('Error in verifyRegistration:', error);
-    console.error('Error details:', {
-      name: error.name,
-      message: error.message,
-      stack: error.stack,
-    });
+    console.error('Error in verifyRegistration:', error.message);
     throw new Error(`Registration verification failed: ${error.message}`);
   }
 };
@@ -337,14 +235,6 @@ export const verifyAuthentication = async (body, expectedChallenge, user, creden
     // Ensure counter exists and is a number
     const initialCounter = credential.counter !== undefined && credential.counter !== null ? Number(credential.counter) : 0;
 
-    console.log('Starting verifyAuthentication:', {
-      credentialID: credential.credentialID?.substring(0, 20) + '...',
-      hasPublicKey: !!credential.credentialPublicKey,
-      counter: initialCounter,
-      counterType: typeof initialCounter,
-      credentialType: typeof credential,
-      credentialKeys: Object.keys(credential),
-    });
 
     // credentialID is stored as base64url string, convert to Uint8Array using helper
     let credentialIDBuffer;
@@ -391,18 +281,6 @@ export const verifyAuthentication = async (body, expectedChallenge, user, creden
     // Use the initial counter we validated earlier
     const credentialCounter = initialCounter;
 
-    console.log('Verifying authentication - prepared data:', {
-      credentialIDType: typeof credential.credentialID,
-      credentialIDLength: credential.credentialID?.length,
-      credentialIDBufferType: credentialIDBuffer instanceof Uint8Array,
-      credentialIDBufferLength: credentialIDBuffer?.length,
-      credentialPublicKeyType: typeof credential.credentialPublicKey,
-      credentialPublicKeyBufferType: credentialPublicKeyBuffer instanceof Uint8Array,
-      credentialPublicKeyBufferLength: credentialPublicKeyBuffer?.length,
-      hasExpectedChallenge: !!expectedChallenge,
-      credentialCounter,
-      credentialCounterType: typeof credentialCounter,
-    });
 
     // Prepare credential object with correct structure for @simplewebauthn/server v11+
     // Library expects: { id: Uint8Array, publicKey: Uint8Array, counter: number, transports?: string[] }
@@ -413,17 +291,6 @@ export const verifyAuthentication = async (body, expectedChallenge, user, creden
       // transports is optional, can be added if available
     };
 
-    console.log('WebAuthn credential object prepared:', {
-      hasId: !!webauthnCredential.id,
-      idIsUint8Array: webauthnCredential.id instanceof Uint8Array,
-      idLength: webauthnCredential.id?.length,
-      hasPublicKey: !!webauthnCredential.publicKey,
-      publicKeyIsUint8Array: webauthnCredential.publicKey instanceof Uint8Array,
-      publicKeyLength: webauthnCredential.publicKey?.length,
-      counter: webauthnCredential.counter,
-      counterType: typeof webauthnCredential.counter,
-      counterIsNumber: typeof webauthnCredential.counter === 'number',
-    });
 
     // Validate credential object before passing to library
     if (!webauthnCredential.id || !webauthnCredential.publicKey) {
@@ -434,14 +301,6 @@ export const verifyAuthentication = async (body, expectedChallenge, user, creden
       throw new Error(`Invalid credential: counter must be a number, got ${typeof webauthnCredential.counter}`);
     }
 
-    console.log('Calling verifyAuthenticationResponse with:', {
-      hasResponse: !!body,
-      responseKeys: body ? Object.keys(body) : null,
-      hasExpectedChallenge: !!expectedChallenge,
-      expectedOrigin: origin,
-      expectedRPID: rpID,
-      credentialValid: !!webauthnCredential,
-    });
 
     let verification;
     try {

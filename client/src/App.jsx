@@ -11,6 +11,7 @@ import Profile from './pages/Profile';
 import Welcome from './pages/Welcome';
 import Documentation from './pages/Documentation';
 import UsabilityTest from './pages/UsabilityTest';
+import ManageDevices from './pages/ManageDevices';
 import ScrollToTop from './components/ScrollToTop';
 import './App.css';
 
@@ -51,6 +52,14 @@ function App() {
             element={
               <PrivateRoute>
                 <UsabilityTest />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/manage-devices"
+            element={
+              <PrivateRoute>
+                <ManageDevices />
               </PrivateRoute>
             }
           />
