@@ -4,7 +4,6 @@ import { userAPI } from '../services/api';
 import { isAuthenticated } from '../utils/auth';
 import { startRegistration } from '@simplewebauthn/browser';
 import { toast } from 'react-toastify';
-import Modal from '../components/Modal';
 import {
   Shield,
   Plus,
@@ -417,62 +416,65 @@ const ManageDevices = () => {
         </div>
       </div>
 
-      <Modal
-        isOpen={showAddModal}
-        onClose={() => !addingDevice && setShowAddModal(false)}
-        maxWidth="max-w-md"
-        title="Tambah Perangkat Baru"
-        closeOnOverlayClick={!addingDevice}
-        showClose={!addingDevice}
-      >
-        <div className="">
-          <p className="text-sm text-gray-500 mb-6">
-            Daftarkan authenticator baru (Touch ID, Face ID, Windows Hello, atau Security Key) ke akun Anda.
-          </p>
+      {/* Add Device Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => !addingDevice && setShowAddModal(false)}
+          />
+          {/* Modal */}
+          <div className="relative w-full max-w-md glass-card rounded-2xl p-8 animate-fade-in-up">
+            <h2 className="text-lg font-bold mb-2">Tambah Perangkat Baru</h2>
+            <p className="text-sm text-gray-500 mb-6">
+              Daftarkan authenticator baru (Touch ID, Face ID, Windows Hello, atau Security Key) ke akun Anda.
+            </p>
 
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-400 mb-2">
-              Nama Perangkat (opsional)
-            </label>
-            <input
-              type="text"
-              value={newDeviceName}
-              onChange={(e) => setNewDeviceName(e.target.value)}
-              placeholder="cth: iPhone 15 Pro, Laptop Kantor, Yubikey"
-              maxLength={50}
-              disabled={addingDevice}
-              className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-white placeholder-gray-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all disabled:opacity-50"
-            />
-          </div>
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-400 mb-2">
+                Nama Perangkat (opsional)
+              </label>
+              <input
+                type="text"
+                value={newDeviceName}
+                onChange={(e) => setNewDeviceName(e.target.value)}
+                placeholder="cth: iPhone 15 Pro, Laptop Kantor, Yubikey"
+                maxLength={50}
+                disabled={addingDevice}
+                className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-white placeholder-gray-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all disabled:opacity-50"
+              />
+            </div>
 
-          <div className="flex gap-3">
-            <button
-              onClick={handleAddDevice}
-              disabled={addingDevice}
-              className="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-semibold text-sm transition-all disabled:opacity-50 shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2"
-            >
-              {addingDevice ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white" />
-                  Memproses...
-                </>
-              ) : (
-                <>
-                  <Fingerprint className="w-4 h-4" />
-                  Daftarkan Perangkat
-                </>
-              )}
-            </button>
-            <button
-              onClick={() => setShowAddModal(false)}
-              disabled={addingDevice}
-              className="px-5 py-3 bg-white/[0.04] text-gray-400 rounded-xl text-sm font-medium hover:bg-white/[0.08] transition-all disabled:opacity-50"
-            >
-              Batal
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={handleAddDevice}
+                disabled={addingDevice}
+                className="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-semibold text-sm transition-all disabled:opacity-50 shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2"
+              >
+                {addingDevice ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white" />
+                    Memproses...
+                  </>
+                ) : (
+                  <>
+                    <Fingerprint className="w-4 h-4" />
+                    Daftarkan Perangkat
+                  </>
+                )}
+              </button>
+              <button
+                onClick={() => setShowAddModal(false)}
+                disabled={addingDevice}
+                className="px-5 py-3 bg-white/[0.04] text-gray-400 rounded-xl text-sm font-medium hover:bg-white/[0.08] transition-all disabled:opacity-50"
+              >
+                Batal
+              </button>
+            </div>
           </div>
         </div>
-      </Modal>
+      )}
     </div>
   );
 };

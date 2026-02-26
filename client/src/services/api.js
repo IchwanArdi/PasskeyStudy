@@ -67,25 +67,6 @@ export const statsAPI = {
     api.get(`/stats/${viewMode === "global" ? "global-stats" : "my-stats"}`),
 };
 
-// Security API
-export const securityAPI = {
-  getAnalysis: (viewMode = "global") =>
-    api.get(`/stats/security-analysis?viewMode=${viewMode}`),
-  runSimulation: (method) => api.post("/security/simulate", { method }),
-};
-
-// UX API
-export const uxAPI = {
-  getUXData: (viewMode = "global") =>
-    api.get(`/stats/ux-research?viewMode=${viewMode}`),
-  submitFeedback: (data) => api.post("/ux/feedback", data),
-  submitSUSSurvey: (data) => api.post("/ux/sus-survey", data),
-  submitCognitiveLoad: (data) => api.post("/ux/cognitive-load", data),
-  submitTaskCompletion: (data) => api.post("/ux/task-completion", data),
-  submitDemographics: (data) => api.post("/ux/demographics", data),
-  createSession: (data) => api.post("/ux/session", data),
-  exportCSV: () => api.get("/ux/export-csv", { responseType: "blob" }),
-};
 
 // Recovery API
 export const recoveryAPI = {

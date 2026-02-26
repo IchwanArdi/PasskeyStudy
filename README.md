@@ -6,26 +6,22 @@
   <img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge" alt="MIT License" />
 </p>
 
-# 🔐 WebAuthn vs Password — Authentication Research Platform
+# 🔐 WebAuthn Passwordless — Implementation Prototype
 
-> **Platform riset autentikasi open-source** untuk membandingkan WebAuthn/FIDO2 passwordless dengan sistem password tradisional secara empiris dari tiga aspek: **keamanan**, **performa**, dan **usabilitas (UX)**.
+> **Prototipe implementasi sistem autentikasi** berbasis WebAuthn/FIDO2 passwordless pada aplikasi web fullstack JavaScript.
 
-Dibangun sebagai bagian dari penelitian skripsi untuk mengkaji efektivitas autentikasi modern berbasis kriptografi kunci publik dibandingkan mekanisme _shared-secret_ konvensional.
+Dibangun sebagai bagian dari penelitian skripsi dengan metodologi R&D (Research and Development) untuk mengkaji implementasi teknis autentikasi modern berbasis kriptografi kunci publik.
 
 ---
 
 ## ✨ Fitur Utama
 
-| Kategori              | Fitur                                                                                                             |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| 🔑 **Autentikasi**    | Native FIDO2/WebAuthn (Passkey), Password tradisional (bcrypt), Multi-device credential management                |
-| 🛡️ **Keamanan**       | Simulasi brute force, Analisis ketahanan phishing, Vulnerability assessment (STRIDE), Origin binding verification |
-| ⚡ **Performa**       | Latensi real-time (Avg, P50, P95, P99), Payload size comparison, Round-trip analysis                              |
-| 📊 **UX Research**    | System Usability Scale (SUS), Cognitive Load (NASA-TLX), Task completion metrics, Data export (CSV)               |
-| 💰 **Analisis Biaya** | Implementation cost (Capex), Operational cost (Opex), ROI calculation, 3-year TCO comparison                      |
-| 🌐 **Kompatibilitas** | Browser matrix, Device/OS support, Aksesibilitas WCAG                                                             |
-| 🔄 **Recovery**       | Offline recovery codes (SHA-256), Re-registration flow, Multi-device backup                                       |
-| 📖 **Dokumentasi**    | 14 halaman modular, API Reference (42+ endpoints), Metodologi penelitian                                          |
+| Kategori           | Fitur                                                                       |
+| ------------------ | --------------------------------------------------------------------------- |
+| 🔑 **Autentikasi** | Native FIDO2/WebAuthn (Passkey), Multi-device credential management         |
+| ⚡ **Performa**    | Latensi logger endpoints, API Performance tracking                          |
+| 🔄 **Recovery**    | Offline recovery codes (SHA-256), Re-registration flow, Multi-device backup |
+| 📖 **Dokumentasi** | Dokumentasi teknis terintegrasi                                             |
 
 ---
 
@@ -34,11 +30,9 @@ Dibangun sebagai bagian dari penelitian skripsi untuk mengkaji efektivitas auten
 ```
 ┌──────────────────────── CLIENT (React 19 + Vite 7) ────────────────────────┐
 │                                                                             │
-│  Landing Page ──► Login/Register ──► Dashboard (4 Tab)                      │
+│  Landing Page ──► Login/Register ──► Dashboard                              │
 │                                      ├── Ringkasan (Stats)                  │
-│                                      ├── Analisis Keamanan (Simulasi)       │
-│                                      ├── Riset UX (SUS + Cognitive)         │
-│                                      └── Performa (Latensi + Payload)       │
+│                                      └── Performa (Latensi)                 │
 │                                                                             │
 │  @simplewebauthn/browser ◄──── navigator.credentials API ────► Authenticator│
 └──────────────────────────────────┬──────────────────────────────────────────┘
@@ -56,8 +50,6 @@ Dibangun sebagai bagian dari penelitian skripsi untuk mengkaji efektivitas auten
 │                         DATABASE (MongoDB Atlas)                            │
 │                                                                             │
 │  Collections:  User · AuthLog · PerformanceLog                              │
-│                SUSSurvey · CognitiveLoad · TaskCompletion                    │
-│                DemographicData · UsabilitySession                           │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -148,11 +140,7 @@ PasskeyStudy/
 │   │   ├── user.js                  # /api/user — Profile, Device Management
 │   │   ├── recovery.js              # /api/auth/recovery — Recovery Codes
 │   │   ├── stats.js                 # /api/stats — Dashboard Aggregation
-│   │   ├── security.js              # /api/security — Attack Simulation
 │   │   ├── performance.js           # /api/performance — Latency Stats
-│   │   ├── ux.js                    # /api/ux — SUS, Cognitive, Task Data
-│   │   ├── cost.js                  # /api/cost — Implementation & ROI
-│   │   └── compatibility.js         # /api/compatibility — Browser & WCAG
 │   ├── utils/
 │   │   └── webauthn.js              # SimpleWebAuthn Wrapper
 │   ├── seeders/
@@ -162,8 +150,6 @@ PasskeyStudy/
 ├── client/
 │   └── src/
 │       ├── components/
-│       │   ├── SecurityAnalysisTab.jsx
-│       │   ├── UXResearchTab.jsx
 │       │   ├── PerformanceTab.jsx
 │       │   └── MetricInfoButton.jsx  # Info Tooltip Component
 │       ├── pages/

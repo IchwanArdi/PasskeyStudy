@@ -1,7 +1,7 @@
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { toast } from 'react-toastify';
 import { CheckCircle, X, Star, MessageSquare } from 'lucide-react';
-import Modal from './Modal';
 
 const Feedback = ({ isOpen, onClose, authMethod, duration, onSuccess }) => {
   const [rating, setRating] = useState(0);
@@ -37,7 +37,7 @@ const Feedback = ({ isOpen, onClose, authMethod, duration, onSuccess }) => {
         setFeedback('');
         onClose();
       }, 2000);
-    } catch {
+    } catch (error) {
       toast.error('Gagal menyimpan feedback.');
     } finally {
       setIsSubmitting(false);
@@ -46,23 +46,14 @@ const Feedback = ({ isOpen, onClose, authMethod, duration, onSuccess }) => {
 
   if (!isOpen) return null;
 
-  return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      showClose={false}
-      closeOnOverlayClick={!isSubmitting}
-    >
-      <div className="relative">
-        <button 
-          className="absolute -top-1 -right-1 p-2 text-gray-500 hover:text-white transition-all hover:bg-white/5 rounded-lg" 
-          onClick={onClose}
-          disabled={isSubmitting}
-        >
+  return createPortal(
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[100] p-4 animate-fade-in-up">
+      <div className="glass-card rounded-2xl max-w-md w-full relative shadow-2xl">
+        <button className="absolute top-5 right-5 p-2 text-gray-500 hover:text-white transition-all hover:bg-white/5 rounded-lg" onClick={onClose}>
           <X className="w-5 h-5" />
         </button>
 
-        <div className="">
+        <div className="p-8">
           {submitted ? (
             <div className="text-center py-10 space-y-4">
               <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mx-auto">
@@ -139,7 +130,8 @@ const Feedback = ({ isOpen, onClose, authMethod, duration, onSuccess }) => {
           )}
         </div>
       </div>
-    </Modal>
+    </div>,
+    document.body
   );
 };
 

@@ -9,10 +9,6 @@ import connectDB from './config/database.js';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
 import statsRoutes from './routes/stats.js';
-import securityRoutes from './routes/security.js';
-import uxRoutes from './routes/ux.js';
-import costRoutes from './routes/cost.js';
-import compatibilityRoutes from './routes/compatibility.js';
 import recoveryRoutes from './routes/recovery.js';
 import performanceRoutes from './routes/performance.js';
 import rateLimit from 'express-rate-limit';
@@ -143,14 +139,6 @@ app.use('/api/user', userRoutes);
 app.use('/user', userRoutes); // Alias for client compatibility
 app.use('/api/stats', statsRoutes);
 app.use('/stats', statsRoutes); // Alias for client compatibility
-app.use('/api/security', securityRoutes);
-app.use('/security', securityRoutes); // Alias for client compatibility
-app.use('/api/ux', uxRoutes);
-app.use('/ux', uxRoutes); // Alias for client compatibility
-app.use('/api/cost', costRoutes);
-app.use('/cost', costRoutes); // Alias for client compatibility
-app.use('/api/compatibility', compatibilityRoutes);
-app.use('/compatibility', compatibilityRoutes); // Alias for client compatibility
 app.use('/api/recovery', recoveryRoutes);
 app.use('/recovery', recoveryRoutes);
 app.use('/api/performance', performanceRoutes);

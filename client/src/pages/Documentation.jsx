@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { BookOpen, Settings, Lock, Shield, Key, BarChart3, Code, Menu, X, ExternalLink, AlertTriangle } from 'lucide-react';
-import { isAuthenticated, clearAuth } from '../utils/auth';
 
 // Modular Section Components
 import IntroductionSection from './docs/IntroductionSection';
@@ -13,10 +12,6 @@ import PasswordSection from './docs/PasswordSection';
 import ThreatModelSection from './docs/ThreatModelSection';
 import FidoComparisonSection from './docs/FidoComparisonSection';
 import LimitationsSection from './docs/LimitationsSection';
-import DashboardSection from './docs/DashboardSection';
-import CostAnalysisSection from './docs/CostAnalysisSection';
-import CompatibilitySection from './docs/CompatibilitySection';
-import MethodologySection from './docs/MethodologySection';
 import ApiReferenceSection from './docs/ApiReferenceSection';
 
 const sections = [
@@ -44,15 +39,7 @@ const sections = [
       { id: 'limitations', title: 'Kelemahan & Limitasi', icon: AlertTriangle },
     ]
   },
-  {
-    group: 'Analitik',
-    items: [
-      { id: 'dashboard', title: 'Dashboard & Metrik', icon: BarChart3 },
-      { id: 'cost-analysis', title: 'Analisis Biaya', icon: BarChart3 },
-      { id: 'compatibility', title: 'Kompatibilitas', icon: Settings },
-      { id: 'methodology', title: 'Metodologi', icon: BarChart3 },
-    ]
-  },
+
   {
     group: 'Referensi',
     items: [
@@ -107,25 +94,7 @@ const onPageSections = {
     { id: 'adoption-barriers', title: 'Hambatan Adopsi' },
     { id: 'technical-limits', title: 'Keterbatasan Teknis' },
   ],
-  dashboard: [
-    { id: 'overview', title: 'Arsitektur Dashboard' },
-    { id: 'metrics', title: 'Metrik Perbandingan' },
-  ],
-  'cost-analysis': [
-    { id: 'implementation', title: 'Biaya Implementasi (Capex)' },
-    { id: 'operational', title: 'Biaya Operasional (Opex)' },
-    { id: 'roi', title: 'Return on Investment' },
-  ],
-  compatibility: [
-    { id: 'browser', title: 'Dukungan Browser' },
-    { id: 'device', title: 'Dukungan Perangkat' },
-    { id: 'accessibility', title: 'Aksesibilitas (WCAG)' },
-  ],
-  methodology: [
-    { id: 'security-math', title: 'Perhitungan Keamanan' },
-    { id: 'performance-math', title: 'Metrik Performa' },
-    { id: 'ux-math', title: 'Kalkulasi SUS' },
-  ],
+
   api: [
     { id: 'endpoints', title: 'Ringkasan Modul' },
     { id: 'auth-api', title: 'Auth API' },
@@ -143,10 +112,6 @@ const sectionComponents = {
   'threat-model': ThreatModelSection,
   'fido-comparison': FidoComparisonSection,
   limitations: LimitationsSection,
-  dashboard: DashboardSection,
-  'cost-analysis': CostAnalysisSection,
-  compatibility: CompatibilitySection,
-  methodology: MethodologySection,
   api: ApiReferenceSection,
 };
 
@@ -154,8 +119,6 @@ const Documentation = () => {
   const [activeSection, setActiveSection] = useState('introduction');
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeOnPage, setActiveOnPage] = useState('overview');
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });

@@ -1,13 +1,11 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { statsAPI, securityAPI, uxAPI } from '../services/api';
+import { statsAPI } from '../services/api';
 import { isAuthenticated, clearAuth } from '../utils/auth';
 import { SuccessRateChart, ActivityOverTimeChart, ErrorDistributionChart } from '../components/StatsChart';
 import { toast } from 'react-toastify';
 import Feedback from '../components/Feedback';
-import { Download, MessageSquare, Lightbulb, BarChart3, Key, Shield, Menu, User, ChevronRight, CheckCircle, Globe, UserCircle, PanelLeftClose, PanelLeftOpen, LogOut } from 'lucide-react';
-import SecurityAnalysisTab from '../components/SecurityAnalysisTab';
-import UXResearchTab from '../components/UXResearchTab';
+import { Download, MessageSquare, BarChart3, Key, Shield, Menu, User, ChevronRight, CheckCircle, Globe, UserCircle, PanelLeftClose, PanelLeftOpen, LogOut } from 'lucide-react';
 import PerformanceTab from '../components/PerformanceTab';
 import MetricInfoButton from '../components/MetricInfoButton';
 
@@ -16,10 +14,6 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [viewMode, setViewMode] = useState('global');
   const [stats, setStats] = useState(null);
-  const [securityData, setSecurityData] = useState(null);
-  const [uxData, setUxData] = useState(null);
-  const [loadingSecurity, setLoadingSecurity] = useState(false);
-  const [loadingUX, setLoadingUX] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
   const scrollContainerRef = useRef(null);
 
@@ -37,6 +31,7 @@ const Dashboard = () => {
       navigate('/login');
       return;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     fetchStats();
   }, [navigate, fetchStats]);
 
@@ -49,11 +44,6 @@ const Dashboard = () => {
   const handleTabChange = async (tab) => {
     setActiveTab(tab);
     if (window.innerWidth < 1024) setIsSidebarOpen(false);
-    if (tab === 'security_intel' && !securityData) {
-      loadSecurityIntel();
-    } else if (tab === 'ux_research' && !uxData) {
-      loadUXResearch();
-    }
   };
 
   const handleLogout = () => {
@@ -62,36 +52,12 @@ const Dashboard = () => {
     navigate('/login');
   };
 
-  const loadSecurityIntel = async () => {
-    setLoadingSecurity(true);
-    try {
-      const data = await securityAPI.getAnalysis(viewMode);
-      setSecurityData(data);
-    } catch {
-      toast.error('Gagal memuat data keamanan');
-    } finally {
-      setLoadingSecurity(false);
-    }
-  };
 
-  const loadUXResearch = async () => {
-    setLoadingUX(true);
-    try {
-      const data = await uxAPI.getUXData(viewMode);
-      setUxData(data);
-    } catch {
-      toast.error('Gagal memuat data UX');
-    } finally {
-      setLoadingUX(false);
-    }
-  };
 
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
 
   const navItems = [
     { id: 'overview', label: 'Ringkasan', icon: BarChart3 },
-    { id: 'security_intel', label: 'Analisis Keamanan', icon: Shield },
-    { id: 'ux_research', label: 'Riset UX', icon: Lightbulb },
     { id: 'performance', label: 'Performa', icon: Key },
   ];
 
@@ -354,10 +320,6 @@ const Dashboard = () => {
                 </div>
               </>
             )}
-
-            {activeTab === 'security_intel' && <SecurityAnalysisTab securityData={securityData} loadingSecurity={loadingSecurity} />}
-
-            {activeTab === 'ux_research' && <UXResearchTab uxData={uxData} loadingUX={loadingUX} setUxData={setUxData} />}
 
             {activeTab === 'performance' && <PerformanceTab />}
           </div>

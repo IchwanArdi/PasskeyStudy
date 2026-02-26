@@ -10,7 +10,7 @@ import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import Welcome from './pages/Welcome';
 import Documentation from './pages/Documentation';
-import UsabilityTest from './pages/UsabilityTest';
+import About from './pages/About';
 import ManageDevices from './pages/ManageDevices';
 import ScrollToTop from './components/ScrollToTop';
 import './App.css';
@@ -28,6 +28,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Welcome />} />
           <Route path="/docs" element={<Documentation />} />
+          <Route path="/about" element={<About />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/recovery" element={<Recovery />} />
@@ -47,14 +48,7 @@ function App() {
               </PrivateRoute>
             }
           />
-          <Route
-            path="/usability-test"
-            element={
-              <PrivateRoute>
-                <UsabilityTest />
-              </PrivateRoute>
-            }
-          />
+
           <Route
             path="/manage-devices"
             element={
