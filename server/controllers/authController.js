@@ -1,6 +1,5 @@
 import User from '../models/User.js';
 import AuthLog from '../models/AuthLog.js';
-import { calculateRiskScore } from '../utils/riskEngine.js';
 import { validationResult } from 'express-validator';
 import { generateToken } from '../utils/tokenHelper.js';
 
@@ -136,18 +135,9 @@ export const login = async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Assess Risk
     const currentIP = req.ip || req.connection.remoteAddress;
     const currentUA = req.get('user-agent');
 
-    // Get deep historical logs for ML Behavioral Profiling
-    const recentLogs = await AuthLog.find({ userId: user._id }).sort({ timestamp: -1 }).limit(20);
-
-    const { score: riskScore, factors: riskFactors } = await calculateRiskScore(user, {
-      currentIP,
-      currentUA,
-      recentLogs,
-    });
 
     // Calculate duration after password verification
     const duration = Date.now() - startTime;
@@ -166,16 +156,14 @@ export const login = async (req, res) => {
     }
     await user.save();
 
-    // Log successful login with risk info
+    // Log successful login
     const authLog = await AuthLog.create({
       userId: user._id,
       method: 'password',
       duration,
       success: true,
       ipAddress: currentIP,
-      userAgent: currentUA,
-      riskScore,
-      riskFactors,
+      userAgent: currentUA
     });
 
     res.json({
@@ -184,9 +172,7 @@ export const login = async (req, res) => {
       user: {
         id: user._id,
         username: user.username,
-        email: user.email,
-        riskScore,
-        riskFactors,
+        email: user.email
       },
       duration,
     });

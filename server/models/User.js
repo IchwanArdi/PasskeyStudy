@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
-import crypto from 'crypto';
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
+import crypto from "crypto";
 
 const webauthnCredentialSchema = new mongoose.Schema({
   credentialID: {
@@ -18,7 +18,7 @@ const webauthnCredentialSchema = new mongoose.Schema({
   },
   deviceType: {
     type: String,
-    enum: ['platform', 'cross-platform'],
+    enum: ["platform", "cross-platform"],
   },
   transports: {
     type: [String],
@@ -26,7 +26,7 @@ const webauthnCredentialSchema = new mongoose.Schema({
   },
   nickname: {
     type: String,
-    default: 'My Authenticator',
+    default: "My Authenticator",
   },
   createdAt: {
     type: Date,
@@ -50,7 +50,7 @@ const userSchema = new mongoose.Schema({
       validator: function (v) {
         return v && v.length >= 3 && v.length <= 30;
       },
-      message: 'Username must be between 3 and 30 characters',
+      message: "Username must be between 3 and 30 characters",
     },
   },
   email: {
@@ -64,10 +64,27 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  // Role-based access: 'warga' (citizen) or 'admin'
+  role: {
+    type: String,
+    enum: ["warga", "admin"],
+    default: "warga",
+  },
+  // Citizen identity fields
+  namaLengkap: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+  nik: {
+    type: String,
+    trim: true,
+    default: "",
+  },
   authMethod: {
     type: String,
-    enum: ['webauthn', 'password', 'hybrid'],
-    default: 'webauthn',
+    enum: ["webauthn", "password", "hybrid"],
+    default: "webauthn",
   },
   webauthnCredentials: [webauthnCredentialSchema],
   createdAt: {
@@ -84,16 +101,6 @@ const userSchema = new mongoose.Schema({
   lastLoginUA: {
     type: String,
   },
-  securityReputation: {
-    type: Number,
-    default: 100,
-  },
-  knownDevices: [
-    {
-      userAgent: String,
-      lastUsed: Date,
-    },
-  ],
   backupCodes: [
     {
       code: String,
@@ -104,10 +111,10 @@ const userSchema = new mongoose.Schema({
 });
 
 // Hash password before saving
-userSchema.pre('save', async function (next) {
+userSchema.pre("save", async function (next) {
   try {
     // Only hash password if it's modified and exists
-    if (this.isModified('password') && this.password) {
+    if (this.isModified("password") && this.password) {
       const salt = await bcrypt.genSalt(10);
       this.password = await bcrypt.hash(this.password, salt);
     }
@@ -118,12 +125,12 @@ userSchema.pre('save', async function (next) {
     }
 
     // Ensure next is a function before calling
-    if (typeof next === 'function') {
+    if (typeof next === "function") {
       next();
     }
   } catch (error) {
-    console.error('Error in pre-save hook:', error);
-    if (typeof next === 'function') {
+    console.error("Error in pre-save hook:", error);
+    if (typeof next === "function") {
       next(error);
     } else {
       throw error;
@@ -143,10 +150,12 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
 // Method to add WebAuthn credential
 userSchema.methods.addWebAuthnCredential = async function (credential) {
   // Check if credentialID already exists for this user
-  const existingCred = this.webauthnCredentials.find((cred) => cred.credentialID === credential.credentialID);
+  const existingCred = this.webauthnCredentials.find(
+    (cred) => cred.credentialID === credential.credentialID,
+  );
 
   if (existingCred) {
-    throw new Error('This credential is already registered for this user');
+    throw new Error("This credential is already registered for this user");
   }
 
   this.webauthnCredentials.push(credential);
@@ -155,7 +164,9 @@ userSchema.methods.addWebAuthnCredential = async function (credential) {
 
 // Method to find credential by ID
 userSchema.methods.findCredential = function (credentialID) {
-  return this.webauthnCredentials.find((cred) => cred.credentialID === credentialID);
+  return this.webauthnCredentials.find(
+    (cred) => cred.credentialID === credentialID,
+  );
 };
 
 // Method to update credential counter
@@ -171,17 +182,17 @@ userSchema.methods.updateCredentialCounter = function (credentialID, counter) {
 // Method to remove a WebAuthn credential
 userSchema.methods.removeWebAuthnCredential = async function (credentialID) {
   const index = this.webauthnCredentials.findIndex(
-    (cred) => cred.credentialID === credentialID
+    (cred) => cred.credentialID === credentialID,
   );
 
   if (index === -1) {
-    throw new Error('Credential tidak ditemukan');
+    throw new Error("Credential tidak ditemukan");
   }
 
   // Prevent deleting last credential for WebAuthn-only users
   if (!this.password && this.webauthnCredentials.length <= 1) {
     throw new Error(
-      'Tidak dapat menghapus credential terakhir. Tambahkan perangkat lain terlebih dahulu.'
+      "Tidak dapat menghapus credential terakhir. Tambahkan perangkat lain terlebih dahulu.",
     );
   }
 
@@ -193,12 +204,12 @@ userSchema.methods.removeWebAuthnCredential = async function (credentialID) {
 userSchema.methods.generateRecoveryCodes = async function () {
   const codes = [];
   for (let i = 0; i < 8; i++) {
-    const code = crypto.randomBytes(4).toString('hex').toUpperCase();
+    const code = crypto.randomBytes(4).toString("hex").toUpperCase();
     codes.push(code);
   }
 
   this.backupCodes = codes.map((code) => ({
-    code: crypto.createHash('sha256').update(code).digest('hex'),
+    code: crypto.createHash("sha256").update(code).digest("hex"),
     used: false,
     createdAt: new Date(),
   }));
@@ -209,7 +220,10 @@ userSchema.methods.generateRecoveryCodes = async function () {
 
 // Method to verify and use a recovery code
 userSchema.methods.useRecoveryCode = async function (plainCode) {
-  const hashed = crypto.createHash('sha256').update(plainCode.toUpperCase().trim()).digest('hex');
+  const hashed = crypto
+    .createHash("sha256")
+    .update(plainCode.toUpperCase().trim())
+    .digest("hex");
 
   const codeEntry = this.backupCodes.find((c) => c.code === hashed && !c.used);
   if (!codeEntry) return false;
@@ -219,7 +233,6 @@ userSchema.methods.useRecoveryCode = async function (plainCode) {
   return true;
 };
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model("User", userSchema);
 
 export default User;
-

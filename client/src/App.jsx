@@ -2,63 +2,91 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { isAuthenticated } from './utils/auth';
-import Navigation from './components/Navigation';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Recovery from './pages/Recovery';
-import Dashboard from './pages/Dashboard';
-import Profile from './pages/Profile';
-import Welcome from './pages/Welcome';
-import Documentation from './pages/Documentation';
-import About from './pages/About';
-import ManageDevices from './pages/ManageDevices';
+
+import BottomNav from './components/BottomNav';
+import NavLayout from './components/NavLayout';
 import ScrollToTop from './components/ScrollToTop';
+
+// Auth pages
+import Login from './pages/auth/Login';
+import Register from './pages/auth/Register';
+import Recovery from './pages/auth/Recovery';
+import Onboarding from './pages/auth/Onboarding';
+
+// Warga pages
+import Dashboard from './pages/user/Dashboard';
+import Profile from './pages/user/Profile';
+import ManageDevices from './pages/user/ManageDevices';
+import Layanan from './pages/user/Layanan';
+import FormPengajuan from './pages/user/FormPengajuan';
+import RiwayatPengajuan from './pages/user/RiwayatPengajuan';
+import Pengumuman from './pages/user/Pengumuman';
+import DetailPengumuman from './pages/user/DetailPengumuman';
+
+// Admin pages
+import AdminDashboard from './pages/admin/Dashboard';
+import AdminPengajuan from './pages/admin/Pengajuan.jsx'; // Keeping .jsx for now if it was there, but usually Vite handles it. 
+import AdminPengumuman from './pages/admin/Pengumuman.jsx';
+
 import './App.css';
 
+// Guard: wajib login
 const PrivateRoute = ({ children }) => {
-  return isAuthenticated() ? children : <Navigate to="/login" />;
+  return isAuthenticated() ? children : <Navigate to="/login" replace />;
+};
+
+// Guard: wajib login + role admin
+const AdminRoute = ({ children }) => {
+  if (!isAuthenticated()) return <Navigate to="/login" replace />;
+  const userStr = localStorage.getItem('user');
+  const user = userStr ? JSON.parse(userStr) : null;
+  if (user?.role !== 'admin') return <Navigate to="/dashboard" replace />;
+  return children;
 };
 
 function App() {
   return (
     <Router>
       <div className="App">
-        {isAuthenticated() && <Navigation />}
         <ScrollToTop />
         <Routes>
-          <Route path="/" element={<Welcome />} />
-          <Route path="/docs" element={<Documentation />} />
-          <Route path="/about" element={<About />} />
+          {/* Onboarding — halaman awal */}
+          <Route path="/" element={<Onboarding />} />
+
+          {/* Auth */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/recovery" element={<Recovery />} />
-          <Route
-            path="/dashboard"
-            element={
-              <PrivateRoute>
-                <Dashboard />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <PrivateRoute>
-                <Profile />
-              </PrivateRoute>
-            }
-          />
 
-          <Route
-            path="/manage-devices"
-            element={
-              <PrivateRoute>
-                <ManageDevices />
-              </PrivateRoute>
-            }
-          />
+          {/* Warga & Pengumuman - Wrapped in NavLayout */}
+          <Route element={<NavLayout><Dashboard /></NavLayout>} path="/dashboard" />
+          <Route element={<NavLayout><Profile /></NavLayout>} path="/profile" />
+          <Route element={<NavLayout><ManageDevices /></NavLayout>} path="/manage-devices" />
+          <Route element={<NavLayout><Layanan /></NavLayout>} path="/layanan" />
+          <Route element={<NavLayout><FormPengajuan /></NavLayout>} path="/layanan/ajukan" />
+          <Route element={<NavLayout><RiwayatPengajuan /></NavLayout>} path="/riwayat" />
+          <Route element={<NavLayout><Pengumuman /></NavLayout>} path="/pengumuman" />
+          <Route element={<NavLayout><DetailPengumuman /></NavLayout>} path="/pengumuman/:id" />
+
+          {/* Admin */}
+          <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+          <Route path="/admin/pengajuan" element={<AdminRoute><AdminPengajuan /></AdminRoute>} />
+          <Route path="/admin/pengumuman" element={<AdminRoute><AdminPengumuman /></AdminRoute>} />
+
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-        <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
+
+
+        <ToastContainer
+          position="top-center"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          pauseOnHover
+          toastClassName="!rounded-xl !text-sm"
+        />
       </div>
     </Router>
   );

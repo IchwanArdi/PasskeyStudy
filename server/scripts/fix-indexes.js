@@ -17,16 +17,16 @@ const fixIndexes = async () => {
     // Drop the problematic index
     try {
       await collection.dropIndex('webauthnCredentials.credentialID_1');
-      console.log('✅ Dropped problematic index: webauthnCredentials.credentialID_1');
+      console.log('[OK] Dropped problematic index: webauthnCredentials.credentialID_1');
     } catch (error) {
       if (error.code === 27) {
-        console.log('ℹ️  Index does not exist, skipping...');
+        console.log('[INFO] Index does not exist, skipping...');
       } else {
         console.error('Error dropping index:', error);
       }
     }
 
-    console.log('✅ Index fix completed');
+    console.log('[OK] Index fix completed');
     await mongoose.connection.close();
     process.exit(0);
   } catch (error) {

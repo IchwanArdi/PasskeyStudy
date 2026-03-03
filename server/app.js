@@ -8,9 +8,9 @@ import session from 'express-session';
 import connectDB from './config/database.js';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
-import statsRoutes from './routes/stats.js';
 import recoveryRoutes from './routes/recovery.js';
-import performanceRoutes from './routes/performance.js';
+import pengajuanRoutes from './routes/pengajuan.js';
+import pengumumanRoutes from './routes/pengumuman.js';
 import rateLimit from 'express-rate-limit';
 
 // Create Express app
@@ -57,10 +57,6 @@ app.use(cors(corsOptions));
 
 // Middleware
 app.use(express.json());
-
-// Performance measurement middleware
-import performanceMiddleware from './middleware/performanceMiddleware.js';
-app.use(performanceMiddleware);
 
 // Security headers
 app.use(
@@ -137,12 +133,10 @@ app.use('/api/auth', authRoutes);
 app.use('/auth', authRoutes); // Alias for client compatibility
 app.use('/api/user', userRoutes);
 app.use('/user', userRoutes); // Alias for client compatibility
-app.use('/api/stats', statsRoutes);
-app.use('/stats', statsRoutes); // Alias for client compatibility
 app.use('/api/recovery', recoveryRoutes);
 app.use('/recovery', recoveryRoutes);
-app.use('/api/performance', performanceRoutes);
-app.use('/performance', performanceRoutes);
+app.use('/api/pengajuan', pengajuanRoutes);
+app.use('/api/pengumuman', pengumumanRoutes);
 
 // Export app for use in server.js
 export default app;

@@ -4,9 +4,9 @@ import mongoose from 'mongoose';
 const PORT = process.env.PORT || 5000;
 
 const server = app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🌐 Local: http://localhost:${PORT}`);
+  console.log(`[INFO] Server running on port ${PORT}`);
+  console.log(`[ENV] Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`[LOCAL] URL: http://localhost:${PORT}`);
 });
 
 const gracefulShutdown = (signal) => {
