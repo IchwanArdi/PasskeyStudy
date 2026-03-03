@@ -28,23 +28,27 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
     setMessage('');
 
     try {
-      setMessage('Meminta opsi registrasi...');
+      setMessage('Sedang menghubungkan ke HP Anda...');
       const options = await authAPI.getRegisterOptions(email);
+      const credential = await startRegistration({
+        ...options,
+      });
 
-      setMessage('Gunakan authenticator Anda (Touch ID, Face ID, Windows Hello, dll)...');
-      const credential = await startRegistration(options);
-
-      setMessage('Memverifikasi registrasi...');
+      setMessage('Menyimpan kunci aman...');
       const verifyResponse = await authAPI.verifyRegister({
         email,
         credential,
       });
 
       setAuth(verifyResponse.token, verifyResponse.user);
-      setMessage('Registrasi berhasil!');
+      setMessage('HP Berhasil Didaftarkan!');
       onSuccess(verifyResponse);
     } catch (err) {
-      setError(err.response?.data?.message || err.message || 'Registrasi gagal');
+      if (err.name === 'InvalidStateError' || err.message?.includes('already registered')) {
+        setError('Email ini sudah terdaftar dan passkey sudah ada di perangkat Anda atau tersinkronisasi. Silakan langsung Login.');
+      } else {
+        setError(err.response?.data?.message || err.message || 'Registrasi gagal');
+      }
       setMessage('');
     } finally {
       setLoading(false);
@@ -63,17 +67,19 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
     setMessage('');
 
     try {
-      setMessage('Meminta opsi login...');
+      setMessage('Mencari kunci di HP Anda...');
       const options = await authAPI.getLoginOptions(email);
 
       if (!options || !options.challenge) {
-        throw new Error('Opsi autentikasi tidak valid dari server');
+        throw new Error('Gagal menghubungkan ke sistem desa');
       }
 
-      setMessage('Gunakan authenticator Anda (Touch ID, Face ID, Windows Hello, dll)...');
-      const credential = await startAuthentication(options);
+      setMessage('Tempelkan jari di sensor HP atau Laptop Anda...');
+      const credential = await startAuthentication({
+        ...options,
+      });
 
-      setMessage('Memverifikasi autentikasi...');
+      setMessage('Memverifikasi identitas...');
       const verifyResponse = await authAPI.verifyLogin({
         email,
         credential,
@@ -105,12 +111,12 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
             required
             disabled={loading}
             className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all text-sm"
-            placeholder="Masukkan email terdaftar"
+            placeholder="Contoh: ichwan@gmail.com"
           />
         </div>
         {error && (
           <div className="px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
-            {error}
+            <b>Masalah:</b> {error}
           </div>
         )}
         {message && (
@@ -123,12 +129,12 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
           disabled={loading || !email}
           className="w-full px-6 py-3.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-semibold text-sm transition-all disabled:opacity-50 disabled:hover:bg-blue-600 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30"
         >
-          {loading ? 'Memproses...' : mode === 'register' ? 'Daftar dengan Biometrik' : 'Verifikasi Kunci Keamanan'}
+          {loading ? 'Sabar, sedang diproses...' : mode === 'register' ? 'Daftarkan HP Saya Sekarang' : 'Masuk dengan Sidik Jari'}
         </button>
       </form>
       {mode === 'login' && (
         <p className="text-sm text-gray-500 text-center">
-          Pastikan Anda sudah mendaftar dengan WebAuthn terlebih dahulu
+          Gunakan HP yang sudah pernah Anda daftarkan sebelumnya.
         </p>
       )}
     </div>

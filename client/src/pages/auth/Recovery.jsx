@@ -4,7 +4,7 @@ import { startRegistration } from '@simplewebauthn/browser';
 import { recoveryAPI } from '../../services/api';
 import { setAuth } from '../../utils/auth';
 import { toast } from 'react-toastify';
-import { Shield, KeyRound, AlertTriangle, ArrowLeft, Check, CheckCircle, Fingerprint, ArrowRight } from 'lucide-react';
+import { Shield, KeyRound, AlertTriangle, ArrowLeft, Check, CheckCircle, Fingerprint, ArrowRight, MessageCircle } from 'lucide-react';
 
 const Recovery = () => {
   const navigate = useNavigate();
@@ -181,13 +181,22 @@ const Recovery = () => {
                     </p>
                     <p className="text-sm text-gray-400 mt-1">Kode lama sudah tidak berlaku. Simpan kode baru ini.</p>
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-3 mb-6">
                     {newRecoveryCodes.map((c, i) => (
                       <div key={i} className="p-3 bg-white/[0.03] border border-white/[0.06] rounded-xl text-center">
                         <span className="font-mono text-sm font-bold tracking-widest">{c}</span>
                       </div>
                     ))}
                   </div>
+                  <button
+                    onClick={() => {
+                      const text = `Kunci Cadangan Desa Digital Karangpucung Anda:\n\n${newRecoveryCodes.join('\n')}\n\n*Hanya bisa dipakai 1x. Simpan pesan ini!*`;
+                      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+                    }}
+                    className="w-full py-3 bg-[#25D366]/[0.1] border border-[#25D366]/20 text-[#25D366] rounded-xl text-xs font-bold hover:bg-[#25D366]/20 transition-all flex items-center justify-center gap-2"
+                  >
+                    <MessageCircle className="w-4 h-4" /> Kirim ke WhatsApp (Simpan)
+                  </button>
                 </div>
               )}
 

@@ -1,7 +1,7 @@
 import { useNavigate, Link } from 'react-router-dom';
 import WebAuthnAuth from '../../components/WebAuthnAuth';
 import { toast } from 'react-toastify';
-import { Shield } from 'lucide-react';
+import { Shield, HelpCircle } from 'lucide-react';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -37,15 +37,18 @@ const Login = () => {
           <div className="flex items-center gap-3 p-3.5 bg-emerald-500/[0.06] border border-emerald-500/10 rounded-xl mb-6">
             <Shield className="w-4 h-4 text-emerald-400 shrink-0" />
             <p className="text-xs text-gray-400 leading-relaxed">
-              Masuk menggunakan <span className="text-white font-semibold">sidik jari, wajah, atau kunci keamanan</span> — tanpa password.
+              Masuk cukup pakai <span className="text-white font-semibold">Sidik Jari atau Wajah</span> — aman tanpa perlu hafal password.
             </p>
           </div>
 
           <WebAuthnAuth mode="login" onSuccess={handleSuccess} />
 
-          <div className="mt-6 pt-5 border-t border-white/[0.06] text-center space-y-3">
-            <Link to="/recovery" className="block text-xs text-gray-600 hover:text-gray-400 transition-colors font-semibold uppercase tracking-widest">
-              Pemulihan Akun
+          <div className="mt-6 pt-5 border-t border-white/[0.06] flex flex-col items-center gap-3">
+            <Link to="/help" className="text-xs text-gray-400 hover:text-blue-400 transition-colors flex items-center gap-1.5 font-medium">
+              <HelpCircle className="w-3.5 h-3.5" /> Butuh bantuan masuk?
+            </Link>
+            <Link to="/recovery" className="text-[10px] text-gray-600 hover:text-gray-400 transition-colors font-bold uppercase tracking-widest">
+              Gunakan Kunci Cadangan
             </Link>
           </div>
         </div>

@@ -62,23 +62,31 @@ const ManageDevices = () => {
       const options = await userAPI.addDeviceOptions();
 
       // Step 2: Start WebAuthn registration ceremony
-      const credential = await startRegistration(options);
+      // Refactored to pass options directly as recommended by simplewebauthn
+      const credential = await startRegistration({
+        ...options,
+      });
 
       // Step 3: Verify and save
       await userAPI.addDeviceVerify({
         credential,
-        nickname: newDeviceName.trim() || 'Perangkat Baru',
+        nickname: newDeviceName.trim() || 'HP Baru',
       });
 
-      toast.success('Perangkat baru berhasil ditambahkan!');
+      toast.success('HP baru berhasil ditambahkan!');
       setShowAddModal(false);
       setNewDeviceName('');
       await fetchCredentials();
     } catch (error) {
       if (error.name === 'NotAllowedError') {
-        toast.error('Registrasi dibatalkan oleh pengguna');
+        toast.error('Gagal mendeteksi jari Anda (Dibatalkan)');
+      } else if (error.name === 'InvalidStateError' || error.message?.includes('already registered')) {
+        toast.info(
+          'HP ini sudah pernah didaftarkan sebelumnya. Anda bisa langsung masuk.'
+        );
+        setShowAddModal(false);
       } else {
-        toast.error(error.response?.data?.message || 'Gagal menambahkan perangkat');
+        toast.error('Gagal menghubungkan ke HP');
       }
       console.error('Add device error:', error);
     } finally {
@@ -89,27 +97,27 @@ const ManageDevices = () => {
   const handleDelete = async (credentialID) => {
     try {
       await userAPI.deleteCredential(credentialID);
-      toast.success('Perangkat berhasil dihapus');
+      toast.success('Kunci berhasil dihapus');
       setDeleteConfirmId(null);
       await fetchCredentials();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Gagal menghapus perangkat');
+      toast.error('Gagal menghapus kunci');
       console.error('Delete credential error:', error);
     }
   };
 
   const handleUpdateNickname = async (credentialID) => {
     if (!editNickname.trim()) {
-      toast.error('Nama perangkat tidak boleh kosong');
+      toast.error('Nama HP tidak boleh kosong');
       return;
     }
     try {
       await userAPI.updateNickname(credentialID, editNickname.trim());
-      toast.success('Nama perangkat berhasil diperbarui');
+      toast.success('Nama HP berhasil diubah');
       setEditingId(null);
       await fetchCredentials();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Gagal memperbarui nama');
+      toast.error('Gagal mengubah nama');
       console.error('Update nickname error:', error);
     }
   };
@@ -123,9 +131,9 @@ const ManageDevices = () => {
 
   const getDeviceLabel = (cred) => {
     const type = cred.deviceType || '';
-    if (type === 'platform') return 'Biometrik Internal';
-    if (type === 'cross-platform') return 'Kunci Hardware';
-    return 'Authenticator';
+    if (type === 'platform') return 'Sidik Jari HP/Laptop';
+    if (type === 'cross-platform') return 'Pernah Discan (QR)';
+    return 'Alat Masuk';
   };
 
   const getTransportIcons = (transports) => {
@@ -182,11 +190,11 @@ const ManageDevices = () => {
         <div className="mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-500/[0.08] border border-blue-500/20 rounded-full text-blue-400 text-xs font-semibold mb-4">
             <Shield className="w-3 h-3" />
-            Manajemen Perangkat
+            Bantuan Keamanan
           </div>
-          <h1 className="text-3xl font-bold tracking-tight mb-2">Kelola Perangkat</h1>
+          <h1 className="text-3xl font-bold tracking-tight mb-2">Kelola Kunci HP</h1>
           <p className="text-gray-500 text-base">
-            Kelola kunci keamanan dan authenticator yang terdaftar pada akun Anda.
+            Daftar HP atau alat masuk yang terhubung ke akun Anda.
           </p>
         </div>
 
@@ -233,13 +241,13 @@ const ManageDevices = () => {
 
         {/* Add Device Button */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-base font-bold">Perangkat Terdaftar</h2>
+          <h2 className="text-base font-bold">HP Terdaftar</h2>
           <button
             onClick={() => setShowAddModal(true)}
             className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30"
           >
             <Plus className="w-4 h-4" />
-            Tambah Perangkat
+            Daftarkan HP Lain
           </button>
         </div>
 
@@ -426,20 +434,20 @@ const ManageDevices = () => {
           />
           {/* Modal */}
           <div className="relative w-full max-w-md glass-card rounded-2xl p-8 animate-fade-in-up">
-            <h2 className="text-lg font-bold mb-2">Tambah Perangkat Baru</h2>
+            <h2 className="text-lg font-bold mb-2">Daftarkan HP Lainnya</h2>
             <p className="text-sm text-gray-500 mb-6">
-              Daftarkan authenticator baru (Touch ID, Face ID, Windows Hello, atau Security Key) ke akun Anda.
+              Gunakan Sidik Jari/Wajah di HP lain (seperti HP anak atau pasangan) agar akun tetap bisa dibuka jika HP utama hilang.
             </p>
 
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-400 mb-2">
-                Nama Perangkat (opsional)
+                Nama Panggilan HP (Opsional)
               </label>
               <input
                 type="text"
                 value={newDeviceName}
                 onChange={(e) => setNewDeviceName(e.target.value)}
-                placeholder="cth: iPhone 15 Pro, Laptop Kantor, Yubikey"
+                placeholder="cth: HP Anak, HP Istri, Laptop Rumah"
                 maxLength={50}
                 disabled={addingDevice}
                 className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-white placeholder-gray-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all disabled:opacity-50"

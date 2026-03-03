@@ -181,6 +181,12 @@ export const verifyRegistration = async (body, expectedChallenge, user) => {
       transports,
     };
   } catch (error) {
+    /**
+     * NOTE: Client-side may throw 'InvalidStateError' if the authenticator already
+     * contains one of the credentials in 'excludeCredentials'.
+     * This is common when passkeys are synced via Google Password Manager or iCloud.
+     * The frontend should handle this error gracefully.
+     */
     console.error('Error in verifyRegistration:', error.message);
     throw new Error(`Registration verification failed: ${error.message}`);
   }

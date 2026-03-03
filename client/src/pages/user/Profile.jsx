@@ -201,13 +201,13 @@ const Profile = () => {
             <div className="glass-card rounded-2xl p-8">
               <h2 className="text-base font-bold flex items-center gap-2.5 mb-8">
                 <Key className="w-5 h-5 text-blue-400" />
-                Kredensial Aktif
+                Kunci HP Aktif
               </h2>
 
               {!credentials || !Array.isArray(credentials) || credentials.length === 0 ? (
                 <div className="text-center py-12 border border-dashed border-white/10 rounded-xl">
                   <Lock className="w-10 h-10 text-gray-700 mx-auto mb-3" />
-                  <p className="text-sm font-medium text-gray-600">Belum ada kunci hardware terdaftar.</p>
+                  <p className="text-sm font-medium text-gray-600">Belum ada HP terdaftar.</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -218,8 +218,8 @@ const Profile = () => {
                           <Shield className="w-5 h-5 text-gray-500 group-hover:text-blue-400 transition-colors" />
                         </div>
                         <div>
-                          <p className="text-xs font-medium text-gray-500 mb-0.5">Authenticator</p>
-                          <p className="text-sm font-semibold truncate max-w-[140px]">{cred.deviceType || 'Hardware Key'}</p>
+                          <p className="text-xs font-medium text-gray-500 mb-0.5">Alat Masuk</p>
+                          <p className="text-sm font-semibold truncate max-w-[140px]">{cred.nickname || 'HP Tanpa Nama'}</p>
                         </div>
                       </div>
                       <div className="text-right">
@@ -269,8 +269,8 @@ const Profile = () => {
                       <Shield className="w-5 h-5" />
                     </div>
                     <div className="text-left">
-                      <span className="text-sm font-bold block text-emerald-400">Keamanan Perangkat</span>
-                      <span className="text-[10px] text-emerald-500/50 font-medium uppercase tracking-wider">Kelola Kunci Keamanan</span>
+                      <span className="text-sm font-bold block text-emerald-400">Keamanan & Kunci HP</span>
+                      <span className="text-[10px] text-emerald-500/50 font-medium uppercase tracking-wider">Tambah atau Hapus Kunci</span>
                     </div>
                   </div>
                   <ChevronRight className="w-5 h-5 text-emerald-400/30 group-hover:translate-x-1 transition-transform" />
@@ -315,7 +315,7 @@ const Profile = () => {
             <div className="glass-card rounded-2xl p-6">
               <p className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-widest">Status</p>
               <p className="text-sm text-gray-500 leading-relaxed italic">
-                Akun dilindungi oleh WebAuthn.
+                Akun dilindungi kunci biometrik (Login Tanpa Password).
               </p>
             </div>
           </div>

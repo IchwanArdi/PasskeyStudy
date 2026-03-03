@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import WebAuthnAuth from '../../components/WebAuthnAuth';
 import { toast } from 'react-toastify';
-import { Shield, CheckCircle, Copy, Download, AlertTriangle, ArrowRight } from 'lucide-react';
+import { Shield, CheckCircle, Copy, Download, AlertTriangle, ArrowRight, HelpCircle, MessageCircle } from 'lucide-react';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -66,7 +66,7 @@ const Register = () => {
               <CheckCircle className="w-7 h-7 text-emerald-400" />
             </div>
             <h1 className="text-2xl font-black">Akun Berhasil Dibuat!</h1>
-            <p className="text-sm text-gray-500 mt-1">Simpan kode pemulihan ini di tempat aman</p>
+            <p className="text-sm text-gray-500 mt-1">Simpan kunci cadangan ini di tempat aman</p>
           </div>
 
           <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-6">
@@ -75,7 +75,7 @@ const Register = () => {
               <div className="flex-1">
                 <p className="text-xs text-yellow-400 font-bold mb-1 text-left">Peringatan Penting</p>
                 <p className="text-xs text-gray-500 leading-relaxed text-left">
-                  Kode ini adalah <b className="text-white">satu-satunya cara</b> untuk memulihkan akun jika perangkat hilang. Setiap kode hanya bisa digunakan sekali.
+                  Kunci cadangan ini adalah <b className="text-white">satu-satunya cara</b> untuk masuk jika HP Anda hilang.
                 </p>
               </div>
             </div>
@@ -96,6 +96,16 @@ const Register = () => {
                 <Download className="w-3.5 h-3.5" /> Unduh
               </button>
             </div>
+
+            <button
+              onClick={() => {
+                const text = `Kunci Cadangan Desa Karangpucung:\n\n${recoveryCodes.join('\n')}\n\n*Simpan pesan ini!*`;
+                window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+              }}
+              className="w-full py-3 bg-[#25D366]/[0.1] border border-[#25D366]/20 text-[#25D366] rounded-xl text-xs font-bold hover:bg-[#25D366]/20 transition-all flex items-center justify-center gap-2 mb-4"
+            >
+              <MessageCircle className="w-4 h-4" /> Kirim ke WhatsApp
+            </button>
 
             <button onClick={handleDismissCodes} className="w-full py-4 bg-emerald-500 text-black font-bold rounded-xl hover:bg-emerald-400 transition-all text-sm flex items-center justify-center gap-2">
               Sudah Disimpan <ArrowRight className="w-4 h-4" /> Masuk ke Layanan
@@ -122,15 +132,17 @@ const Register = () => {
           <div className="flex items-center gap-3 p-3.5 bg-emerald-500/[0.06] border border-emerald-500/10 rounded-xl mb-6">
             <Shield className="w-4 h-4 text-emerald-400 shrink-0" />
             <p className="text-xs text-gray-400 leading-relaxed">
-              Akun Anda dilindungi dengan <span className="text-white font-semibold">kriptografi kunci publik</span> — tidak perlu password.
+              Daftarkan <span className="text-white font-semibold">Sidik Jari atau Wajah</span> — aman dan praktis tanpa perlu hafal password.
             </p>
           </div>
 
           <WebAuthnAuth mode="register" onSuccess={handleSuccess} />
 
-          <p className="text-center text-xs text-gray-600 mt-5">
-            Gunakan perangkat dengan sidik jari, Windows Hello, atau kunci keamanan.
-          </p>
+          <div className="mt-4 text-center">
+            <Link to="/help" className="text-xs text-gray-500 hover:text-blue-400 transition-colors flex items-center justify-center gap-1">
+              <HelpCircle className="w-3 h-3" /> Belum paham caranya? Klik di sini
+            </Link>
+          </div>
         </div>
 
         <p className="text-center text-xs text-gray-700 mt-6">
