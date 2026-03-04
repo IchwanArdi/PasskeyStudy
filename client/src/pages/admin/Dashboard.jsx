@@ -74,7 +74,7 @@ const AdminDashboard = () => {
   const statusColor = { diproses:'text-blue-400', disetujui:'text-emerald-400', ditolak:'text-red-400' };
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] font-sans pt-8 pb-24 md:pt-12 md:pb-12 px-6">
+    <div className="space-y-8 animate-in fade-in duration-500">
       <div className="max-w-7xl mx-auto space-y-8">
         <header className="flex items-start justify-between">
         <div>

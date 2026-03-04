@@ -29,8 +29,11 @@ import PanduanWarga from './pages/user/PanduanWarga';
 
 // Admin pages
 import AdminDashboard from './pages/admin/Dashboard';
-import AdminPengajuan from './pages/admin/Pengajuan.jsx'; // Keeping .jsx for now if it was there, but usually Vite handles it. 
+import AdminPengajuan from './pages/admin/Pengajuan.jsx';
 import AdminPengumuman from './pages/admin/Pengumuman.jsx';
+import AdminProfile from './pages/admin/Profile.jsx';
+import AdminUsers from './pages/admin/ManageUsers.jsx';
+import AdminNavLayout from './components/AdminNavLayout.jsx';
 
 import './App.css';
 
@@ -92,9 +95,13 @@ function App() {
           <Route element={<NavLayout><PanduanWarga /></NavLayout>} path="/panduan" />
 
           {/* Admin */}
-          <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
-          <Route path="/admin/pengajuan" element={<AdminRoute><AdminPengajuan /></AdminRoute>} />
-          <Route path="/admin/pengumuman" element={<AdminRoute><AdminPengumuman /></AdminRoute>} />
+          <Route path="/admin" element={<AdminRoute><AdminNavLayout><AdminDashboard /></AdminNavLayout></AdminRoute>} />
+          <Route path="/admin/pengajuan" element={<AdminRoute><AdminNavLayout><AdminPengajuan /></AdminNavLayout></AdminRoute>} />
+          <Route path="/admin/pengumuman" element={<AdminRoute><AdminNavLayout><AdminPengumuman /></AdminNavLayout></AdminRoute>} />
+          <Route path="/admin/profile" element={<AdminRoute><AdminNavLayout><AdminProfile /></AdminNavLayout></AdminRoute>} />
+          <Route path="/admin/users" element={<AdminRoute><AdminNavLayout><AdminUsers /></AdminNavLayout></AdminRoute>} />
+          <Route path="/admin/manage-devices" element={<AdminRoute><AdminNavLayout><ManageDevices /></AdminNavLayout></AdminRoute>} />
+          <Route path="/admin/panduan" element={<AdminRoute><AdminNavLayout><PanduanWarga /></AdminNavLayout></AdminRoute>} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />

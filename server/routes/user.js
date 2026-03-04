@@ -202,4 +202,48 @@ router.post('/credentials/add-verify', authenticate, async (req, res) => {
   }
 });
 
+// =============================================
+// ADMIN ENDPOINTS
+// =============================================
+
+// Get all users (Admin only)
+router.get('/admin/semua', authenticate, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Akses ditolak. Hanya untuk Admin.' });
+    }
+    const users = await User.find().select('username email role createdAt').sort({ createdAt: -1 });
+    res.json({ users });
+  } catch (error) {
+    console.error('Get all users error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// Change user role (Admin only)
+router.put('/admin/role', authenticate, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Akses ditolak.' });
+    }
+    const { userId, role } = req.body;
+    if (!['warga', 'admin'].includes(role)) {
+      return res.status(400).json({ message: 'Role tidak valid' });
+    }
+    const userToUpdate = await User.findById(userId);
+    if (!userToUpdate) {
+      return res.status(404).json({ message: 'User tidak ditemukan' });
+    }
+    userToUpdate.role = role;
+    await userToUpdate.save();
+    res.json({ 
+      message: `Role berhasil diubah menjadi ${role}`, 
+      user: { id: userToUpdate._id, username: userToUpdate.username, role: userToUpdate.role } 
+    });
+  } catch (error) {
+    console.error('Update role error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
 export default router;
