@@ -123,8 +123,8 @@ const VillageCarousel = () => {
       </div>
 
       {/* Tip Badge */}
-      <div className="absolute top-6 left-6 px-3 py-1 bg-black/20 backdrop-blur-md border border-white/10 rounded-full">
-        <span className="text-[10px] font-black text-white uppercase tracking-widest">Foto Desa Kami</span>
+      <div className="absolute top-6 left-6 px-3 py-1 bg-black/20 backdrop-blur-md border border-white/10 dark:border-black/10 dark:bg-white/20 rounded-full">
+        <span className="text-[10px] font-black dark:text-white text-black uppercase tracking-widest">Foto Desa Kami</span>
       </div>
     </div>
   );

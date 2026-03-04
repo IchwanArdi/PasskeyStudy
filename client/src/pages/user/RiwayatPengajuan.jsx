@@ -181,16 +181,16 @@ const RiwayatPengajuan = () => {
           />
           
           {/* Content */}
-          <div className="relative w-full max-w-4xl bg-[#ffffff] dark:bg-[#121214] border border-black/10 dark:border-white/10 rounded-[32px] shadow-2xl overflow-hidden animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
+          <div className="relative w-full max-w-4xl bg-white dark:bg-[#121214] border border-black/10 dark:border-white/10 rounded-[32px] shadow-2xl overflow-hidden animate-in zoom-in-95 slide-in-from-bottom-4 duration-300">
             <div className="max-h-[85vh] overflow-y-auto custom-scrollbar">
               {/* Header Modal */}
-              <div className="p-6 md:p-8 flex items-start justify-between border-b border-black/5 dark:border-white/5 sticky top-0 bg-white/90 dark:bg-[#121214]/90 backdrop-blur-xl z-20">
+              <div className="p-6 md:p-8 flex items-start justify-between border-b border-black/5 dark:border-white/5 sticky top-0 bg-white/95 dark:bg-[#121214]/95 backdrop-blur-xl z-20">
                 <div className="flex items-center gap-4">
                   <div className="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center">
                     <LetterIcon jenis={selectedPengajuan.jenisSurat} className="w-8 h-8 text-emerald-500" />
                   </div>
                   <div>
-                    <h2 className="text-xl md:text-2xl font-black tracking-tight">Detail Pengajuan</h2>
+                    <h2 className="text-xl md:text-2xl font-black tracking-tight text-gray-900 dark:text-white">Detail Pengajuan</h2>
                     <p className="text-xs md:text-sm text-gray-500 font-medium">{jenisList[selectedPengajuan.jenisSurat]?.label || selectedPengajuan.jenisSurat}</p>
                   </div>
                 </div>
@@ -203,7 +203,7 @@ const RiwayatPengajuan = () => {
               </div>
 
               {/* Data Content */}
-              <div className="p-6 md:p-8 space-y-8">
+              <div className="p-6 md:p-8 space-y-8 bg-white dark:bg-transparent">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {[
                     { label: 'Nama Lengkap', value: selectedPengajuan.namaLengkap, icon: User },
@@ -212,12 +212,12 @@ const RiwayatPengajuan = () => {
                     { label: 'Alamat', value: selectedPengajuan.alamat, icon: MapPin },
                     { label: 'Keperluan', value: selectedPengajuan.keperluan, icon: Info },
                   ].map((item) => (
-                    <div key={item.label} className="bg-black/[0.02] dark:bg-white/[0.02] p-4 rounded-2xl border border-black/[0.05] dark:border-white/[0.05]">
+                    <div key={item.label} className="bg-gray-50 dark:bg-white/5 p-4 rounded-2xl border border-black/[0.05] dark:border-white/[0.05]">
                       <div className="flex items-center gap-2 mb-2">
                         <item.icon className="w-3.5 h-3.5 text-gray-400" />
                         <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">{item.label}</span>
                       </div>
-                      <span className="text-sm font-semibold text-[var(--text)]">{item.value || '—'}</span>
+                      <span className="text-sm font-semibold text-gray-900 dark:text-white">{item.value || '—'}</span>
                     </div>
                   ))}
                 </div>
@@ -230,7 +230,7 @@ const RiwayatPengajuan = () => {
                       {Object.entries(selectedPengajuan.dataTambahan).map(([key, value]) => {
                         const formattedLabel = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
                         return (
-                          <div key={key} className="bg-emerald-500/[0.03] p-4 rounded-2xl border border-emerald-500/10">
+                          <div key={key} className="bg-emerald-500/[0.03] dark:bg-emerald-500/[0.05] p-4 rounded-2xl border border-emerald-500/10">
                             <span className="text-[10px] text-emerald-500/70 font-bold uppercase tracking-widest block mb-2">{formattedLabel}</span>
                             <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">{String(value)}</span>
                           </div>

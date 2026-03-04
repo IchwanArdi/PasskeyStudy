@@ -1,6 +1,6 @@
 {
   "name": "Layanan Desa Digital Karangpucung",
-  "short_name": "Desa Karangpucung",
+  "short_name": "Layanan Desa Digital",
   "description": "Platform layanan administrasi digital untuk warga Desa Karangpucung",
   "start_url": "/",
   "display": "standalone",
