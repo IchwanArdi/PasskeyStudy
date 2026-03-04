@@ -201,13 +201,13 @@ const Profile = () => {
             <div className="glass-card rounded-2xl p-8">
               <h2 className="text-base font-bold flex items-center gap-2.5 mb-8">
                 <Key className="w-5 h-5 text-blue-400" />
-                Kunci HP Aktif
+                Kredensial Aktif
               </h2>
 
               {!credentials || !Array.isArray(credentials) || credentials.length === 0 ? (
                 <div className="text-center py-12 border border-dashed border-white/10 rounded-xl">
                   <Lock className="w-10 h-10 text-gray-700 mx-auto mb-3" />
-                  <p className="text-sm font-medium text-gray-600">Belum ada HP terdaftar.</p>
+                  <p className="text-sm font-medium text-gray-600">Belum ada kunci kredensial terdaftar.</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -269,8 +269,8 @@ const Profile = () => {
                       <Shield className="w-5 h-5" />
                     </div>
                     <div className="text-left">
-                      <span className="text-sm font-bold block text-emerald-400">Keamanan & Kunci HP</span>
-                      <span className="text-[10px] text-emerald-500/50 font-medium uppercase tracking-wider">Tambah atau Hapus Kunci</span>
+                      <span className="text-sm font-bold block text-emerald-400">Keamanan Perangkat</span>
+                      <span className="text-[10px] text-emerald-500/50 font-medium uppercase tracking-wider">Kelola Kunci Keamanan</span>
                     </div>
                   </div>
                   <ChevronRight className="w-5 h-5 text-emerald-400/30 group-hover:translate-x-1 transition-transform" />

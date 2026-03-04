@@ -28,7 +28,7 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
     setMessage('');
 
     try {
-      setMessage('Sedang menghubungkan ke HP Anda...');
+      setMessage('Meminta opsi registrasi...');
       const options = await authAPI.getRegisterOptions(email);
       const credential = await startRegistration({
         ...options,
@@ -41,7 +41,7 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
       });
 
       setAuth(verifyResponse.token, verifyResponse.user);
-      setMessage('HP Berhasil Didaftarkan!');
+      setMessage('Registrasi berhasil!');
       onSuccess(verifyResponse);
     } catch (err) {
       if (err.name === 'InvalidStateError' || err.message?.includes('already registered')) {
@@ -67,7 +67,7 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
     setMessage('');
 
     try {
-      setMessage('Mencari kunci di HP Anda...');
+      setMessage('Meminta opsi login...');
       const options = await authAPI.getLoginOptions(email);
 
       if (!options || !options.challenge) {
@@ -129,12 +129,12 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
           disabled={loading || !email}
           className="w-full px-6 py-3.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-semibold text-sm transition-all disabled:opacity-50 disabled:hover:bg-blue-600 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30"
         >
-          {loading ? 'Sabar, sedang diproses...' : mode === 'register' ? 'Daftarkan HP Saya Sekarang' : 'Masuk dengan Sidik Jari'}
+          {loading ? 'Memproses...' : mode === 'register' ? 'Daftar dengan Biometrik' : 'Verifikasi Kunci Keamanan'}
         </button>
       </form>
       {mode === 'login' && (
         <p className="text-sm text-gray-500 text-center">
-          Gunakan HP yang sudah pernah Anda daftarkan sebelumnya.
+          Pastikan Anda sudah mendaftar dengan WebAuthn terlebih dahulu
         </p>
       )}
     </div>

@@ -70,10 +70,10 @@ const ManageDevices = () => {
       // Step 3: Verify and save
       await userAPI.addDeviceVerify({
         credential,
-        nickname: newDeviceName.trim() || 'HP Baru',
+        nickname: newDeviceName.trim() || 'Perangkat Baru',
       });
 
-      toast.success('HP baru berhasil ditambahkan!');
+      toast.success('Perangkat baru berhasil ditambahkan!');
       setShowAddModal(false);
       setNewDeviceName('');
       await fetchCredentials();
@@ -82,11 +82,11 @@ const ManageDevices = () => {
         toast.error('Gagal mendeteksi jari Anda (Dibatalkan)');
       } else if (error.name === 'InvalidStateError' || error.message?.includes('already registered')) {
         toast.info(
-          'HP ini sudah pernah didaftarkan sebelumnya. Anda bisa langsung masuk.'
+          'Perangkat ini sudah pernah didaftarkan sebelumnya. Anda bisa langsung masuk.'
         );
         setShowAddModal(false);
       } else {
-        toast.error('Gagal menghubungkan ke HP');
+        toast.error('Gagal menghubungkan ke perangkat');
       }
       console.error('Add device error:', error);
     } finally {
@@ -108,12 +108,12 @@ const ManageDevices = () => {
 
   const handleUpdateNickname = async (credentialID) => {
     if (!editNickname.trim()) {
-      toast.error('Nama HP tidak boleh kosong');
+      toast.error('Nama perangkat tidak boleh kosong');
       return;
     }
     try {
       await userAPI.updateNickname(credentialID, editNickname.trim());
-      toast.success('Nama HP berhasil diubah');
+      toast.success('Nama perangkat berhasil diubah');
       setEditingId(null);
       await fetchCredentials();
     } catch (error) {
