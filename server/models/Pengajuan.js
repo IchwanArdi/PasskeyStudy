@@ -45,8 +45,8 @@ const pengajuanSchema = new mongoose.Schema(
     // Status pengajuan
     status: {
       type: String,
-      enum: ['menunggu', 'diproses', 'disetujui', 'ditolak'],
-      default: 'menunggu',
+      enum: ['diproses', 'disetujui', 'ditolak'],
+      default: 'diproses',
     },
     // Catatan dari admin
     catatanAdmin: {

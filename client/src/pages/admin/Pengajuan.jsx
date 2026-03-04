@@ -4,16 +4,16 @@ import { isAuthenticated } from '../../utils/auth';
 import { toast } from 'react-toastify';
 import {
   ArrowLeft, ChevronDown, ChevronUp, Check, X, RefreshCw,
-  Settings, Clock, Filter
+  Settings, Clock, Filter, DownloadCloud, Trash2
 } from 'lucide-react';
 import LetterIcon from '../../components/LetterIcon';
 import { Link } from 'react-router-dom';
+import { pengajuanAPI } from '../../services/api';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const jenisLabel = { domisili: 'Domisili', tidak_mampu: 'Tidak Mampu', kelahiran: 'Kelahiran', kematian: 'Kematian', usaha: 'Usaha' };
 const statusConfig = {
-  menunggu: { label: 'Menunggu', color: 'text-yellow-400 border-yellow-400/20 bg-yellow-400/10' },
   diproses: { label: 'Diproses', color: 'text-blue-400 border-blue-400/20 bg-blue-400/10' },
   disetujui: { label: 'Disetujui', color: 'text-emerald-400 border-emerald-400/20 bg-emerald-400/10' },
   ditolak: { label: 'Ditolak', color: 'text-red-400 border-red-400/20 bg-red-400/10' },
@@ -26,7 +26,30 @@ const AdminPengajuan = () => {
   const [expanded, setExpanded] = useState(null);
   const [filterStatus, setFilterStatus] = useState('');
   const [updating, setUpdating] = useState(null);
+  const [downloadingId, setDownloadingId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
   const [catatan, setCatatan] = useState('');
+
+  const handleDownloadPDF = async (id, jenis, nik) => {
+    try {
+      setDownloadingId(id);
+      const res = await pengajuanAPI.downloadPDF(id);
+      const url = window.URL.createObjectURL(new Blob([res]));
+      const link = document.createElement('a');
+      link.href = url;
+      const safeJenis = jenis.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+      link.setAttribute('download', `Surat_${safeJenis}_${nik}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      toast.success('Surat PDF berhasil diunduh!');
+    } catch (error) {
+      toast.error('Gagal mengunduh surat PDF');
+      console.error(error);
+    } finally {
+      setDownloadingId(null);
+    }
+  };
 
   const fetchPengajuan = useCallback(async () => {
     setLoading(true);
@@ -65,6 +88,21 @@ const AdminPengajuan = () => {
     finally { setUpdating(null); }
   };
 
+  const handleDelete = async (id) => {
+    if (!window.confirm('Yakin ingin menghapus pengajuan ini selamanya? (Aksi ini tidak bisa dibatalkan)')) return;
+    try {
+      setDeletingId(id);
+      await pengajuanAPI.deletePengajuan(id);
+      toast.success('Pengajuan berhasil dihapus dari sistem');
+      setPengajuan(prev => prev.filter(p => p._id !== id));
+      if (expanded === id) setExpanded(null);
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Gagal menghapus pengajuan');
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#050508] text-white font-sans pt-8 pb-24 md:pt-12 md:pb-12 px-6">
       <div className="max-w-7xl mx-auto space-y-6">
@@ -93,7 +131,6 @@ const AdminPengajuan = () => {
           >
             {[
               { val: '', label: 'Semua Status' },
-              { val: 'menunggu', label: 'Menunggu' },
               { val: 'diproses', label: 'Diproses' },
               { val: 'disetujui', label: 'Disetujui' },
               { val: 'ditolak', label: 'Ditolak' }
@@ -117,7 +154,7 @@ const AdminPengajuan = () => {
           <p className="text-center text-gray-600 text-sm py-16">Tidak ada pengajuan.</p>
         ) : (
           pengajuan.map((p) => {
-            const sc = statusConfig[p.status] || statusConfig.menunggu;
+            const sc = statusConfig[p.status] || statusConfig.diproses;
             const isOpen = expanded === p._id;
             return (
               <div key={p._id} className="bg-white/[0.02] border border-white/[0.05] rounded-[24px] overflow-hidden transition-all hover:bg-white/[0.03]">
@@ -169,13 +206,6 @@ const AdminPengajuan = () => {
                           <div className="flex flex-wrap gap-2">
                             <button
                               disabled={updating === p._id}
-                              onClick={() => updateStatus(p._id, 'diproses')}
-                              className="flex-1 min-w-[100px] py-2.5 md:py-3 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-xl text-xs font-bold hover:bg-blue-500/20 transition-all flex items-center justify-center gap-2"
-                            >
-                              <Settings className="w-4 h-4" /> Proses
-                            </button>
-                            <button
-                              disabled={updating === p._id}
                               onClick={() => updateStatus(p._id, 'disetujui')}
                               className="flex-1 min-w-[100px] py-2.5 md:py-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold rounded-xl hover:bg-emerald-500/20 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                             >
@@ -191,8 +221,30 @@ const AdminPengajuan = () => {
                           </div>
                         )}
                         {(p.status === 'disetujui' || p.status === 'ditolak') && (
-                          <div className="p-3 bg-white/[0.02] border border-white/[0.04] rounded-xl text-center">
-                            <p className="text-xs text-gray-500 font-medium">Pengajuan sudah bersifat final.</p>
+                          <div className="space-y-3">
+                            <div className="p-3 bg-white/[0.02] border border-white/[0.04] rounded-xl text-center">
+                              <p className="text-xs text-gray-500 font-medium">Pengajuan sudah bersifat final.</p>
+                            </div>
+                            
+                            {p.status === 'disetujui' && (
+                              <button
+                                onClick={() => handleDownloadPDF(p._id, p.jenisSurat, p.nik)}
+                                disabled={downloadingId === p._id || deletingId === p._id}
+                                className="w-full flex items-center justify-center gap-2 py-2.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl text-xs font-bold hover:bg-emerald-500/20 transition-all disabled:opacity-50"
+                              >
+                                <DownloadCloud className="w-4 h-4" />
+                                {downloadingId === p._id ? 'Mengunduh...' : 'Unduh Surat Modal (PDF)'}
+                              </button>
+                            )}
+                            
+                            <button
+                              onClick={() => handleDelete(p._id)}
+                              disabled={deletingId === p._id || downloadingId === p._id}
+                              className="w-full mt-2 flex items-center justify-center gap-2 py-2.5 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl text-xs font-bold hover:bg-red-500/20 transition-all disabled:opacity-50"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                              {deletingId === p._id ? 'Menghapus...' : 'Hapus Permanen'}
+                            </button>
                           </div>
                         )}
                       </div>

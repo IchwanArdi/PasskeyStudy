@@ -27,7 +27,7 @@ const StatCard = ({ icon, label, value, color }) => {
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  const [stats, setStats] = useState({ menunggu: 0, diproses: 0, disetujui: 0, ditolak: 0 });
+  const [stats, setStats] = useState({ diproses: 0, disetujui: 0, ditolak: 0 });
   const [recentPengajuan, setRecentPengajuan] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -40,7 +40,6 @@ const AdminDashboard = () => {
         const data = await res.json();
         const all = data.pengajuan || [];
         setStats({
-          menunggu: all.filter((p) => p.status === 'menunggu').length,
           diproses: all.filter((p) => p.status === 'diproses').length,
           disetujui: all.filter((p) => p.status === 'disetujui').length,
           ditolak: all.filter((p) => p.status === 'ditolak').length,
@@ -72,7 +71,7 @@ const AdminDashboard = () => {
     navigate('/login');
   };
 
-  const statusColor = { menunggu:'text-yellow-400', diproses:'text-blue-400', disetujui:'text-emerald-400', ditolak:'text-red-400' };
+  const statusColor = { diproses:'text-blue-400', disetujui:'text-emerald-400', ditolak:'text-red-400' };
 
   return (
     <div className="min-h-screen bg-[#050508] text-white font-sans pt-8 pb-24 md:pt-12 md:pb-12 px-6">
@@ -92,8 +91,7 @@ const AdminDashboard = () => {
           {/* Main Content (Stats & Menu) */}
           <div className="lg:col-span-8 space-y-8">
             {/* Stats */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-              <StatCard icon={Clock} label="Menunggu" value={stats.menunggu} color="text-yellow-400" />
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
               <StatCard icon={Settings} label="Diproses" value={stats.diproses} color="text-blue-400" />
               <StatCard icon={CheckCircle} label="Disetujui" value={stats.disetujui} color="text-emerald-400" />
               <StatCard icon={XCircle} label="Ditolak" value={stats.ditolak} color="text-red-400" />
@@ -135,31 +133,6 @@ const AdminDashboard = () => {
                 <h2 className="text-sm font-bold text-gray-300">Pengajuan Terbaru</h2>
                 <Link to="/admin/pengajuan" className="text-xs text-red-400 font-bold hover:text-red-300 transition-colors uppercase tracking-wider">Lihat semua</Link>
               </div>
-          <h2 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Menu Admin</h2>
-          <Link to="/admin/pengajuan" className="flex items-center gap-4 p-4 bg-white/[0.03] border border-white/[0.06] rounded-2xl hover:border-yellow-500/20 transition-all">
-            <FileText className="w-5 h-5 text-yellow-400" />
-            <div className="flex-1">
-              <p className="text-sm font-bold">Kelola Pengajuan</p>
-              <p className="text-xs text-gray-500">Review dan proses surat warga</p>
-            </div>
-            <ChevronRight className="w-4 h-4 text-gray-600" />
-          </Link>
-          <Link to="/admin/pengumuman" className="flex items-center gap-4 p-4 bg-white/[0.03] border border-white/[0.06] rounded-2xl hover:border-blue-500/20 transition-all">
-            <Bell className="w-5 h-5 text-blue-400" />
-            <div className="flex-1">
-              <p className="text-sm font-bold">Kelola Pengumuman</p>
-              <p className="text-xs text-gray-500">Buat dan edit pengumuman desa</p>
-            </div>
-            <ChevronRight className="w-4 h-4 text-gray-600" />
-          </Link>
-        </div>
-
-        {/* Recent pengajuan */}
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-bold text-gray-300">Pengajuan Terbaru</h2>
-            <Link to="/admin/pengajuan" className="text-xs text-red-400 font-semibold">Lihat semua</Link>
-          </div>
               {loading ? (
                 <div className="flex-1 flex items-center justify-center py-12">
                   <div className="w-8 h-8 border-2 border-white/10 border-t-red-400 rounded-full animate-spin" />

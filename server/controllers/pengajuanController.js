@@ -1,4 +1,5 @@
 import Pengajuan from '../models/Pengajuan.js';
+import { generateSuratPDF } from '../utils/pdfGenerator.js';
 
 // ─── WARGA ────────────────────────────────────────────────────────────────────
 
@@ -138,5 +139,75 @@ export const detailPengajuan = async (req, res) => {
   } catch (error) {
     console.error('Detail Pengajuan Error:', error);
     res.status(500).json({ message: 'Terjadi kesalahan server.' });
+  }
+};
+
+/**
+ * GET /api/pengajuan/:id/pdf
+ * Unduh surat balasan PDF jika status disetujui
+ */
+export const downloadSuratPDF = async (req, res) => {
+  try {
+    const pengajuan = await Pengajuan.findById(req.params.id)
+      .populate('userId', 'username email namaLengkap')
+      .lean();
+
+    if (!pengajuan) {
+      return res.status(404).json({ message: 'Pengajuan tidak ditemukan.' });
+    }
+
+    const isAdmin = req.user.role === 'admin';
+    const isOwner = pengajuan.userId._id.toString() === req.user._id.toString();
+
+    if (!isAdmin && !isOwner) {
+      return res.status(403).json({ message: 'Akses ditolak.' });
+    }
+
+    if (pengajuan.status !== 'disetujui') {
+      return res.status(400).json({ message: 'Dokumen belum tersedia atau belum disetujui.' });
+    }
+
+    // Generate PDF buffer
+    const pdfBytes = await generateSuratPDF(pengajuan);
+    const pdfBuffer = Buffer.from(pdfBytes);
+
+    const jenisSafe = pengajuan.jenisSurat.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    const filename = `Surat_${jenisSafe}_${pengajuan.nik}.pdf`;
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.setHeader('Content-Length', pdfBuffer.length);
+    res.end(pdfBuffer);
+
+  } catch (error) {
+    console.error('Download PDF Error:', error);
+    res.status(500).json({ message: 'Terjadi kesalahan saat membuat PDF.' });
+  }
+};
+
+/**
+ * DELETE /api/pengajuan/:id
+ * Hapus pengajuan (Admin hapus apa saja, Warga hanya miliknya)
+ */
+export const hapusPengajuan = async (req, res) => {
+  try {
+    const pengajuan = await Pengajuan.findById(req.params.id);
+
+    if (!pengajuan) {
+      return res.status(404).json({ message: 'Pengajuan tidak ditemukan.' });
+    }
+
+    const isAdmin = req.user.role === 'admin';
+    const isOwner = pengajuan.userId.toString() === req.user._id.toString();
+
+    if (!isAdmin && !isOwner) {
+      return res.status(403).json({ message: 'Akses ditolak. Anda tidak berhak menghapus pengajuan ini.' });
+    }
+
+    await pengajuan.deleteOne();
+    res.json({ message: 'Pengajuan berhasil dihapus.' });
+  } catch (error) {
+    console.error('Hapus Pengajuan Error:', error);
+    res.status(500).json({ message: 'Terjadi kesalahan saat menghapus pengajuan.' });
   }
 };

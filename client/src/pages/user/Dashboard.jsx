@@ -20,13 +20,11 @@ const layananList = [
 const StatusIcon = ({ status }) => {
   if (status === 'disetujui') return <CheckCircle className="w-4 h-4 text-emerald-400" />;
   if (status === 'ditolak') return <XCircle className="w-4 h-4 text-red-400" />;
-  if (status === 'diproses') return <Hourglass className="w-4 h-4 text-blue-400" />;
-  return <Clock className="w-4 h-4 text-yellow-400" />;
+  return <Hourglass className="w-4 h-4 text-blue-400" />;
 };
 
-const statusLabel = { menunggu: 'Menunggu', diproses: 'Diproses', disetujui: 'Disetujui', ditolak: 'Ditolak' };
+const statusLabel = { diproses: 'Diproses', disetujui: 'Disetujui', ditolak: 'Ditolak' };
 const statusColor = {
-  menunggu: 'text-yellow-400',
   diproses: 'text-blue-400',
   disetujui: 'text-emerald-400',
   ditolak: 'text-red-400',

@@ -6,6 +6,8 @@ import {
   semuaPengajuan,
   updateStatusPengajuan,
   detailPengajuan,
+  downloadSuratPDF,
+  hapusPengajuan,
 } from '../controllers/pengajuanController.js';
 
 const router = express.Router();
@@ -22,6 +24,8 @@ const adminOnly = (req, res, next) => {
 router.post('/', authenticate, buatPengajuan);
 router.get('/saya', authenticate, getPengajuanSaya);
 router.get('/:id', authenticate, detailPengajuan);
+router.get('/:id/pdf', authenticate, downloadSuratPDF);
+router.delete('/:id', authenticate, hapusPengajuan);
 
 // ─── Admin routes ─────────────────────────────────────────────────────────────
 router.get('/admin/semua', authenticate, adminOnly, semuaPengajuan);

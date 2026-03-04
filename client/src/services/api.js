@@ -83,4 +83,10 @@ export const performanceAPI = {
   getComparison: () => api.get("/performance/comparison"),
 };
 
+// Pengajuan API
+export const pengajuanAPI = {
+  downloadPDF: (id) => api.get(`/pengajuan/${id}/pdf`, { responseType: 'blob' }),
+  deletePengajuan: (id) => api.delete(`/pengajuan/${id}`),
+};
+
 export default api;
