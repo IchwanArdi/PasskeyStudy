@@ -86,7 +86,7 @@ const FormPengajuan = () => {
           </div>
         </header>
 
-        <form onSubmit={handleSubmit} className="px-5 md:px-0 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <form onSubmit={handleSubmit} className="px-5 md:px-0 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 pb-10">
           <div className="space-y-6">
             <h2 className="text-sm font-bold text-white border-l-2 border-emerald-500 pl-3">Data Personal</h2>
             
@@ -100,7 +100,7 @@ const FormPengajuan = () => {
                 onChange={handleChange}
                 required
                 placeholder="Sesuai KTP"
-                className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all placeholder:text-gray-600"
+                className="appearance-none w-full px-4 py-4 md:py-3.5 bg-white/[0.02] border border-white/[0.06] rounded-[16px] text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all placeholder:text-gray-600 focus:bg-white/[0.04]"
               />
             </div>
 
@@ -114,8 +114,9 @@ const FormPengajuan = () => {
                 onChange={handleChange}
                 required
                 maxLength={16}
+                inputMode="numeric"
                 placeholder="Masukkan 16 digit NIK"
-                className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all placeholder:text-gray-600 font-mono"
+                className="appearance-none w-full px-4 py-4 md:py-3.5 bg-white/[0.02] border border-white/[0.06] rounded-[16px] text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all placeholder:text-gray-600 font-mono focus:bg-white/[0.04]"
               />
             </div>
 
@@ -130,7 +131,7 @@ const FormPengajuan = () => {
                   onChange={handleChange}
                   required
                   placeholder="Kota/Kab"
-                  className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all placeholder:text-gray-600"
+                  className="appearance-none w-full px-4 py-4 md:py-3.5 bg-white/[0.02] border border-white/[0.06] rounded-[16px] text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all placeholder:text-gray-600 focus:bg-white/[0.04]"
                 />
               </div>
               <div>
@@ -141,7 +142,7 @@ const FormPengajuan = () => {
                   value={form.tanggalLahir}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all text-gray-300"
+                  className="appearance-none w-full px-4 py-4 md:py-3.5 bg-white/[0.02] border border-white/[0.06] rounded-[16px] text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all text-gray-300 focus:bg-white/[0.04] color-scheme-dark"
                 />
               </div>
             </div>
@@ -160,7 +161,7 @@ const FormPengajuan = () => {
                 required
                 rows={3}
                 placeholder="Jl. / RT / RW / Dusun / Desa"
-                className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all placeholder:text-gray-600 resize-none"
+                className="appearance-none w-full px-4 py-4 md:py-3.5 bg-white/[0.02] border border-white/[0.06] rounded-[16px] text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all placeholder:text-gray-600 resize-none focus:bg-white/[0.04]"
               />
             </div>
 
@@ -174,7 +175,7 @@ const FormPengajuan = () => {
                 required
                 rows={3}
                 placeholder="Sebutkan alasan atau tujuan pengajuan surat ini..."
-                className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all placeholder:text-gray-600 resize-none"
+                className="appearance-none w-full px-4 py-4 md:py-3.5 bg-white/[0.02] border border-white/[0.06] rounded-[16px] text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all placeholder:text-gray-600 resize-none focus:bg-white/[0.04]"
               />
             </div>
 
@@ -188,7 +189,7 @@ const FormPengajuan = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-4 bg-emerald-500 text-black font-extrabold rounded-2xl flex items-center justify-center gap-2 hover:bg-emerald-400 transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed shadow-xl shadow-emerald-500/10"
+              className="w-full py-4 bg-emerald-500 text-black font-extrabold rounded-2xl flex items-center justify-center gap-2 hover:bg-emerald-400 transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed shadow-[0_0_30px_rgba(16,185,129,0.2)] md:mt-4"
             >
               {loading ? (
                 <><Loader2 className="w-5 h-5 animate-spin" /> Mengirim...</>

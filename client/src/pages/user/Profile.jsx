@@ -102,7 +102,7 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] font-sans pt-12 md:pt-0 pb-24 px-6 md:px-0 transition-colors duration-300">
-      <div className="max-w-5xl mx-auto animate-fade-in-up">
+      <div className="max-w-5xl mx-auto">
         <div className="mb-10 border-b border-white/5 pb-8">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-500/[0.08] border border-blue-500/20 rounded-full text-blue-400 text-[10px] font-bold uppercase tracking-wider mb-4">
             <User className="w-3 h-3" />

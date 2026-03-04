@@ -75,28 +75,66 @@ const AdminDashboard = () => {
   const statusColor = { menunggu:'text-yellow-400', diproses:'text-blue-400', disetujui:'text-emerald-400', ditolak:'text-red-400' };
 
   return (
-    <div className="min-h-screen bg-[#050508] text-white font-sans pt-12 pb-24 px-6">
-      <header className="px-5 pt-0 pb-6 flex items-start justify-between">
+    <div className="min-h-screen bg-[#050508] text-white font-sans pt-8 pb-24 md:pt-12 md:pb-12 px-6">
+      <div className="max-w-7xl mx-auto space-y-8">
+        <header className="flex items-start justify-between">
         <div>
           <p className="text-xs text-red-400 font-bold uppercase tracking-widest mb-1">Panel Admin</p>
           <h1 className="text-2xl font-black">Desa Karangpucung</h1>
         </div>
-        <button onClick={handleLogout} className="p-2 rounded-xl bg-white/[0.04] border border-white/[0.06] text-gray-500 hover:text-red-400 transition-colors">
-          <LogOut className="w-4 h-4" />
-        </button>
+          <button onClick={handleLogout} className="p-2.5 md:p-3 rounded-2xl bg-white/[0.04] border border-white/[0.06] text-gray-500 hover:text-red-400 hover:bg-red-500/10 hover:border-red-500/20 transition-all flex items-center justify-center">
+            <LogOut className="w-5 h-5" />
+          </button>
       </header>
 
-      <div className="px-5 space-y-6">
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-          <StatCard icon={Clock} label="Menunggu" value={stats.menunggu} color="text-yellow-400" />
-          <StatCard icon={Settings} label="Diproses" value={stats.diproses} color="text-blue-400" />
-          <StatCard icon={CheckCircle} label="Disetujui" value={stats.disetujui} color="text-emerald-400" />
-          <StatCard icon={XCircle} label="Ditolak" value={stats.ditolak} color="text-red-400" />
-        </div>
+        {/* Menu & Stats Layout for Desktop */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Main Content (Stats & Menu) */}
+          <div className="lg:col-span-8 space-y-8">
+            {/* Stats */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <StatCard icon={Clock} label="Menunggu" value={stats.menunggu} color="text-yellow-400" />
+              <StatCard icon={Settings} label="Diproses" value={stats.diproses} color="text-blue-400" />
+              <StatCard icon={CheckCircle} label="Disetujui" value={stats.disetujui} color="text-emerald-400" />
+              <StatCard icon={XCircle} label="Ditolak" value={stats.ditolak} color="text-red-400" />
+            </div>
 
-        {/* Menu */}
-        <div className="space-y-2">
+            {/* Menu */}
+            <div className="space-y-4">
+              <h2 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Akses Cepat Admin</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Link to="/admin/pengajuan" className="flex items-center gap-4 p-5 md:p-6 bg-white/[0.03] border border-white/[0.06] rounded-3xl hover:border-yellow-500/20 hover:bg-white/[0.05] transition-all group">
+                  <div className="w-12 h-12 rounded-2xl bg-yellow-500/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                    <FileText className="w-6 h-6 text-yellow-400" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm md:text-base font-bold text-gray-200 group-hover:text-white transition-colors">Kelola Pengajuan</p>
+                    <p className="text-xs text-gray-500 mt-1">Review dan proses surat warga</p>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-gray-600 group-hover:text-yellow-400 group-hover:translate-x-1 transition-all" />
+                </Link>
+
+                <Link to="/admin/pengumuman" className="flex items-center gap-4 p-5 md:p-6 bg-white/[0.03] border border-white/[0.06] rounded-3xl hover:border-blue-500/20 hover:bg-white/[0.05] transition-all group">
+                  <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                    <Bell className="w-6 h-6 text-blue-400" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm md:text-base font-bold text-gray-200 group-hover:text-white transition-colors">Kelola Pengumuman</p>
+                    <p className="text-xs text-gray-500 mt-1">Buat dan edit pengumuman desa</p>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-gray-600 group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Sidebar Area (Recent Pengajuan) */}
+          <div className="lg:col-span-4 space-y-6">
+            <div className="p-6 bg-white/[0.02] border border-white/[0.04] rounded-[2rem] h-full flex flex-col">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-sm font-bold text-gray-300">Pengajuan Terbaru</h2>
+                <Link to="/admin/pengajuan" className="text-xs text-red-400 font-bold hover:text-red-300 transition-colors uppercase tracking-wider">Lihat semua</Link>
+              </div>
           <h2 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Menu Admin</h2>
           <Link to="/admin/pengajuan" className="flex items-center gap-4 p-4 bg-white/[0.03] border border-white/[0.06] rounded-2xl hover:border-yellow-500/20 transition-all">
             <FileText className="w-5 h-5 text-yellow-400" />
@@ -122,30 +160,37 @@ const AdminDashboard = () => {
             <h2 className="text-sm font-bold text-gray-300">Pengajuan Terbaru</h2>
             <Link to="/admin/pengajuan" className="text-xs text-red-400 font-semibold">Lihat semua</Link>
           </div>
-          {loading ? (
-            <div className="py-8 text-center">
-              <div className="w-6 h-6 border-2 border-white/10 border-t-red-400 rounded-full animate-spin mx-auto" />
-            </div>
-          ) : recentPengajuan.length === 0 ? (
-            <p className="text-xs text-gray-600 text-center py-8">Belum ada pengajuan.</p>
-          ) : (
-            <div className="space-y-2">
-              {recentPengajuan.map((p) => (
-                <div key={p._id} className="flex items-center gap-3 p-3 bg-white/[0.02] border border-white/[0.05] rounded-xl">
-                    <div className="w-10 h-10 rounded-xl bg-white/[0.04] flex items-center justify-center shrink-0">
-                      <LetterIcon jenis={p.jenisSurat} className="w-5 h-5 text-gray-400" />
-                    </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold truncate">{p.namaLengkap}</p>
-                    <p className="text-xs text-gray-600">{new Date(p.createdAt).toLocaleDateString('id-ID')}</p>
-                  </div>
-                  <span className={`text-xs font-bold ${statusColor[p.status]}`}>
-                    {p.status.charAt(0).toUpperCase() + p.status.slice(1)}
-                  </span>
+              {loading ? (
+                <div className="flex-1 flex items-center justify-center py-12">
+                  <div className="w-8 h-8 border-2 border-white/10 border-t-red-400 rounded-full animate-spin" />
                 </div>
-              ))}
+              ) : recentPengajuan.length === 0 ? (
+                <div className="flex-1 flex flex-col items-center justify-center py-12 text-center">
+                  <div className="w-12 h-12 bg-white/[0.02] rounded-full flex items-center justify-center mb-4">
+                    <ClipboardList className="w-6 h-6 text-gray-600" />
+                  </div>
+                  <p className="text-xs text-gray-500 font-medium">Belum ada pengajuan masuk.</p>
+                </div>
+              ) : (
+                <div className="space-y-3 flex-1">
+                  {recentPengajuan.map((p) => (
+                    <div key={p._id} className="group flex items-center gap-3 p-4 bg-white/[0.02] border border-white/[0.04] rounded-2xl hover:bg-white/[0.04] transition-all">
+                      <div className="w-10 h-10 rounded-xl bg-white/[0.03] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                        <LetterIcon jenis={p.jenisSurat} className="w-5 h-5 text-gray-400" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-bold truncate text-gray-200 group-hover:text-white transition-colors">{p.namaLengkap}</p>
+                        <p className="text-[10px] text-gray-600 font-bold uppercase mt-0.5 tracking-tighter">{new Date(p.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}</p>
+                      </div>
+                      <div className={`text-[10px] font-black uppercase tracking-tighter ${statusColor[p.status]}`}>
+                        {p.status}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

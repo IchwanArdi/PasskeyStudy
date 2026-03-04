@@ -16,22 +16,24 @@ const BottomNav = () => {
   if (hide.some((p) => location.pathname === p || location.pathname.startsWith('/admin'))) return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[var(--bg)]/90 backdrop-blur-xl border-t border-white/[0.06] safe-area-inset-bottom">
-      <div className="flex items-stretch max-w-lg mx-auto">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[var(--bg)]/80 backdrop-blur-2xl border-t border-white/[0.06] pb-safe pt-1">
+      <div className="flex items-stretch max-w-lg mx-auto px-2">
         {navItems.map(({ to, icon: NavIcon, label }) => {
           const isActive = location.pathname === to || (to !== '/dashboard' && location.pathname.startsWith(to));
           return (
             <Link
               key={to}
               to={to}
-              className={`flex-1 flex flex-col items-center justify-center py-3 gap-1 transition-all ${
-                isActive ? 'text-emerald-400' : 'text-gray-600 hover:text-gray-400'
+              className={`flex-1 flex flex-col items-center justify-center py-2 md:py-3 gap-1.5 transition-all relative ${
+                isActive ? 'text-emerald-400' : 'text-gray-500 hover:text-gray-300'
               }`}
             >
-              <NavIcon className={`w-5 h-5 ${isActive ? 'stroke-emerald-400' : ''}`} />
-              <span className={`text-[10px] font-semibold ${isActive ? 'text-emerald-400' : ''}`}>{label}</span>
+              <div className={`relative p-1.5 rounded-xl transition-all ${isActive ? 'bg-emerald-400/10' : ''}`}>
+                <NavIcon className={`w-5 h-5 md:w-6 md:h-6 ${isActive ? 'stroke-emerald-400' : ''}`} />
+              </div>
+              <span className={`text-[10px] font-bold tracking-wide ${isActive ? 'text-emerald-400' : ''}`}>{label}</span>
               {isActive && (
-                <span className="absolute bottom-0 h-0.5 w-8 bg-emerald-400 rounded-full" style={{ marginBottom: '0px' }} />
+                <span className="absolute -top-1 left-1/2 -translate-x-1/2 h-1 w-1 bg-emerald-400 rounded-full shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
               )}
             </Link>
           );

@@ -185,7 +185,7 @@ const ManageDevices = () => {
 
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] font-sans pt-24 pb-24 px-6 transition-colors duration-300">
-      <div className="max-w-4xl mx-auto animate-fade-in-up">
+      <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-500/[0.08] border border-blue-500/20 rounded-full text-blue-400 text-xs font-semibold mb-4">
@@ -433,7 +433,7 @@ const ManageDevices = () => {
             onClick={() => !addingDevice && setShowAddModal(false)}
           />
           {/* Modal */}
-          <div className="relative w-full max-w-md glass-card rounded-2xl p-8 animate-fade-in-up">
+          <div className="relative w-full max-w-md glass-card rounded-2xl p-8">
             <h2 className="text-lg font-bold mb-2">Daftarkan HP Lainnya</h2>
             <p className="text-sm text-gray-500 mb-6">
               Gunakan Sidik Jari/Wajah di HP lain (seperti HP anak atau pasangan) agar akun tetap bisa dibuka jika HP utama hilang.

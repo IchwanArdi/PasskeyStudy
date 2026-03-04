@@ -136,7 +136,9 @@ app.use('/user', userRoutes); // Alias for client compatibility
 app.use('/api/recovery', recoveryRoutes);
 app.use('/recovery', recoveryRoutes);
 app.use('/api/pengajuan', pengajuanRoutes);
+app.use('/pengajuan', pengajuanRoutes); // Alias for client compatibility
 app.use('/api/pengumuman', pengumumanRoutes);
+app.use('/pengumuman', pengumumanRoutes); // Alias for client compatibility
 
 // Export app for use in server.js
 export default app;

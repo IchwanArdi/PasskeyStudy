@@ -57,12 +57,12 @@ const Layanan = () => {
               <LetterIcon jenis={l.jenis} className="w-24 h-24 text-emerald-400" />
             </div>
 
-            <div className="w-14 h-14 bg-emerald-500/5 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-              <LetterIcon jenis={l.jenis} className="w-7 h-7 text-emerald-400" />
+            <div className="w-12 h-12 md:w-14 md:h-14 bg-emerald-500/5 rounded-2xl flex items-center justify-center mb-5 md:mb-6 group-hover:scale-110 transition-transform shadow-inner border border-emerald-500/10">
+              <LetterIcon jenis={l.jenis} className="w-6 h-6 md:w-7 md:h-7 text-emerald-400" />
             </div>
             
-            <div className="flex-1">
-              <h3 className="text-lg font-bold mb-2 group-hover:text-emerald-400 transition-colors">{l.label}</h3>
+            <div className="flex-1 flex flex-col">
+              <h3 className="text-base md:text-lg font-bold mb-1 md:mb-2 text-gray-100 group-hover:text-emerald-400 transition-colors">{l.label}</h3>
               <p className="text-xs text-gray-500 leading-relaxed font-medium mb-6 line-clamp-2">{l.desc}</p>
               
               <div className="flex items-center justify-between mt-auto">

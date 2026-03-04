@@ -5,7 +5,7 @@ import { userAPI } from '../../services/api';
 import {
   FileText, Bell, Key, ChevronRight,
   Clock, CheckCircle, XCircle, Hourglass, User,
-  Megaphone, Folder
+  Megaphone, Folder, LayoutGrid
 } from 'lucide-react';
 import LetterIcon from '../../components/LetterIcon';
 
@@ -95,128 +95,124 @@ const Dashboard = () => {
 
       <div className="px-5 md:px-0 grid grid-cols-1 md:grid-cols-12 gap-8">
         {/* Left Column (Main Stats & Actions) */}
-        <div className="md:col-span-8 space-y-8">
-          {/* Quick links - Redesigned to be compact on mobile */}
-          <section>
-            <div className="grid grid-cols-3 gap-3 md:gap-8">
-              {/* Ajukan Surat */}
+        <div className="md:col-span-8 space-y-6 md:space-y-8">
+          {/* Menu Utama (App-like Grid) */}
+          <section className="bg-white/[0.01] border border-white/[0.03] rounded-[32px] p-5 md:p-8">
+            <h2 className="text-sm md:text-base font-bold text-white mb-5">Layanan Utama</h2>
+            <div className="grid grid-cols-4 gap-2 md:gap-6">
+              {/* Domisili */}
+              <Link to="/layanan/ajukan?jenis=domisili" className="flex flex-col items-center group">
+                <div className="w-[60px] h-[60px] md:w-20 md:h-20 bg-emerald-500/[0.04] rounded-2xl md:rounded-[2rem] flex items-center justify-center mb-3 group-hover:-translate-y-1 group-hover:bg-emerald-500/[0.08] transition-all shadow-inner border border-emerald-500/10">
+                  <LetterIcon jenis="domisili" className="w-7 h-7 md:w-9 md:h-9 text-emerald-400 group-hover:scale-110 transition-transform" />
+                </div>
+                <span className="text-[10px] md:text-xs font-bold text-gray-500 group-hover:text-emerald-400 text-center leading-tight">Domisili</span>
+              </Link>
+              {/* Usaha */}
+              <Link to="/layanan/ajukan?jenis=usaha" className="flex flex-col items-center group">
+                <div className="w-[60px] h-[60px] md:w-20 md:h-20 bg-blue-500/[0.04] rounded-2xl md:rounded-[2rem] flex items-center justify-center mb-3 group-hover:-translate-y-1 group-hover:bg-blue-500/[0.08] transition-all shadow-inner border border-blue-500/10">
+                  <LetterIcon jenis="usaha" className="w-7 h-7 md:w-9 md:h-9 text-blue-400 group-hover:scale-110 transition-transform" />
+                </div>
+                <span className="text-[10px] md:text-xs font-bold text-gray-500 group-hover:text-blue-400 text-center leading-tight">Usaha</span>
+              </Link>
+              {/* Kelahiran */}
+              <Link to="/layanan/ajukan?jenis=kelahiran" className="flex flex-col items-center group">
+                <div className="w-[60px] h-[60px] md:w-20 md:h-20 bg-orange-500/[0.04] rounded-2xl md:rounded-[2rem] flex items-center justify-center mb-3 group-hover:-translate-y-1 group-hover:bg-orange-500/[0.08] transition-all shadow-inner border border-orange-500/10">
+                  <LetterIcon jenis="kelahiran" className="w-7 h-7 md:w-9 md:h-9 text-orange-400 group-hover:scale-110 transition-transform" />
+                </div>
+                <span className="text-[10px] md:text-xs font-bold text-gray-500 group-hover:text-orange-400 text-center leading-tight">Kelahiran</span>
+              </Link>
+              {/* Lainnya */}
               <Link to="/layanan" className="flex flex-col items-center group">
-                <div className="w-full aspect-square md:aspect-auto md:h-32 glass-card rounded-[24px] md:rounded-[40px] flex flex-col items-center justify-center gap-2 md:gap-4 hover:border-emerald-500/30 hover:bg-emerald-500/[0.02] transition-all active:scale-95">
-                  <div className="w-10 h-10 md:w-16 md:h-16 bg-gradient-to-br from-emerald-400/20 to-emerald-600/10 rounded-xl md:rounded-2xl flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
-                    <FileText className="w-6 h-6 md:w-10 md:h-10" />
-                  </div>
-                  <span className="text-[10px] md:text-sm font-bold text-gray-500 group-hover:text-white transition-colors">Ajukan Surat</span>
+                <div className="w-[60px] h-[60px] md:w-20 md:h-20 bg-white/[0.03] rounded-2xl md:rounded-[2rem] flex items-center justify-center mb-3 group-hover:-translate-y-1 group-hover:bg-white/[0.08] transition-all shadow-inner border border-white/5">
+                  <LayoutGrid className="w-6 h-6 md:w-8 md:h-8 text-gray-400 group-hover:scale-110 transition-transform" />
                 </div>
-              </Link>
-
-              {/* Berita Desa */}
-              <Link to="/pengumuman" className="flex flex-col items-center group">
-                <div className="w-full aspect-square md:aspect-auto md:h-32 glass-card rounded-[24px] md:rounded-[40px] flex flex-col items-center justify-center gap-2 md:gap-4 hover:border-blue-500/30 hover:bg-blue-500/[0.02] transition-all active:scale-95">
-                  <div className="w-10 h-10 md:w-16 md:h-16 bg-gradient-to-br from-blue-400/20 to-blue-600/10 rounded-xl md:rounded-2xl flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
-                    <Megaphone className="w-6 h-6 md:w-10 md:h-10" />
-                  </div>
-                  <span className="text-[10px] md:text-sm font-bold text-gray-500 group-hover:text-white transition-colors">Berita Desa</span>
-                </div>
-              </Link>
-
-              {/* Riwayat Anda */}
-              <Link to="/riwayat" className="flex flex-col items-center group">
-                <div className="w-full aspect-square md:aspect-auto md:h-32 glass-card rounded-[24px] md:rounded-[40px] flex flex-col items-center justify-center gap-2 md:gap-4 hover:border-violet-500/30 hover:bg-violet-500/[0.02] transition-all active:scale-95">
-                  <div className="w-10 h-10 md:w-16 md:h-16 bg-gradient-to-br from-violet-400/20 to-violet-600/10 rounded-xl md:rounded-2xl flex items-center justify-center text-violet-400 group-hover:scale-110 transition-transform">
-                    <FileText className="w-6 h-6 md:w-10 md:h-10" />
-                  </div>
-                  <span className="text-[10px] md:text-sm font-bold text-gray-500 group-hover:text-white transition-colors">Riwayat Anda</span>
-                </div>
+                <span className="text-[10px] md:text-xs font-bold text-gray-500 group-hover:text-gray-300 text-center leading-tight">Lainnya</span>
               </Link>
             </div>
           </section>
 
-          {/* Layanan surat */}
-          <section className="glass-panel p-6 md:p-8 rounded-[32px]">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-lg font-bold text-white">Layanan Mandiri</h2>
-                <p className="text-xs text-gray-500">Pilih jenis surat yang ingin diajukan</p>
+          {/* Banner Pengumuman Desa */}
+          <section className="glass-panel p-6 md:p-8 rounded-[32px] relative overflow-hidden group border border-blue-500/10 hover:border-blue-500/20 transition-all">
+            <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/10 blur-[50px] rounded-full -mr-10 -mt-20 pointer-events-none transition-all group-hover:bg-blue-500/20" />
+            <div className="relative z-10">
+              <div className="flex items-center gap-3 mb-3 md:mb-4">
+                <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                  <Megaphone className="w-5 h-5 text-blue-400" />
+                </div>
+                <h2 className="text-base md:text-lg font-bold text-white">Berita Desa</h2>
               </div>
-              <Link to="/layanan" className="text-xs text-emerald-400 font-bold flex items-center gap-1 hover:underline">
-                Lihat Semua <ChevronRight className="w-3 h-3" />
+              <p className="text-xs md:text-sm text-gray-400 leading-relaxed font-medium mb-5 md:mb-6 max-w-sm">
+                Temukan informasi penting, jadwal kegiatan, dan pengumuman terbaru langsung dari Pemerintah Desa Karangpucung.
+              </p>
+              <Link to="/pengumuman" className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-500 text-white text-xs font-bold rounded-xl hover:bg-blue-400 transition-all shadow-[0_0_15px_rgba(59,130,246,0.3)]">
+                Baca Pengumuman <ChevronRight className="w-4 h-4" />
               </Link>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {layananList.slice(0, 4).map((l) => (
-                <Link
-                  key={l.jenis}
-                  to={`/layanan/ajukan?jenis=${l.jenis}`}
-                  className="flex items-center gap-4 p-4 md:p-5 bg-white/[0.02] border border-white/[0.04] rounded-2xl hover:border-emerald-500/20 hover:bg-emerald-500/[0.02] transition-all group"
-                >
-                  <div className="w-12 h-12 bg-emerald-500/5 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <LetterIcon jenis={l.jenis} className="w-6 h-6 text-emerald-400" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold">{l.label}</p>
-                    <p className="text-[10px] md:text-xs text-gray-500 font-medium">{l.desc}</p>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all" />
-                </Link>
-              ))}
             </div>
           </section>
         </div>
 
-        {/* Right Column (Notifications/Status) */}
-        <div className="md:col-span-4 space-y-8">
+        {/* Right Column (Notifications/Status / Update Terkini) */}
+        <div className="md:col-span-4 space-y-6 md:space-y-8">
           {/* Riwayat terbaru */}
-          <section className="glass-panel p-6 md:p-8 rounded-[32px] h-full flex flex-col">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-sm md:text-base font-bold text-white">Update Terkini</h2>
-              <Link to="/riwayat" className="text-[10px] text-emerald-400 font-bold tracking-wider uppercase border border-emerald-400/20 px-2 py-1 rounded">
-                AKTIVITAS
+          <section className="bg-white/[0.01] border border-white/[0.03] rounded-[32px] p-5 md:p-8 h-full flex flex-col relative overflow-hidden group">
+            {/* Subtle glow background */}
+            <div className="absolute -top-20 -right-20 w-40 h-40 bg-emerald-500/5 blur-[50px] rounded-full pointer-events-none transition-all group-hover:bg-emerald-500/10" />
+
+            <div className="flex items-center justify-between mb-5 md:mb-6 relative z-10">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                  <Clock className="w-4 h-4 text-emerald-400" />
+                </div>
+                <h2 className="text-sm md:text-base font-bold text-white">Aktivitas Terkini</h2>
+              </div>
+              <Link to="/riwayat" className="text-[10px] text-gray-400 hover:text-emerald-400 font-bold uppercase tracking-wider transition-colors flex items-center gap-1">
+                Semua <ChevronRight className="w-3 h-3" />
               </Link>
             </div>
 
             {loadingRiwayat ? (
               <div className="flex-1 flex items-center justify-center py-12">
-                <div className="w-8 h-8 border-2 border-white/10 border-t-emerald-400 rounded-full animate-spin" />
+                <div className="w-6 h-6 border-2 border-white/10 border-t-emerald-400 rounded-full animate-spin" />
               </div>
             ) : riwayat.length === 0 ? (
-              <div className="flex-1 flex flex-col items-center justify-center p-8 text-center border border-dashed border-white/5 rounded-2xl">
-                <div className="w-12 h-12 bg-white/[0.02] rounded-full flex items-center justify-center mb-4">
-                  <FileText className="w-6 h-6 text-gray-700" />
+              <div className="flex-1 flex flex-col items-center justify-center p-6 text-center border border-dashed border-white/5 rounded-2xl bg-white/[0.005]">
+                <div className="w-10 h-10 bg-white/[0.02] rounded-full flex items-center justify-center mb-3">
+                  <FileText className="w-5 h-5 text-gray-600" />
                 </div>
-                <p className="text-sm text-gray-500 font-medium">Belum ada pengajuan</p>
-                <Link to="/layanan" className="text-emerald-400 text-xs font-bold mt-4 px-4 py-2 bg-emerald-400/5 rounded-lg border border-emerald-400/10">
-                  Buat Pengajuan
-                </Link>
+                <p className="text-[11px] md:text-xs text-gray-500 font-medium">Belum ada pengajuan surat</p>
               </div>
             ) : (
-              <div className="space-y-3 flex-1">
+              <div className="space-y-3 flex-1 relative z-10">
                 {riwayat.map((r) => {
                   const layanan = layananList.find((l) => l.jenis === r.jenisSurat);
                   return (
                     <div
                       key={r._id}
-                      className="group flex items-start gap-3 p-4 bg-white/[0.02] border border-white/[0.04] rounded-2xl hover:bg-white/[0.04] transition-colors"
+                      className="group flex flex-col p-4 bg-white/[0.02] border border-white/[0.04] rounded-2xl focus:bg-white/[0.04] hover:bg-white/[0.03] transition-colors relative overflow-hidden"
                     >
-                      <div className="mt-1">
-                        <StatusIcon status={r.status} />
+                      {/* Status Accent Line */}
+                      <div className={`absolute left-0 top-0 bottom-0 w-1 ${statusColor[r.status].replace('text-', 'bg-')} opacity-50`} />
+
+                      <div className="flex items-start justify-between gap-3 font-medium mb-1.5 pl-2">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[13px] md:text-sm font-bold truncate text-gray-200 group-hover:text-white transition-colors">
+                            {layanan?.label || r.jenisSurat}
+                          </p>
+                        </div>
+                        <div className={`text-[9px] md:text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-white/[0.03] ${statusColor[r.status]}`}>
+                          {statusLabel[r.status]}
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-bold truncate group-hover:text-emerald-400 transition-colors">
-                          {layanan?.label || r.jenisSurat}
+                      <div className="flex items-center gap-2 mt-1 pl-2">
+                        <p className="text-[10px] md:text-xs text-gray-500 font-medium tracking-wide">
+                          {new Date(r.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                         </p>
-                        <p className="text-[10px] text-gray-600 font-bold uppercase mt-0.5 tracking-tighter">
-                          {new Date(r.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
-                        </p>
-                      </div>
-                      <div className={`text-[10px] font-black uppercase tracking-tighter ${statusColor[r.status]}`}>
-                        {statusLabel[r.status]}
                       </div>
                     </div>
                   );
                 })}
               </div>
             )}
-
           </section>
         </div>
       </div>
