@@ -73,12 +73,12 @@ const Dashboard = () => {
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] font-sans pb-24 md:pb-8 transition-colors duration-300">
       {/* Header */}
       <header className="px-5 md:px-0 pt-12 md:pt-0 mb-4">
-        <div className="flex items-center justify-between mb-6 pb-2 border-b border-white/[0.04]">
+        <div className="flex items-center justify-between mb-6 pb-2 border-b border-[var(--card-border)]">
           <div>
             <p className="text-gray-500 text-xs font-bold mb-1 uppercase tracking-widest leading-none">
               Halo, {user?.username}
             </p>
-            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-br from-white to-gray-500 bg-clip-text text-transparent">
+            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-br from-[var(--heading-from)] to-[var(--heading-to)] bg-clip-text text-transparent">
               Selamat Datang di<br className="md:hidden" /> Desa Karangpucung
             </h1>
           </div>
@@ -96,7 +96,7 @@ const Dashboard = () => {
         <div className="md:col-span-8 space-y-6 md:space-y-8">
           {/* Menu Utama (App-like Grid) */}
           <section className="bg-white/[0.01] border border-white/[0.03] rounded-[32px] p-5 md:p-8">
-            <h2 className="text-sm md:text-base font-bold text-white mb-5">Layanan Utama</h2>
+            <h2 className="text-sm md:text-base font-bold mb-5">Layanan Utama</h2>
             <div className="grid grid-cols-4 gap-2 md:gap-6">
               {/* Domisili */}
               <Link to="/layanan/ajukan?jenis=domisili" className="flex flex-col items-center group">
@@ -137,7 +137,7 @@ const Dashboard = () => {
                 <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
                   <Megaphone className="w-5 h-5 text-blue-400" />
                 </div>
-                <h2 className="text-base md:text-lg font-bold text-white">Berita Desa</h2>
+                <h2 className="text-base md:text-lg font-bold">Berita Desa</h2>
               </div>
               <p className="text-xs md:text-sm text-gray-400 leading-relaxed font-medium mb-5 md:mb-6 max-w-sm">
                 Temukan informasi penting, jadwal kegiatan, dan pengumuman terbaru langsung dari Pemerintah Desa Karangpucung.
@@ -161,7 +161,7 @@ const Dashboard = () => {
                 <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center">
                   <Clock className="w-4 h-4 text-emerald-400" />
                 </div>
-                <h2 className="text-sm md:text-base font-bold text-white">Aktivitas Terkini</h2>
+                <h2 className="text-sm md:text-base font-bold">Aktivitas Terkini</h2>
               </div>
               <Link to="/riwayat" className="text-[10px] text-gray-400 hover:text-emerald-400 font-bold uppercase tracking-wider transition-colors flex items-center gap-1">
                 Semua <ChevronRight className="w-3 h-3" />

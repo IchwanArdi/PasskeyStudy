@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
 @import "tailwindcss";
 
 @theme {
@@ -15,121 +16,293 @@
   --color-warning: #f59e0b;
 }
 
-/* Base styles */
-* {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  letter-spacing: -0.01em;
+/* ============================================
+   THEME SYSTEM — CSS Variables
+   ============================================ */
+
+:root {
+  --primary: #10b981;
+  --primary-glow: rgba(16, 185, 129, 0.15);
+  --bg: #050508;
+  --card-bg: rgba(255, 255, 255, 0.03);
+  --card-border: rgba(255, 255, 255, 0.06);
+  --text: #ffffff;
+  --text-muted: #6b7280;
+  --glass-bg: linear-gradient(135deg, rgba(17, 17, 24, 0.9), rgba(10, 10, 15, 0.95));
+  --glass-border: rgba(30, 30, 42, 0.8);
+  --heading-from: #ffffff;
+  --heading-to: #9ca3af;
 }
+
+.light {
+  --primary: #059669;
+  --primary-glow: rgba(5, 150, 105, 0.1);
+  --bg: #f8fafc;
+  --card-bg: #ffffff;
+  --card-border: #e2e8f0;
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --glass-bg: #ffffff;
+  --glass-border: #e2e8f0;
+  --heading-from: #0f172a;
+  --heading-to: #475569;
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
 
 body {
-  font-family: var(--font-sans);
-  background-color: #000000;
-  color: #ededed;
+  font-family: "Plus Jakarta Sans", var(--font-sans);
+  background-color: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Grid background - inspired by Next.js */
+input, textarea {
+  color: var(--text);
+}
+
+/* ============================================
+   LAYOUT
+   ============================================ */
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.App {
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+  background-color: var(--bg);
+  transition: background-color 0.3s ease;
+}
+
+/* ============================================
+   GLASS / CARD UTILITIES
+   ============================================ */
+
+.glass-panel {
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--card-border);
+}
+
+.glass-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(20px);
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.3s ease;
+}
+
+.glass-card:active {
+  transform: scale(0.98);
+}
+
+.light .glass-card,
+.light .glass-panel {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+/* ============================================
+   LIGHT MODE — TEXT + BACKGROUND OVERRIDES
+   ============================================ */
+
+/* --- White text becomes dark --- */
+.light .text-white {
+  color: #0f172a !important;
+}
+
+/* --- Gray shades become readable on light bg --- */
+.light .text-gray-100 { color: #1e293b !important; }
+.light .text-gray-200 { color: #334155 !important; }
+.light .text-gray-300 { color: #475569 !important; }
+.light .text-gray-400 { color: #64748b !important; }
+.light .text-gray-600 { color: #475569 !important; }
+.light .text-gray-700 { color: #334155 !important; }
+
+/* --- Accent colors: slightly darker for light bg --- */
+.light .text-emerald-400 { color: #059669 !important; }
+.light .text-blue-400    { color: #2563eb !important; }
+.light .text-red-400     { color: #dc2626 !important; }
+.light .text-amber-400   { color: #d97706 !important; }
+.light .text-orange-400  { color: #d97706 !important; }
+.light .text-cyan-400    { color: #0891b2 !important; }
+.light .text-violet-400  { color: #7c3aed !important; }
+
+/* --- bg-white/[opacity] → visible light gray --- */
+.light [class*="bg-white\\/"] {
+  background-color: #f1f5f9 !important;
+  background-image: none !important;
+}
+
+/* --- border-white/[opacity] → visible light border --- */
+.light [class*="border-white\\/"] {
+  border-color: #e2e8f0 !important;
+}
+
+/* --- Gradient heading fix --- */
+.light .from-white {
+  --tw-gradient-from: #0f172a !important;
+}
+.light .to-gray-400,
+.light .to-gray-500 {
+  --tw-gradient-to: #64748b !important;
+}
+
+/* --- Hover states --- */
+.light .hover\:text-white:hover {
+  color: #0f172a !important;
+}
+.light .hover\:text-gray-300:hover {
+  color: #334155 !important;
+}
+.light [class*="hover\:bg-white"]:hover {
+  background-color: #e2e8f0 !important;
+}
+
+/* --- Colored bg with opacity → slightly visible --- */
+.light [class*="bg-emerald"] {
+  background-color: rgba(5, 150, 105, 0.06) !important;
+}
+.light [class*="bg-blue-500\\/"],
+.light [class*="bg-blue-600\\/"] {
+  background-color: rgba(37, 99, 235, 0.06) !important;
+}
+.light [class*="bg-red-500\\/"] {
+  background-color: rgba(220, 38, 38, 0.06) !important;
+}
+.light [class*="bg-orange-500\\/"] {
+  background-color: rgba(234, 88, 12, 0.06) !important;
+}
+
+/* --- Don't override solid colored buttons --- */
+.light .bg-blue-600 { color: #ffffff !important; background-color: #2563eb !important; }
+.light .bg-blue-500 { color: #ffffff !important; background-color: #3b82f6 !important; }
+.light .bg-emerald-500 { color: #ffffff !important; }
+.light .bg-\[\#25D366\] { color: #ffffff !important; }
+
+/* ============================================
+   LIGHT MODE — COMPONENT-SPECIFIC FIXES
+   ============================================ */
+
+/* Sidebar & nav borders */
+.light aside {
+  border-right-color: #e2e8f0 !important;
+}
+
+/* Dashed borders */
+.light .border-dashed {
+  border-color: #cbd5e1 !important;
+}
+
+/* Inputs & selects */
+.light input, .light textarea {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+.light input:focus, .light textarea:focus {
+  border-color: #93c5fd !important;
+  background-color: #ffffff !important;
+}
+.light input::placeholder, .light textarea::placeholder {
+  color: #94a3b8 !important;
+}
+.light select {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+  border-color: #e2e8f0 !important;
+}
+.light option {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+/* Spinners */
+.light .border-t-blue-400 { border-top-color: #2563eb !important; }
+.light .border-t-red-400 { border-top-color: #dc2626 !important; }
+.light .border-t-emerald-400 { border-top-color: #059669 !important; }
+
+/* shadow-black → light shadow in light mode */
+.light [class*="shadow-black"] {
+  --tw-shadow-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+/* ============================================
+   GRID BACKGROUND
+   ============================================ */
+
 .grid-bg {
   background-image:
     linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
   background-size: 64px 64px;
 }
-
+.light .grid-bg {
+  background-image:
+    linear-gradient(to right, rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+}
 .mask-radial {
   mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-}
+/* ============================================
+   SCROLLBAR
+   ============================================ */
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #1e1e2a; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #2a2a3a; }
+.light ::-webkit-scrollbar-thumb { background: #cbd5e1; }
+.light ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+.scrollbar-none::-webkit-scrollbar { display: none; }
 
-::-webkit-scrollbar-thumb {
-  background: #1e1e2a;
-  border-radius: 3px;
-}
+/* ============================================
+   EFFECTS
+   ============================================ */
 
-::-webkit-scrollbar-thumb:hover {
-  background: #2a2a3a;
-}
-
-/* Focus ring utility */
 .focus-ring {
   outline: none;
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
 }
-
-/* Glass card effect */
-.glass-card {
-  background: linear-gradient(
-    135deg,
-    rgba(17, 17, 24, 0.9),
-    rgba(10, 10, 15, 0.95)
-  );
-  border: 1px solid rgba(30, 30, 42, 0.8);
-  backdrop-filter: blur(20px);
-}
-
-/* Subtle glow effect */
 .glow-blue {
-  box-shadow:
-    0 0 30px rgba(59, 130, 246, 0.08),
-    0 0 60px rgba(59, 130, 246, 0.04);
+  box-shadow: 0 0 30px rgba(59, 130, 246, 0.08), 0 0 60px rgba(59, 130, 246, 0.04);
 }
-
 .glow-blue-hover:hover {
-  box-shadow:
-    0 0 40px rgba(59, 130, 246, 0.12),
-    0 0 80px rgba(59, 130, 246, 0.06);
+  box-shadow: 0 0 40px rgba(59, 130, 246, 0.12), 0 0 80px rgba(59, 130, 246, 0.06);
+}
+.light .glow-blue {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-/* Smooth animations */
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-
-.animate-fade-in-up {
-  animation: fadeInUp 0.5s ease-out forwards;
-}
+.animate-fade-in-up { animation: fadeInUp 0.5s ease-out forwards; }
 
 @keyframes pulse-glow {
-  0%,
-  100% {
-    box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 16px rgba(16, 185, 129, 0.6);
-  }
+  0%, 100% { box-shadow: 0 0 8px rgba(16, 185, 129, 0.4); }
+  50% { box-shadow: 0 0 16px rgba(16, 185, 129, 0.6); }
 }
+.pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
 
-.pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
-}
-
-/* Slide down animation for install banner */
 @keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-100%);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(-100%); }
+  to { opacity: 1; transform: translateY(0); }
 }
-
-.animate-slide-down {
-  animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
+.animate-slide-down { animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }

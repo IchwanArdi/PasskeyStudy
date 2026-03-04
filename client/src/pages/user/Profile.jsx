@@ -91,7 +91,7 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0f] text-white flex items-center justify-center">
+      <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto mb-4" />
           <p className="text-sm font-medium text-gray-500">Memuat profil...</p>
@@ -103,12 +103,12 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] font-sans pt-12 md:pt-0 pb-24 px-6 md:px-0 transition-colors duration-300">
       <div className="max-w-5xl mx-auto">
-        <div className="mb-10 border-b border-white/5 pb-8">
+        <div className="mb-10 border-b border-[var(--card-border)] pb-8">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-500/[0.08] border border-blue-500/20 rounded-full text-blue-400 text-[10px] font-bold uppercase tracking-wider mb-4">
             <User className="w-3 h-3" />
             Profil Pengguna
           </div>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-2 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">Pengaturan Akun</h1>
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-2 bg-gradient-to-r from-[var(--heading-from)] to-[var(--heading-to)] bg-clip-text text-transparent">Pengaturan Akun</h1>
           <p className="text-gray-500 text-sm md:text-base font-medium">Kelola informasi pribadi dan keamanan autentikasi Anda.</p>
         </div>
 
@@ -122,7 +122,7 @@ const Profile = () => {
                   Informasi Akun
                 </h2>
                 {!editMode && (
-                  <button onClick={() => setEditMode(true)} className="px-4 py-2 bg-white/[0.06] hover:bg-white/10 text-white rounded-xl text-sm font-medium transition-all border border-white/10 flex items-center gap-2">
+                  <button onClick={() => setEditMode(true)} className="px-4 py-2 bg-[var(--card-bg)] hover:opacity-80 text-[var(--text)] rounded-xl text-sm font-medium transition-all border border-[var(--card-border)] flex items-center gap-2">
                     <Edit className="w-3.5 h-3.5" />
                     Edit
                   </button>
@@ -139,7 +139,7 @@ const Profile = () => {
                       value={formData.username}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all"
+                      className="w-full px-4 py-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl text-sm focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all"
                     />
                   </div>
                   <div>
@@ -150,11 +150,11 @@ const Profile = () => {
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all"
+                      className="w-full px-4 py-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl text-sm focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all"
                     />
                   </div>
                   <div className="flex gap-3 pt-2">
-                    <button type="submit" className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-semibold transition-all flex items-center gap-2 shadow-lg shadow-blue-500/20">
+                    <button type="submit" className="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 !text-white rounded-xl text-sm font-semibold transition-all flex items-center gap-2 shadow-lg shadow-blue-500/20">
                       <Check className="w-4 h-4" />
                       Simpan
                     </button>
@@ -164,7 +164,7 @@ const Profile = () => {
                         setEditMode(false);
                         setFormData({ username: user.username, email: user.email });
                       }}
-                      className="px-5 py-2.5 bg-white/[0.04] text-gray-400 rounded-xl text-sm font-medium hover:bg-white/[0.08] transition-all"
+                      className="px-5 py-2.5 bg-[var(--card-bg)] text-gray-400 rounded-xl text-sm font-medium hover:opacity-80 transition-all"
                     >
                       Batal
                     </button>
@@ -172,14 +172,14 @@ const Profile = () => {
                 </form>
               ) : (
                 <div className="space-y-1">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4 border-b border-white/[0.04]">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4 border-b border-[var(--card-border)]">
                     <div className="flex items-center gap-2.5 text-gray-500 mb-1.5 sm:mb-0">
                       <Shield className="w-4 h-4" />
                       <span className="text-sm font-medium">Username</span>
                     </div>
                     <span className="text-sm font-semibold">{user?.username}</span>
                   </div>
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4 border-b border-white/[0.04]">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4 border-b border-[var(--card-border)]">
                     <div className="flex items-center gap-2.5 text-gray-500 mb-1.5 sm:mb-0">
                       <Mail className="w-4 h-4" />
                       <span className="text-sm font-medium">Email</span>
@@ -205,7 +205,7 @@ const Profile = () => {
               </h2>
 
               {!credentials || !Array.isArray(credentials) || credentials.length === 0 ? (
-                <div className="text-center py-12 border border-dashed border-white/10 rounded-xl">
+                <div className="text-center py-12 border border-dashed border-[var(--card-border)] rounded-xl">
                   <Lock className="w-10 h-10 text-gray-700 mx-auto mb-3" />
                   <p className="text-sm font-medium text-gray-600">Belum ada kunci kredensial terdaftar.</p>
                 </div>
@@ -214,7 +214,7 @@ const Profile = () => {
                   {credentials.map((cred, index) => (
                     <div key={index} className="p-5 glass-card rounded-xl flex items-center justify-between group">
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-white/[0.03] border border-white/[0.08] rounded-xl flex items-center justify-center">
+                        <div className="w-10 h-10 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl flex items-center justify-center">
                           <Shield className="w-5 h-5 text-gray-500 group-hover:text-blue-400 transition-colors" />
                         </div>
                         <div>

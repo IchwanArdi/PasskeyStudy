@@ -66,17 +66,6 @@ const Recovery = () => {
 
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] selection:bg-blue-500/30 font-sans transition-colors duration-300">
-      <header className="fixed top-0 left-0 right-0 z-50 bg-[var(--bg)]/80 backdrop-blur-xl border-b border-white/[0.06]">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link to="/" className="text-emerald-400 font-bold text-sm tracking-tight flex items-center gap-2.5">
-            Desa Karangpucung
-          </Link>
-          <Link to="/login" className="text-gray-400 hover:text-white text-sm font-medium transition-colors">
-            Masuk
-          </Link>
-        </div>
-      </header>
-
       <div className="flex flex-col items-center justify-center min-h-screen px-6 pt-16">
         <div className="w-full max-w-md animate-fade-in-up">
           {/* Progress */}

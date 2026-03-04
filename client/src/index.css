@@ -8,6 +8,10 @@
   --card-border: rgba(255, 255, 255, 0.06);
   --text: #ffffff;
   --text-muted: #6b7280;
+  --glass-bg: linear-gradient(135deg, rgba(17, 17, 24, 0.9), rgba(10, 10, 15, 0.95));
+  --glass-border: rgba(30, 30, 42, 0.8);
+  --heading-from: #ffffff;
+  --heading-to: #9ca3af;
 }
 
 .light {
@@ -18,6 +22,10 @@
   --card-border: #e5e7eb;
   --text: #111827;
   --text-muted: #6b7280;
+  --glass-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(249, 250, 251, 0.98));
+  --glass-border: #e5e7eb;
+  --heading-from: #111827;
+  --heading-to: #6b7280;
 }
 
 * {

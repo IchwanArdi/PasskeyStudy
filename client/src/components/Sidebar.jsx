@@ -25,7 +25,7 @@ const Sidebar = () => {
           <ShieldCheck className="w-6 h-6 text-emerald-400" />
         </div>
         <div>
-          <h1 className="text-lg font-bold bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
+          <h1 className="text-lg font-bold bg-gradient-to-r from-[var(--heading-from)] to-[var(--heading-to)] bg-clip-text text-transparent">
             SmartWarga
           </h1>
           <p className="text-[10px] text-emerald-400 font-medium tracking-wider uppercase">
@@ -35,7 +35,9 @@ const Sidebar = () => {
       </div>
 
       <nav className="flex-1 px-4 space-y-2">
-        {navItems.map(({ to, icon: Icon, label }) => {
+        {navItems.map((item) => {
+          const { to, label } = item;
+          const NavIcon = item.icon;
           const isActive = location.pathname === to || (to !== '/dashboard' && location.pathname.startsWith(to));
           return (
             <Link
@@ -47,7 +49,7 @@ const Sidebar = () => {
                   : 'text-gray-400 hover:bg-white/5 hover:text-white'
               }`}
             >
-              <Icon className={`w-5 h-5 transition-transform group-hover:scale-110 ${isActive ? 'text-emerald-400' : ''}`} />
+              <NavIcon className={`w-5 h-5 transition-transform group-hover:scale-110 ${isActive ? 'text-emerald-400' : ''}`} />
               <span className="font-medium">{label}</span>
               {isActive && (
                 <div className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]" />

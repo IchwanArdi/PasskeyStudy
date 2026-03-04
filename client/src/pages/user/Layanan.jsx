@@ -39,6 +39,7 @@ const layananList = [
 const Layanan = () => {
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] font-sans pt-12 md:pt-0 pb-24 md:pb-8 transition-colors duration-300">
+      
       <header className="px-5 md:px-0 pt-0 pb-6 mb-8 border-b border-white/5">
         <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-[0.2em] mb-2">Desa Karangpucung</p>
         <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">Layanan Surat</h1>

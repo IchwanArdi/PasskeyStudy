@@ -16,7 +16,7 @@ const BottomNav = () => {
   if (hide.some((p) => location.pathname === p || location.pathname.startsWith('/admin'))) return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[var(--bg)]/80 backdrop-blur-2xl border-t border-white/[0.06] pb-safe pt-1">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[var(--bg)]/80 backdrop-blur-2xl border-t border-[var(--card-border)] pb-safe pt-1">
       <div className="flex items-stretch max-w-lg mx-auto px-2">
         {navItems.map(({ to, icon: NavIcon, label }) => {
           const isActive = location.pathname === to || (to !== '/dashboard' && location.pathname.startsWith(to));
