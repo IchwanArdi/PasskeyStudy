@@ -71,16 +71,6 @@ const userSchema = new mongoose.Schema({
     default: "warga",
   },
   // Citizen identity fields
-  namaLengkap: {
-    type: String,
-    trim: true,
-    default: "",
-  },
-  nik: {
-    type: String,
-    trim: true,
-    default: "",
-  },
   authMethod: {
     type: String,
     enum: ["webauthn", "password", "hybrid"],

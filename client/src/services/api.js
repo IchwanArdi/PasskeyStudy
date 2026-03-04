@@ -38,11 +38,11 @@ api.interceptors.response.use(
 
 // Auth API — WebAuthn Only (passwordless)
 export const authAPI = {
-  getRegisterOptions: (email) =>
-    api.post("/auth/webauthn/register/options", { email }),
+  getRegisterOptions: (email, username) =>
+    api.post("/auth/webauthn/register/options", { email, username }),
   verifyRegister: (data) => api.post("/auth/webauthn/register/verify", data),
-  getLoginOptions: (email) =>
-    api.post("/auth/webauthn/login/options", { email }),
+  getLoginOptions: (identifier) =>
+    api.post("/auth/webauthn/login/options", { identifier }),
   verifyLogin: (data) => api.post("/auth/webauthn/login/verify", data),
 };
 

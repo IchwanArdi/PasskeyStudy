@@ -9,54 +9,26 @@ const challenges = new Map();
 
 export const getRegisterOptions = async (req, res) => {
   try {
-    const { email } = req.body;
+    const { email, username: inputUsername } = req.body;
 
-    if (!email) {
-      return res.status(400).json({ message: 'Email is required' });
+    if (!email || !inputUsername) {
+      return res.status(400).json({ message: 'Email dan Nama tidak boleh kosong' });
     }
 
     // Find existing user by email (case-insensitive)
     let user = await User.findOne({ email: email.toLowerCase().trim() });
 
     if (!user) {
-      // User doesn't exist, create new user for WebAuthn-only registration
-      // Generate unique username if needed
-      let baseUsername = email.split('@')[0].trim();
-
-      // Remove any invalid characters and ensure it's alphanumeric
-      baseUsername = baseUsername.replace(/[^a-zA-Z0-9]/g, '');
-
-      // Ensure username meets minimum length requirement
-      if (baseUsername.length < 3) {
-        baseUsername = baseUsername + '123';
+      // Validate and clean username
+      const username = inputUsername.trim();
+      if (username.length < 3) {
+        return res.status(400).json({ message: 'Nama harus terdiri dari minimal 3 karakter' });
       }
 
-      // Ensure username doesn't exceed max length
-      if (baseUsername.length > 30) {
-        baseUsername = baseUsername.substring(0, 27) + '123';
-      }
-
-      let username = baseUsername;
-      let counter = 1;
-
-      // Check if username already exists
-      while (await User.findOne({ username })) {
-        const suffix = counter.toString();
-        const maxLength = 30;
-        const availableLength = maxLength - suffix.length;
-
-        if (baseUsername.length > availableLength) {
-          username = baseUsername.substring(0, availableLength) + suffix;
-        } else {
-          username = baseUsername + suffix;
-        }
-
-        counter++;
-        // Prevent infinite loop
-        if (counter > 100) {
-          username = `user${Date.now()}`.substring(0, 30);
-          break;
-        }
+      // Check if username is already taken
+      const existingName = await User.findOne({ username });
+      if (existingName) {
+        return res.status(400).json({ message: 'Nama ini sudah terdaftar. Silakan gunakan nama lain atau tambahkan angka di belakang nama Anda.' });
       }
 
       try {
@@ -68,67 +40,20 @@ export const getRegisterOptions = async (req, res) => {
         console.log('User created successfully for WebAuthn:', user.email);
       } catch (saveError) {
         console.error('Error saving user (WebAuthn registration):', saveError);
-        console.error('Error details:', {
-          name: saveError.name,
-          code: saveError.code,
-          message: saveError.message,
-          errors: saveError.errors,
-          keyPattern: saveError.keyPattern,
-        });
-
-        // If user creation fails due to duplicate (email or username), try to find by email
+        
         if (saveError.code === 11000) {
-          // Try to find user by email (maybe it was created between our check and save)
-          user = await User.findOne({ email: email.toLowerCase().trim() });
-          if (user) {
-            console.log('User already exists (found after duplicate error), using existing user:', user.email);
-          } else {
-            // If duplicate is on username, try to generate new username
-            if (saveError.keyPattern && saveError.keyPattern.username) {
-              // Username duplicate, generate new one
-              const timestamp = Date.now().toString().slice(-6);
-              username = `user${timestamp}`.substring(0, 30);
-              try {
-                user = new User({
-                  username,
-                  email: email.toLowerCase().trim(),
-                });
-                await user.save();
-                console.log('User created with fallback username:', user.email);
-              } catch (retryError) {
-                return res.status(500).json({
-                  message: 'Failed to create user - duplicate key error',
-                  error: saveError.message,
-                  details: saveError.keyPattern,
-                });
-              }
-            } else {
-              return res.status(500).json({
-                message: 'Failed to create user - duplicate key error',
-                error: saveError.message,
-                details: saveError.keyPattern,
-              });
-            }
-          }
+          return res.status(400).json({ message: 'Email atau Nama ini sudah terdaftar.' });
         } else if (saveError.name === 'ValidationError') {
-          // Handle validation errors
-          const errors = Object.values(saveError.errors || {}).map((err) => err.message);
           return res.status(400).json({
-            message: 'Validation error',
-            errors,
-            details: saveError.message,
-          });
-        } else {
-          return res.status(500).json({
-            message: 'Failed to create user',
-            error: saveError.message,
-            name: saveError.name,
-            stack: process.env.NODE_ENV === 'development' ? saveError.stack : undefined,
+            message: 'Validasi gagal',
+            errors: Object.values(saveError.errors || {}).map((err) => err.message),
           });
         }
+        
+        return res.status(500).json({ message: 'Gagal membuat akun' });
       }
     } else {
-      // User already exists (maybe registered with password), use existing user
+      // User already exists, use existing user for WebAuthn credential addition
       console.log('User already exists, adding WebAuthn credential to existing user:', user.email);
     }
 
@@ -251,14 +176,19 @@ export const verifyRegister = async (req, res) => {
 
 export const getLoginOptions = async (req, res) => {
   try {
-    const { email } = req.body;
+    const { identifier } = req.body;
 
-    if (!email) {
-      return res.status(400).json({ message: 'Email is required' });
+    if (!identifier) {
+      return res.status(400).json({ message: 'Nama atau Email dibutuhkan' });
     }
 
-    // Find user with normalized email (case-insensitive)
-    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    // Find user with normalized email (case-insensitive) or username
+    const user = await User.findOne({
+      $or: [
+        { email: identifier.toLowerCase().trim() },
+        { username: identifier.trim() }
+      ]
+    });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -290,14 +220,19 @@ export const verifyLogin = async (req, res) => {
   const startTime = Date.now();
 
   try {
-    const { email, credential } = req.body;
+    const { identifier, credential } = req.body;
 
-    if (!email || !credential) {
-      return res.status(400).json({ message: 'Email and credential are required' });
+    if (!identifier || !credential) {
+      return res.status(400).json({ message: 'Nama/Email dan credential dibutuhkan' });
     }
 
-    // Find user with normalized email (case-insensitive)
-    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    // Find user with normalized email (case-insensitive) or username
+    const user = await User.findOne({
+      $or: [
+        { email: identifier.toLowerCase().trim() },
+        { username: identifier.trim() }
+      ]
+    });
     if (!user) {
       const duration = Date.now() - startTime;
       await AuthLog.create({
@@ -462,7 +397,16 @@ export const verifyLogin = async (req, res) => {
     const duration = Date.now() - startTime;
     console.error('Verify login error:', error);
 
-    const user = await User.findOne({ email: req.body.email?.toLowerCase().trim() });
+    const identifier = req.body.identifier;
+    let user = null;
+    if (identifier) {
+      user = await User.findOne({
+        $or: [
+          { email: identifier.toLowerCase().trim() },
+          { username: identifier.trim() }
+        ]
+      });
+    }
     if (user) {
       await AuthLog.create({
         userId: user._id,
