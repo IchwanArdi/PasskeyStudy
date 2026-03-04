@@ -13,6 +13,7 @@ import Register from './pages/auth/Register';
 import Recovery from './pages/auth/Recovery';
 import Onboarding from './pages/auth/Onboarding';
 import Help from './pages/Help';
+import InstallAppBanner from './components/InstallAppBanner';
 
 // Warga pages
 import Dashboard from './pages/user/Dashboard';
@@ -49,10 +50,15 @@ function App() {
   return (
     <Router>
       <div className="App">
+        <InstallAppBanner />
         <ScrollToTop />
         <Routes>
-          {/* Onboarding — halaman awal */}
-          <Route path="/" element={<Onboarding />} />
+          {/* Onboarding — halaman awal (skip jika sudah login) */}
+          <Route path="/" element={
+            isAuthenticated()
+              ? <Navigate to="/dashboard" replace />
+              : <Onboarding />
+          } />
 
           {/* Auth */}
           <Route path="/login" element={<Login />} />
