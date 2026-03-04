@@ -189,6 +189,22 @@ const AdminPengajuan = () => {
                             <span className="text-xs md:text-sm text-right font-medium text-gray-300">{item.v}</span>
                           </div>
                         ))}
+                        
+                        {/* Dynamic Fields Data Tambahan */}
+                        {p.dataTambahan && Object.keys(p.dataTambahan).length > 0 && (
+                           <>
+                             <div className="border-t border-white/[0.05] my-2 pt-2"></div>
+                             {Object.entries(p.dataTambahan).map(([key, value]) => {
+                               const formattedLabel = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                               return (
+                                <div key={key} className="flex justify-between gap-4 mt-2">
+                                  <span className="text-xs md:text-sm text-emerald-500/80 shrink-0">{formattedLabel}</span>
+                                  <span className="text-xs md:text-sm text-right font-medium text-emerald-400">{String(value)}</span>
+                                </div>
+                               );
+                             })}
+                           </>
+                        )}
                       </div>
 
                       {/* Action & Catatan */}

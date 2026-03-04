@@ -1,5 +1,6 @@
 import Pengajuan from '../models/Pengajuan.js';
 import { generateSuratPDF } from '../utils/pdfGenerator.js';
+import { decrypt } from '../utils/encryption.js';
 
 // ─── WARGA ────────────────────────────────────────────────────────────────────
 
@@ -9,7 +10,7 @@ import { generateSuratPDF } from '../utils/pdfGenerator.js';
  */
 export const buatPengajuan = async (req, res) => {
   try {
-    const { jenisSurat, namaLengkap, nik, tempatLahir, tanggalLahir, alamat, keperluan } = req.body;
+    const { jenisSurat, namaLengkap, nik, tempatLahir, tanggalLahir, alamat, keperluan, dataTambahan } = req.body;
 
     if (!jenisSurat || !namaLengkap || !nik || !tempatLahir || !tanggalLahir || !alamat || !keperluan) {
       return res.status(400).json({ message: 'Semua field wajib diisi.' });
@@ -29,6 +30,7 @@ export const buatPengajuan = async (req, res) => {
       tanggalLahir: new Date(tanggalLahir),
       alamat: alamat.trim(),
       keperluan: keperluan.trim(),
+      dataTambahan: dataTambahan || {}, // Simpan field dinamis
     });
 
     res.status(201).json({ message: 'Pengajuan berhasil dikirim.', pengajuan });
@@ -48,7 +50,17 @@ export const getPengajuanSaya = async (req, res) => {
       .sort({ createdAt: -1 })
       .lean();
 
-    res.json({ pengajuan });
+    // Pastikan data dekripsi jika mengambil data menggunakan lean()
+    const pengajuanDecrypted = pengajuan.map(p => ({
+      ...p,
+      nik: decrypt(p.nik),
+      namaLengkap: decrypt(p.namaLengkap),
+      tempatLahir: decrypt(p.tempatLahir),
+      tanggalLahir: new Date(decrypt(p.tanggalLahir)), // Kembalikan string iso ke Date
+      alamat: decrypt(p.alamat)
+    }));
+
+    res.json({ pengajuan: pengajuanDecrypted });
   } catch (error) {
     console.error('Get Pengajuan Saya Error:', error);
     res.status(500).json({ message: 'Terjadi kesalahan server.' });
@@ -72,7 +84,17 @@ export const semuaPengajuan = async (req, res) => {
       .populate('userId', 'username email namaLengkap')
       .lean();
 
-    res.json({ pengajuan });
+    // Pastikan data dekripsi jika mengambil data menggunakan lean() untuk admin
+    const pengajuanDecrypted = pengajuan.map(p => ({
+      ...p,
+      nik: decrypt(p.nik),
+      namaLengkap: decrypt(p.namaLengkap),
+      tempatLahir: decrypt(p.tempatLahir),
+      tanggalLahir: new Date(decrypt(p.tanggalLahir)), // Kembalikan string iso ke Date
+      alamat: decrypt(p.alamat)
+    }));
+
+    res.json({ pengajuan: pengajuanDecrypted });
   } catch (error) {
     console.error('Semua Pengajuan Error:', error);
     res.status(500).json({ message: 'Terjadi kesalahan server.' });
@@ -120,7 +142,7 @@ export const updateStatusPengajuan = async (req, res) => {
  */
 export const detailPengajuan = async (req, res) => {
   try {
-    const pengajuan = await Pengajuan.findById(req.params.id)
+    let pengajuan = await Pengajuan.findById(req.params.id)
       .populate('userId', 'username email namaLengkap')
       .lean();
 
@@ -135,6 +157,13 @@ export const detailPengajuan = async (req, res) => {
       return res.status(403).json({ message: 'Akses ditolak.' });
     }
 
+    // Dekripsi NIK karena kita pakai lean()
+    pengajuan.nik = decrypt(pengajuan.nik);
+    pengajuan.namaLengkap = decrypt(pengajuan.namaLengkap);
+    pengajuan.tempatLahir = decrypt(pengajuan.tempatLahir);
+    pengajuan.tanggalLahir = new Date(decrypt(pengajuan.tanggalLahir));
+    pengajuan.alamat = decrypt(pengajuan.alamat);
+
     res.json({ pengajuan });
   } catch (error) {
     console.error('Detail Pengajuan Error:', error);
@@ -148,7 +177,7 @@ export const detailPengajuan = async (req, res) => {
  */
 export const downloadSuratPDF = async (req, res) => {
   try {
-    const pengajuan = await Pengajuan.findById(req.params.id)
+    let pengajuan = await Pengajuan.findById(req.params.id)
       .populate('userId', 'username email namaLengkap')
       .lean();
 
@@ -166,6 +195,13 @@ export const downloadSuratPDF = async (req, res) => {
     if (pengajuan.status !== 'disetujui') {
       return res.status(400).json({ message: 'Dokumen belum tersedia atau belum disetujui.' });
     }
+
+    // Dekripsi Data Sensitif
+    pengajuan.nik = decrypt(pengajuan.nik);
+    pengajuan.namaLengkap = decrypt(pengajuan.namaLengkap);
+    pengajuan.tempatLahir = decrypt(pengajuan.tempatLahir);
+    pengajuan.tanggalLahir = new Date(decrypt(pengajuan.tanggalLahir));
+    pengajuan.alamat = decrypt(pengajuan.alamat);
 
     // Generate PDF buffer
     const pdfBytes = await generateSuratPDF(pengajuan);

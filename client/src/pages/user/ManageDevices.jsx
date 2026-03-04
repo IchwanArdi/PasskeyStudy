@@ -97,11 +97,11 @@ const ManageDevices = () => {
   const handleDelete = async (credentialID) => {
     try {
       await userAPI.deleteCredential(credentialID);
-      toast.success('Kunci berhasil dihapus');
+      toast.success('Perangkat berhasil dihapus');
       setDeleteConfirmId(null);
       await fetchCredentials();
     } catch (error) {
-      toast.error('Gagal menghapus kunci');
+      toast.error('Gagal menghapus perangkat');
       console.error('Delete credential error:', error);
     }
   };
@@ -192,9 +192,9 @@ const ManageDevices = () => {
             <Shield className="w-3 h-3" />
             Bantuan Keamanan
           </div>
-          <h1 className="text-3xl font-bold tracking-tight mb-2">Kelola Kunci HP</h1>
+          <h1 className="text-3xl font-bold tracking-tight mb-2">Kelola Perangkat</h1>
           <p className="text-gray-500 text-base">
-            Daftar HP atau alat masuk yang terhubung ke akun Anda.
+            Kelola kunci keamanan dan authenticator yang terdaftar pada akun Anda.
           </p>
         </div>
 
@@ -241,13 +241,13 @@ const ManageDevices = () => {
 
         {/* Add Device Button */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-base font-bold">HP Terdaftar</h2>
+          <h2 className="text-base font-bold">Perangkat Terdaftar</h2>
           <button
             onClick={() => setShowAddModal(true)}
             className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30"
           >
             <Plus className="w-4 h-4" />
-            Daftarkan HP Lain
+            Tambah Perangkat
           </button>
         </div>
 
@@ -434,20 +434,20 @@ const ManageDevices = () => {
           />
           {/* Modal */}
           <div className="relative w-full max-w-md glass-card rounded-2xl p-8">
-            <h2 className="text-lg font-bold mb-2">Daftarkan HP Lainnya</h2>
+            <h2 className="text-lg font-bold mb-2">Tambah Perangkat Baru</h2>
             <p className="text-sm text-gray-500 mb-6">
               Gunakan Sidik Jari/Wajah di HP lain (seperti HP anak atau pasangan) agar akun tetap bisa dibuka jika HP utama hilang.
             </p>
 
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-400 mb-2">
-                Nama Panggilan HP (Opsional)
+                Nama Panggilan Perangkat (Opsional)
               </label>
               <input
                 type="text"
                 value={newDeviceName}
                 onChange={(e) => setNewDeviceName(e.target.value)}
-                placeholder="cth: HP Anak, HP Istri, Laptop Rumah"
+                placeholder="cth: Iphone 15, Samsung A54, Laptop, dll"
                 maxLength={50}
                 disabled={addingDevice}
                 className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-white placeholder-gray-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all disabled:opacity-50"

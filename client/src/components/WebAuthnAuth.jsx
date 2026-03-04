@@ -77,12 +77,12 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
         throw new Error('Gagal menghubungkan ke sistem desa');
       }
 
-      setMessage('Tempelkan jari di sensor HP atau Laptop Anda...');
+      setMessage('Gunakan authenticator Anda (Touch ID, Face ID, Windows Hello)...');
       const credential = await startAuthentication({
         ...options,
       });
 
-      setMessage('Memverifikasi identitas...');
+      setMessage('Memverifikasi autentikasi...');
       const verifyResponse = await authAPI.verifyLogin({
         identifier: email,
         credential,

@@ -108,6 +108,21 @@ export const generateSuratPDF = async (pengajuan) => {
     cursorY -= 15;
   });
 
+  // Render Data Tambahan (Dynamic Fields)
+  if (pengajuan.dataTambahan && Object.keys(pengajuan.dataTambahan).length > 0) {
+    cursorY -= 10;
+    Object.entries(pengajuan.dataTambahan).forEach(([key, value]) => {
+      // Format key like "tujuanUsaha" to "Tujuan Usaha"
+      const formattedLabel = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+      page.drawText(formattedLabel, { x: leftMargin + 20, y: cursorY, size: 11, font: fontRegular, color: rgb(0, 0, 0) });
+      page.drawText(':', { x: leftMargin + 20 + colSize, y: cursorY, size: 11, font: fontRegular, color: rgb(0, 0, 0) });
+      if (value) {
+        page.drawText(String(value), { x: leftMargin + 20 + colSize + 10, y: cursorY, size: 11, font: fontBold, color: rgb(0, 0, 0) });
+      }
+      cursorY -= 20;
+    });
+  }
+
   cursorY -= 10;
   page.drawText('Adalah benar penduduk Desa Karangpucung dan berdomisili di alamat tersebut di atas.', {
     x: leftMargin, y: cursorY, size: 11, font: fontRegular, color: rgb(0, 0, 0),
@@ -131,7 +146,6 @@ export const generateSuratPDF = async (pengajuan) => {
   page.drawText('sebagaimana mestinya.', {
     x: leftMargin, y: cursorY, size: 11, font: fontRegular, color: rgb(0, 0, 0),
   });
-
 
   // --- TANDA TANGAN ---
   cursorY -= 50;

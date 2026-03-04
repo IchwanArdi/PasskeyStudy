@@ -221,7 +221,7 @@ const AdminProfile = () => {
                         </div>
                         <div>
                           <p className="text-xs font-medium text-gray-500 mb-0.5">Alat Masuk</p>
-                          <p className="text-sm font-semibold truncate max-w-[140px]">{cred.nickname || 'HP Tanpa Nama'}</p>
+                          <p className="text-sm font-semibold truncate max-w-[140px]">{cred.nickname || 'Perangkat Tanpa Nama'}</p>
                         </div>
                       </div>
                       <div className="text-right">

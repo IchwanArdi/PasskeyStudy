@@ -57,7 +57,7 @@ const DetailPengumuman = () => {
             </span>
             <span className="flex items-center gap-2">
               <User className="w-4 h-4 text-blue-500/50" />
-              {pengumuman.authorId?.namaLengkap || pengumuman.authorId?.username || 'Admin Desa'}
+              Admin Desa
             </span>
           </div>
         </header>

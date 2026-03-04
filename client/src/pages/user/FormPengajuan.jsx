@@ -13,6 +13,26 @@ const jenisList = {
   usaha: { label: 'Ket. Usaha' },
 };
 
+// Konfigurasi Field Dinamis
+const dynamicFieldsConfig = {
+  kelahiran: [
+    { name: 'namaAnak', label: 'Nama Anak', type: 'text', placeholder: 'Sesuai Akta Kelahiran' },
+    { name: 'namaAyah', label: 'Nama Ayah', type: 'text', placeholder: 'Sesuai KTP Ayah' },
+    { name: 'namaIbu', label: 'Nama Ibu', type: 'text', placeholder: 'Sesuai KTP Ibu' },
+  ],
+  kematian: [
+    { name: 'namaMeninggal', label: 'Nama Almarhum/ah', type: 'text', placeholder: 'Nama Warga Meninggal' },
+    { name: 'tanggalMeninggal', label: 'Tanggal Meninggal', type: 'date' },
+    { name: 'sebabMeninggal', label: 'Sebab Meninggal', type: 'text', placeholder: 'Sakit, Kecelakaan, dll.' },
+  ],
+  usaha: [
+    { name: 'namaUsaha', label: 'Nama Usaha', type: 'text', placeholder: 'Contoh: Warung Berkah' },
+    { name: 'jenisUsaha', label: 'Jenis Usaha', type: 'text', placeholder: 'Contoh: Makanan / Kelontong' },
+    { name: 'alamatUsaha', label: 'Alamat Usaha', type: 'textarea', placeholder: 'Detail lokasi usaha' },
+  ],
+  // domisili dan tidak_mampu hanya pakai form default
+};
+
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const FormPengajuan = () => {
@@ -30,26 +50,48 @@ const FormPengajuan = () => {
     keperluan: '',
   });
 
+  const [dynamicForm, setDynamicForm] = useState({});
+
   useEffect(() => {
     if (!isAuthenticated()) { navigate('/login'); return; }
     if (!jenisList[jenisSurat]) { navigate('/layanan', { replace: true }); }
+    
+    // Reset dynamic form when type changes
+    if (dynamicFieldsConfig[jenisSurat]) {
+      const initialDynamicForm = {};
+      dynamicFieldsConfig[jenisSurat].forEach(field => {
+        initialDynamicForm[field.name] = '';
+      });
+      setDynamicForm(initialDynamicForm);
+    } else {
+      setDynamicForm({});
+    }
   }, [navigate, jenisSurat]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const handleDynamicChange = (e) => {
+    setDynamicForm({ ...dynamicForm, [e.target.name]: e.target.value });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
+      const payload = { ...form, jenisSurat };
+      if (Object.keys(dynamicForm).length > 0) {
+        payload.dataTambahan = dynamicForm;
+      }
+
       const res = await fetch(`${API_URL}/pengajuan`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
-        body: JSON.stringify({ ...form, jenisSurat }),
+        body: JSON.stringify(payload),
       });
 
       const data = await res.json();
@@ -179,10 +221,43 @@ const FormPengajuan = () => {
               />
             </div>
 
+            {/* Dynamic Fields */}
+            {dynamicFieldsConfig[jenisSurat] && (
+              <div className="pt-6 border-t border-white/5 space-y-6">
+                <h2 className="text-sm font-bold text-white border-l-2 border-emerald-500 pl-3">Data Spesifik Layanan</h2>
+                {dynamicFieldsConfig[jenisSurat].map((field) => (
+                  <div key={field.name}>
+                    <label className="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-[0.15em]">{field.label}</label>
+                    {field.type === 'textarea' ? (
+                      <textarea
+                        name={field.name}
+                        value={dynamicForm[field.name] || ''}
+                        onChange={handleDynamicChange}
+                        required
+                        rows={3}
+                        placeholder={field.placeholder}
+                        className="appearance-none w-full px-4 py-4 md:py-3.5 bg-white/[0.02] border border-white/[0.06] rounded-[16px] text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all placeholder:text-gray-600 resize-none focus:bg-white/[0.04]"
+                      />
+                    ) : (
+                      <input
+                        type={field.type}
+                        name={field.name}
+                        value={dynamicForm[field.name] || ''}
+                        onChange={handleDynamicChange}
+                        required
+                        placeholder={field.placeholder}
+                        className={`appearance-none w-full px-4 py-4 md:py-3.5 bg-white/[0.02] border border-white/[0.06] rounded-[16px] text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all placeholder:text-gray-600 focus:bg-white/[0.04] ${field.type === 'date' ? 'text-gray-300 color-scheme-dark' : ''}`}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
             <div className="flex items-center gap-3 p-4 bg-emerald-500/[0.04] border border-emerald-500/10 rounded-2xl">
               <Info className="w-5 h-5 text-emerald-400 shrink-0" />
               <p className="text-[10px] md:text-xs text-gray-500 leading-relaxed font-medium">
-                Pastikan data sesuai dengan KTP/KK untuk mempercepat verifikasi oleh Admin Desa.
+                Pastikan data sesuai dengan dokumen resmi untuk mempercepat verifikasi oleh Admin Desa.
               </p>
             </div>
 

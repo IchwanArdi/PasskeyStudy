@@ -8,6 +8,7 @@ import {
   Megaphone, Folder, LayoutGrid
 } from 'lucide-react';
 import LetterIcon from '../../components/LetterIcon';
+import VillageCarousel from '../../components/VillageCarousel';
 
 const layananList = [
   { jenis: 'domisili', label: 'Surat Domisili', desc: 'Keterangan tempat tinggal' },
@@ -129,24 +130,32 @@ const Dashboard = () => {
             </div>
           </section>
 
-          {/* Banner Pengumuman Desa */}
-          <section className="glass-panel p-6 md:p-8 rounded-[32px] relative overflow-hidden group border border-blue-500/10 hover:border-blue-500/20 transition-all">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/10 blur-[50px] rounded-full -mr-10 -mt-20 pointer-events-none transition-all group-hover:bg-blue-500/20" />
-            <div className="relative z-10">
-              <div className="flex items-center gap-3 mb-3 md:mb-4">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                  <Megaphone className="w-5 h-5 text-blue-400" />
-                </div>
-                <h2 className="text-base md:text-lg font-bold">Berita Desa</h2>
-              </div>
-              <p className="text-xs md:text-sm text-gray-400 leading-relaxed font-medium mb-5 md:mb-6 max-w-sm">
-                Temukan informasi penting, jadwal kegiatan, dan pengumuman terbaru langsung dari Pemerintah Desa Karangpucung.
-              </p>
-              <Link to="/pengumuman" className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-500 text-white text-xs font-bold rounded-xl hover:bg-blue-400 transition-all shadow-[0_0_15px_rgba(59,130,246,0.3)]">
-                Baca Pengumuman <ChevronRight className="w-4 h-4" />
-              </Link>
+          {/* Hero Slider & Section Berita */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 min-h-[300px] md:min-h-[340px]">
+            {/* Village Slider (NEW) */}
+            <div className="h-full">
+              <VillageCarousel />
             </div>
-          </section>
+
+            {/* Banner Pengumuman Desa (Berita Desa) */}
+            <section className="glass-panel p-6 md:p-8 rounded-[32px] relative overflow-hidden group border border-blue-500/10 hover:border-blue-500/20 transition-all flex flex-col justify-center h-full">
+              <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/10 blur-[50px] rounded-full -mr-10 -mt-20 pointer-events-none transition-all group-hover:bg-blue-500/20" />
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-3 md:mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                    <Megaphone className="w-5 h-5 text-blue-400" />
+                  </div>
+                  <h2 className="text-base md:text-lg font-bold">Berita Desa</h2>
+                </div>
+                <p className="text-xs md:text-sm text-gray-400 leading-relaxed font-medium mb-5 md:mb-6 max-w-sm">
+                  Temukan informasi penting, jadwal kegiatan, dan pengumuman terbaru langsung dari Pemerintah Desa Karangpucung.
+                </p>
+                <Link to="/pengumuman" className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-500 text-white text-xs font-bold rounded-xl hover:bg-blue-400 transition-all shadow-[0_0_15px_rgba(59,130,246,0.3)]">
+                  Baca Pengumuman <ChevronRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </section>
+          </div>
         </div>
 
         {/* Right Column (Notifications/Status / Update Terkini) */}
