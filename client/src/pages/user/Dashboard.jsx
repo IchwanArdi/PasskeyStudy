@@ -72,11 +72,11 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] font-sans pb-24 md:pb-8 transition-colors duration-300">
       {/* Header */}
-      <header className="px-5 md:px-0 pt-12 md:pt-0 pb-6 mb-4">
+      <header className="px-5 md:px-0 pt-12 md:pt-0 mb-4">
         <div className="flex items-center justify-between mb-6 pb-2 border-b border-white/[0.04]">
           <div>
             <p className="text-gray-500 text-xs font-bold mb-1 uppercase tracking-widest leading-none">
-              Halo, {user?.username || 'Warga'}
+              Halo, {user?.username}
             </p>
             <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-br from-white to-gray-500 bg-clip-text text-transparent">
               Selamat Datang di<br className="md:hidden" /> Desa Karangpucung
@@ -86,7 +86,7 @@ const Dashboard = () => {
             <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 font-bold text-xs uppercase">
               {user?.username?.substring(0, 2) || 'W'}
             </div>
-            <span className="text-sm font-semibold">{user?.username || 'Warga'}</span>
+            <span className="text-sm font-semibold">{user?.username}</span>
           </div>
         </div>
       </header>

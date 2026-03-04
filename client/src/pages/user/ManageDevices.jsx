@@ -184,7 +184,7 @@ const ManageDevices = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] font-sans pt-24 pb-24 px-6 transition-colors duration-300">
+    <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] font-sans pt-8 pb-24 px-6 transition-colors duration-300">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-10">
