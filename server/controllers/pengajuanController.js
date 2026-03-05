@@ -16,7 +16,7 @@ export const buatPengajuan = async (req, res) => {
       return res.status(400).json({ message: 'Semua field wajib diisi.' });
     }
 
-    const jenisValid = ['domisili', 'tidak_mampu', 'kelahiran', 'kematian', 'usaha'];
+    const jenisValid = ['tidak_mampu', 'kelahiran', 'usaha'];
     if (!jenisValid.includes(jenisSurat)) {
       return res.status(400).json({ message: 'Jenis surat tidak valid.' });
     }

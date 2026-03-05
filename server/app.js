@@ -11,7 +11,13 @@ import userRoutes from './routes/user.js';
 import recoveryRoutes from './routes/recovery.js';
 import pengajuanRoutes from './routes/pengajuan.js';
 import pengumumanRoutes from './routes/pengumuman.js';
+import pengaduanRoutes from './routes/pengaduan.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import rateLimit from 'express-rate-limit';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Create Express app
 const app = express();
@@ -139,6 +145,12 @@ app.use('/api/pengajuan', pengajuanRoutes);
 app.use('/pengajuan', pengajuanRoutes); // Alias for client compatibility
 app.use('/api/pengumuman', pengumumanRoutes);
 app.use('/pengumuman', pengumumanRoutes); // Alias for client compatibility
+
+app.use('/api/pengaduan', pengaduanRoutes);
+app.use('/pengaduan', pengaduanRoutes);
+
+// Static file serving for uploads
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Export app for use in server.js
 export default app;

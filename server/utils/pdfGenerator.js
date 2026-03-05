@@ -46,10 +46,8 @@ export const generateSuratPDF = async (pengajuan) => {
 
   // --- JUDUL SURAT ---
   const jenisLabelMap = {
-    domisili: 'KETERANGAN DOMISILI',
     tidak_mampu: 'KETERANGAN TIDAK MAMPU',
     kelahiran: 'KETERANGAN KELAHIRAN',
-    kematian: 'KETERANGAN KEMATIAN',
     usaha: 'KETERANGAN USAHA',
   };
   const judulSurat = `SURAT ${jenisLabelMap[pengajuan.jenisSurat] || 'KETERANGAN'}`;
