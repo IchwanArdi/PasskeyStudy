@@ -9,10 +9,8 @@ import LetterIcon from '../../components/LetterIcon';
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const jenisList = {
-  domisili: { label: 'Surat Domisili' },
   tidak_mampu: { label: 'Ket. Tidak Mampu' },
   kelahiran: { label: 'Ket. Kelahiran' },
-  kematian: { label: 'Ket. Kematian' },
   usaha: { label: 'Ket. Usaha' },
 };
 

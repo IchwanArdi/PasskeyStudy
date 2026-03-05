@@ -22,7 +22,9 @@ import Profile from './pages/user/Profile';
 import ManageDevices from './pages/user/ManageDevices';
 import Layanan from './pages/user/Layanan';
 import FormPengajuan from './pages/user/FormPengajuan';
+import FormPengaduan from './pages/user/FormPengaduan';
 import RiwayatPengajuan from './pages/user/RiwayatPengajuan';
+import RiwayatPengaduan from './pages/user/RiwayatPengaduan';
 import Pengumuman from './pages/user/Pengumuman';
 import DetailPengumuman from './pages/user/DetailPengumuman';
 import PanduanWarga from './pages/user/PanduanWarga';
@@ -31,6 +33,7 @@ import PanduanWarga from './pages/user/PanduanWarga';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminPengajuan from './pages/admin/Pengajuan.jsx';
 import AdminPengumuman from './pages/admin/Pengumuman.jsx';
+import AdminPengaduan from './pages/admin/Pengaduan.jsx';
 import AdminProfile from './pages/admin/Profile.jsx';
 import AdminUsers from './pages/admin/ManageUsers.jsx';
 import AdminNavLayout from './components/AdminNavLayout.jsx';
@@ -89,6 +92,8 @@ function App() {
           <Route element={<NavLayout><ManageDevices /></NavLayout>} path="/manage-devices" />
           <Route element={<NavLayout><Layanan /></NavLayout>} path="/layanan" />
           <Route element={<NavLayout><FormPengajuan /></NavLayout>} path="/layanan/ajukan" />
+          <Route element={<NavLayout><FormPengaduan /></NavLayout>} path="/pengaduan/ajukan" />
+          <Route element={<NavLayout><RiwayatPengaduan /></NavLayout>} path="/pengaduan/riwayat" />
           <Route element={<NavLayout><RiwayatPengajuan /></NavLayout>} path="/riwayat" />
           <Route element={<NavLayout><Pengumuman /></NavLayout>} path="/pengumuman" />
           <Route element={<NavLayout><DetailPengumuman /></NavLayout>} path="/pengumuman/:id" />
@@ -97,6 +102,7 @@ function App() {
           {/* Admin */}
           <Route path="/admin" element={<AdminRoute><AdminNavLayout><AdminDashboard /></AdminNavLayout></AdminRoute>} />
           <Route path="/admin/pengajuan" element={<AdminRoute><AdminNavLayout><AdminPengajuan /></AdminNavLayout></AdminRoute>} />
+          <Route path="/admin/pengaduan" element={<AdminRoute><AdminNavLayout><AdminPengaduan /></AdminNavLayout></AdminRoute>} />
           <Route path="/admin/pengumuman" element={<AdminRoute><AdminNavLayout><AdminPengumuman /></AdminNavLayout></AdminRoute>} />
           <Route path="/admin/profile" element={<AdminRoute><AdminNavLayout><AdminProfile /></AdminNavLayout></AdminRoute>} />
           <Route path="/admin/users" element={<AdminRoute><AdminNavLayout><AdminUsers /></AdminNavLayout></AdminRoute>} />

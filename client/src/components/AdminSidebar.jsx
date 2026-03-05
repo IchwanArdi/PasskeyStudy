@@ -6,12 +6,14 @@ import {
   Users,
   LogOut,
   ShieldCheck,
+  ShieldAlert,
   User,
 } from "lucide-react";
 
 const navItems = [
   { to: "/admin", icon: Home, label: "Beranda" },
   { to: "/admin/pengajuan", icon: FileText, label: "Pengajuan" },
+  { to: "/admin/pengaduan", icon: ShieldAlert, label: "Pengaduan" },
   { to: "/admin/pengumuman", icon: Bell, label: "Pengumuman" },
   { to: "/admin/users", icon: Users, label: "Warga" },
   { to: "/admin/profile", icon: User, label: "Profil" },

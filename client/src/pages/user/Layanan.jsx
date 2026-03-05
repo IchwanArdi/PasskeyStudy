@@ -1,15 +1,8 @@
-import { isAuthenticated } from '../../utils/auth';
 import { Link } from 'react-router-dom';
-import { ChevronRight, ArrowLeft, Clock } from 'lucide-react';
+import { ChevronRight, Clock } from 'lucide-react';
 import LetterIcon from '../../components/LetterIcon';
 
 const layananList = [
-  {
-    jenis: 'domisili',
-    label: 'Surat Domisili',
-    desc: 'Surat keterangan untuk keperluan administratif kependudukan.',
-    waktu: '1–2 hari kerja',
-  },
   {
     jenis: 'tidak_mampu',
     label: 'Ket. Tidak Mampu',
@@ -20,12 +13,6 @@ const layananList = [
     jenis: 'kelahiran',
     label: 'Ket. Kelahiran',
     desc: 'Pernyataan kelahiran warga untuk pelaporan ke dinas terkait.',
-    waktu: '1–2 hari kerja',
-  },
-  {
-    jenis: 'kematian',
-    label: 'Ket. Kematian',
-    desc: 'Pernyataan kematian warga untuk pelaporan ke dinas terkait.',
     waktu: '1–2 hari kerja',
   },
   {

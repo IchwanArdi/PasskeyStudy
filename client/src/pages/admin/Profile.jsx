@@ -5,7 +5,7 @@ import { isAuthenticated, clearAuth } from '../../utils/auth';
 import { toast } from 'react-toastify';
 import { 
   Edit, Check, Lock, Shield, User, Mail, Calendar, 
-  Key, Settings, Sun, Moon, LogOut, ChevronRight, HelpCircle 
+  Key, Settings, Sun, Moon, LogOut, ChevronRight, HelpCircle, ShieldAlert
 } from 'lucide-react';
 
 const AdminProfile = () => {
@@ -275,6 +275,23 @@ const AdminProfile = () => {
                     <div className={`w-4 h-4 bg-white rounded-full transition-transform duration-300 ${isDark ? 'translate-x-5' : 'translate-x-0'}`} />
                   </div>
                 </button>
+
+                {/* Manage Pengaduan Button */}
+                <Link
+                  to="/admin/pengaduan"
+                  className="w-full h-16 flex items-center justify-between px-4 bg-orange-500/[0.05] border border-orange-500/10 rounded-2xl hover:bg-orange-500/[0.08] transition-all group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-400 group-hover:scale-110 transition-transform">
+                      <ShieldAlert className="w-5 h-5" />
+                    </div>
+                    <div className="text-left">
+                      <span className="text-sm font-bold block text-orange-400">Moderasi Pengaduan</span>
+                      <span className="text-[10px] text-orange-500/50 font-medium uppercase tracking-wider">Tinjau Laporan Warga</span>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-orange-400/30 group-hover:translate-x-1 transition-transform" />
+                </Link>
 
                 {/* Manage Devices Button */}
                 <Link

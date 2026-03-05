@@ -6,10 +6,8 @@ import { ArrowLeft, Send, ShieldCheck, User, MapPin, Calendar, FileText, Info, L
 import LetterIcon from '../../components/LetterIcon';
 
 const jenisList = {
-  domisili: { label: 'Surat Domisili' },
   tidak_mampu: { label: 'Ket. Tidak Mampu' },
   kelahiran: { label: 'Ket. Kelahiran' },
-  kematian: { label: 'Ket. Kematian' },
   usaha: { label: 'Ket. Usaha' },
 };
 
@@ -19,11 +17,6 @@ const dynamicFieldsConfig = {
     { name: 'namaAnak', label: 'Nama Anak', type: 'text', placeholder: 'Sesuai Akta Kelahiran' },
     { name: 'namaAyah', label: 'Nama Ayah', type: 'text', placeholder: 'Sesuai KTP Ayah' },
     { name: 'namaIbu', label: 'Nama Ibu', type: 'text', placeholder: 'Sesuai KTP Ibu' },
-  ],
-  kematian: [
-    { name: 'namaMeninggal', label: 'Nama Almarhum/ah', type: 'text', placeholder: 'Nama Warga Meninggal' },
-    { name: 'tanggalMeninggal', label: 'Tanggal Meninggal', type: 'date' },
-    { name: 'sebabMeninggal', label: 'Sebab Meninggal', type: 'text', placeholder: 'Sakit, Kecelakaan, dll.' },
   ],
   usaha: [
     { name: 'namaUsaha', label: 'Nama Usaha', type: 'text', placeholder: 'Contoh: Warung Berkah' },
@@ -38,7 +31,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 const FormPengajuan = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const jenisSurat = searchParams.get('jenis') || 'domisili';
+  const jenisSurat = searchParams.get('jenis') || 'tidak_mampu';
 
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({

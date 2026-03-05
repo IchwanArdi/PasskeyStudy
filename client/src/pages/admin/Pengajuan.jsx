@@ -4,7 +4,7 @@ import { isAuthenticated } from '../../utils/auth';
 import { toast } from 'react-toastify';
 import {
   ArrowLeft, ChevronDown, ChevronUp, Check, X, RefreshCw,
-  Settings, Clock, Filter, DownloadCloud, Trash2
+  Filter, DownloadCloud, Trash2
 } from 'lucide-react';
 import LetterIcon from '../../components/LetterIcon';
 import { Link } from 'react-router-dom';
@@ -12,7 +12,7 @@ import { pengajuanAPI } from '../../services/api';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-const jenisLabel = { domisili: 'Domisili', tidak_mampu: 'Tidak Mampu', kelahiran: 'Kelahiran', kematian: 'Kematian', usaha: 'Usaha' };
+const jenisLabel = { tidak_mampu: 'Tidak Mampu', kelahiran: 'Kelahiran', usaha: 'Usaha' };
 const statusConfig = {
   diproses: { label: 'Diproses', color: 'text-blue-400 border-blue-400/20 bg-blue-400/10' },
   disetujui: { label: 'Disetujui', color: 'text-emerald-400 border-emerald-400/20 bg-emerald-400/10' },
@@ -55,8 +55,8 @@ const AdminPengajuan = () => {
     setLoading(true);
     try {
       const url = filterStatus
-        ? `${API_URL}/pengajuan/admin/semua?status=${filterStatus}`
-        : `${API_URL}/pengajuan/admin/semua`;
+        ? `${API_URL}/pengajuan/admin?status=${filterStatus}`
+        : `${API_URL}/pengajuan/admin`;
       const res = await fetch(url, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
       if (res.ok) { const data = await res.json(); setPengajuan(data.pengajuan || []); }
     } catch (err) {
@@ -119,7 +119,6 @@ const AdminPengajuan = () => {
         </header>
 
       {/* Filter */}
-        {/* Filter Dropdown */}
         <div className="relative w-full max-w-xs md:max-w-sm mb-4">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Filter className="h-4 w-4 text-gray-400" />
@@ -175,7 +174,6 @@ const AdminPengajuan = () => {
                 {isOpen && (
                   <div className="px-5 pb-5 border-t border-white/[0.03] pt-5">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {/* Detail Info */}
                       <div className="space-y-4 bg-white/[0.01] p-4 rounded-2xl border border-white/[0.02]">
                         <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Detail Pengajuan</h3>
                         {[
@@ -190,7 +188,6 @@ const AdminPengajuan = () => {
                           </div>
                         ))}
                         
-                        {/* Dynamic Fields Data Tambahan */}
                         {p.dataTambahan && Object.keys(p.dataTambahan).length > 0 && (
                            <>
                              <div className="border-t border-white/[0.05] my-2 pt-2"></div>
@@ -207,7 +204,6 @@ const AdminPengajuan = () => {
                         )}
                       </div>
 
-                      {/* Action & Catatan */}
                       <div className="space-y-4">
                          <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Tindakan Admin</h3>
                         <textarea
