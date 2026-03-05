@@ -20,15 +20,16 @@ const adminOnly = (req, res, next) => {
   next();
 };
 
+// ─── Admin routes ─────────────────────────────────────────────────────────────
+router.get('/admin', authenticate, adminOnly, semuaPengajuan);
+router.get('/admin/semua', authenticate, adminOnly, semuaPengajuan);
+router.patch('/:id/status', authenticate, adminOnly, updateStatusPengajuan);
+
 // ─── Warga routes ─────────────────────────────────────────────────────────────
 router.post('/', authenticate, buatPengajuan);
 router.get('/saya', authenticate, getPengajuanSaya);
 router.get('/:id', authenticate, detailPengajuan);
 router.get('/:id/pdf', authenticate, downloadSuratPDF);
 router.delete('/:id', authenticate, hapusPengajuan);
-
-// ─── Admin routes ─────────────────────────────────────────────────────────────
-router.get('/admin/semua', authenticate, adminOnly, semuaPengajuan);
-router.patch('/:id/status', authenticate, adminOnly, updateStatusPengajuan);
 
 export default router;

@@ -239,17 +239,10 @@ const PanduanWarga = () => {
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="mb-8 pt-2">
-          <Link
-            to="/profile"
-            className="inline-flex items-center gap-1.5 text-gray-500 hover:text-white text-xs font-medium mb-5 transition-colors"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            Kembali ke Profil
-          </Link>
 
           <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-500/[0.08] border border-blue-500/20 rounded-full text-blue-400 text-[10px] font-bold uppercase tracking-wider mb-4">
             <HelpCircle className="w-3 h-3" />
-            Panduan Warga
+            Panduan
           </div>
           <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight mb-2 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
             Panduan Penggunaan Aplikasi

@@ -160,11 +160,7 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
           {loading ? 'Memproses...' : mode === 'register' ? 'Daftar dengan Sidik Jari' : 'Masuk dengan Sidik Jari'}
         </button>
       </form>
-      {mode === 'login' && (
-        <p className="text-sm text-gray-400 text-center">
-          Belum punya akun? Yuk daftar dulu agar bisa masuk pakai nama.
-        </p>
-      )}
+
     </div>
   );
 };

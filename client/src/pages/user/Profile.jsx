@@ -240,7 +240,7 @@ const Profile = () => {
               </h2>
 
               <div className="space-y-3">
-                                {/* Mode Gelap */}
+                {/* Mode Gelap */}
                 <button
                   onClick={toggleTheme}
                   className="w-full h-16 flex items-center justify-between px-4 glass-card rounded-2xl hover:bg-white/[0.06] transition-all group"
@@ -261,15 +261,15 @@ const Profile = () => {
                 {/* Panduan & FAQ */}
                 <Link
                   to="/panduan"
-                  className="w-full h-16 flex items-center justify-between px-4 bg-blue-500/[0.05] border border-blue-500/10 rounded-2xl hover:bg-blue-500/[0.08] transition-all group"
+                  className="w-full h-16 flex items-center justify-between px-4 border border-blue-500/10 rounded-2xl hover:bg-blue-500/[0.08] transition-all group"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
                       <HelpCircle className="w-5 h-5" />
                     </div>
                     <div className="text-left">
-                      <span className="text-sm font-bold block text-blue-400">Panduan & FAQ</span>
-                      <span className="text-[10px] text-blue-500/50 font-medium uppercase tracking-wider">Cara Penggunaan Aplikasi</span>
+                      <span className="text-sm font-bold block ">Panduan & FAQ</span>
+                      <span className="text-[10px] text-gray-500 font-medium uppercase tracking-wider">Cara Penggunaan Aplikasi</span>
                     </div>
                   </div>
                   <ChevronRight className="w-5 h-5 text-blue-400/30 group-hover:translate-x-1 transition-transform" />
@@ -279,15 +279,15 @@ const Profile = () => {
                 {/* Manage Devices Button */}
                 <Link
                   to="/manage-devices"
-                  className="w-full h-16 flex items-center justify-between px-4 bg-emerald-500/[0.05] border border-emerald-500/10 rounded-2xl hover:bg-emerald-500/[0.08] transition-all group"
+                  className="w-full h-16 flex items-center justify-between px-4 border border-emerald-500/10 rounded-2xl hover:bg-emerald-500/[0.08] transition-all group"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
                       <Shield className="w-5 h-5" />
                     </div>
                     <div className="text-left">
-                      <span className="text-sm font-bold block text-emerald-400">Keamanan Perangkat</span>
-                      <span className="text-[10px] text-emerald-500/50 font-medium uppercase tracking-wider">Kelola Kunci Keamanan</span>
+                      <span className="text-sm font-bold block ">Keamanan Perangkat</span>
+                      <span className="text-[10px] text-gray-500 font-medium uppercase tracking-wider">Kelola Kunci Keamanan</span>
                     </div>
                   </div>
                   <ChevronRight className="w-5 h-5 text-emerald-400/30 group-hover:translate-x-1 transition-transform" />
@@ -296,15 +296,15 @@ const Profile = () => {
                 {/* Logout Button */}
                 <button
                   onClick={handleLogout}
-                  className="w-full h-16 flex items-center justify-between px-4 bg-red-500/[0.05] border border-red-500/10 rounded-2xl hover:bg-red-500/[0.08] transition-all group"
+                  className="w-full h-16 flex items-center justify-between px-4 border border-red-500/10 rounded-2xl hover:bg-red-500/[0.08] transition-all group"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center text-red-400 group-hover:scale-110 transition-transform">
                       <LogOut className="w-5 h-5" />
                     </div>
                     <div className="text-left">
-                      <span className="text-sm font-bold block text-red-400">Keluar Sesi</span>
-                      <span className="text-[10px] text-red-500/50 font-medium uppercase tracking-wider">Akhiri Akses</span>
+                      <span className="text-sm font-bold block ">Keluar</span>
+                      <span className="text-[10px]  text-gray-500 font-medium uppercase tracking-wider">Akhiri Akses</span>
                     </div>
                   </div>
                   <ChevronRight className="w-5 h-5 text-red-400/30 group-hover:translate-x-1 transition-transform" />
