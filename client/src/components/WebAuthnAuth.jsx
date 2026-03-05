@@ -17,6 +17,8 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
     setMessage('');
   };
 
+  // FLOW REGISTRASI FRONTEND: 
+  // 1. Minta challenge dari backend -> 2. Munculkan popup native WebAuthn/FIDO di OS -> 3. Kirim hasilnya ke backend untuk diverifikasi
   const handleRegister = async (e) => {
     e.preventDefault();
     if (!email || !username) {
@@ -57,6 +59,8 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
     }
   };
 
+  // FLOW LOGIN FRONTEND: 
+  // 1. Dapatkan opsi login dari backend -> 2. Tampilkan popup scan wajah/sidik jari -> 3. Kirim signature biometrik balik ke server
   const handleLogin = async (e) => {
     e.preventDefault();
     // In login mode, 'email' state acts as the identifier (can be username or email)
@@ -99,6 +103,7 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
     }
   };
 
+  // KOMPONEN UI: Men-render form dua fungsi secara dinamis. Bisa berperan sebagai form Registrasi atau Login tergantung props 'mode'.
   return (
     <div className="space-y-5">
       <form onSubmit={mode === 'register' ? handleRegister : handleLogin} className="space-y-5">

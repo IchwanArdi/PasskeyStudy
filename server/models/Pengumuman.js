@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-
+// SCHEMA PENGUMUMAN: Struktur data untuk mading/papan pengumuman digital desa
 const pengumumanSchema = new mongoose.Schema(
   {
     judul: {

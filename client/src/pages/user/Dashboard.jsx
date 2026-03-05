@@ -5,7 +5,7 @@ import { userAPI } from '../../services/api';
 import {
   FileText, Bell, Key, ChevronRight,
   Clock, CheckCircle, XCircle, Hourglass, User,
-  Megaphone, LayoutGrid, ShieldAlert
+  Megaphone, LayoutGrid
 } from 'lucide-react';
 import LetterIcon from '../../components/LetterIcon';
 import VillageCarousel from '../../components/VillageCarousel';
@@ -118,12 +118,12 @@ const Dashboard = () => {
                 </div>
                 <span className="text-[9px] md:text-xs font-bold text-gray-500 group-hover:text-orange-400 text-center leading-tight">S. Kelahiran</span>
               </Link>
-              {/* Pengaduan */}
-              <Link to="/pengaduan/ajukan" className="flex flex-col items-center group">
-                <div className="w-[50px] h-[50px] md:w-20 md:h-20 bg-red-500/[0.04] rounded-2xl md:rounded-[2rem] flex items-center justify-center mb-3 group-hover:-translate-y-1 group-hover:bg-red-500/[0.08] transition-all shadow-inner border border-red-500/10">
-                  <ShieldAlert className="w-6 h-6 md:w-9 md:h-9 text-red-500 group-hover:scale-110 transition-transform" />
+              {/* Berita Desa */}
+              <Link to="/pengumuman" className="flex flex-col items-center group">
+                <div className="w-[50px] h-[50px] md:w-20 md:h-20 bg-indigo-500/[0.04] rounded-2xl md:rounded-[2rem] flex items-center justify-center mb-3 group-hover:-translate-y-1 group-hover:bg-indigo-500/[0.08] transition-all shadow-inner border border-indigo-500/10">
+                  <Megaphone className="w-6 h-6 md:w-9 md:h-9 text-indigo-400 group-hover:scale-110 transition-transform" />
                 </div>
-                <span className="text-[9px] md:text-xs font-bold text-gray-500 group-hover:text-red-500 text-center leading-tight">Pengaduan</span>
+                <span className="text-[9px] md:text-xs font-bold text-gray-500 group-hover:text-indigo-400 text-center leading-tight">Berita Desa</span>
               </Link>
             </div>
           </section>
@@ -163,26 +163,6 @@ const Dashboard = () => {
             {/* Subtle glow background */}
             <div className="absolute -top-20 -right-20 w-40 h-40 bg-emerald-500/5 blur-[50px] rounded-full pointer-events-none transition-all group-hover:bg-emerald-500/10" />
 
-            {/* NEW: Pengaduan Promotion Card */}
-            <div className="mb-6 h-full">
-              <Link to="/pengaduan/ajukan" className="block relative overflow-hidden rounded-[24px] bg-red-500/5 border border-red-500/10 p-4 transition-all hover:bg-red-500/10 hover:border-red-500/20 group/card">
-                <div className="flex items-start gap-3 relative z-10">
-                  <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center shrink-0">
-                    <ShieldAlert className="w-5 h-5 text-red-500" />
-                  </div>
-                  <div>
-                    <h3 className="text-xs font-black text-red-500 uppercase tracking-widest mb-1">Pengaduan Masyarakat</h3>
-                    <p className="text-[11px] text-gray-400 font-medium leading-relaxed">
-                      Temukan masalah atau kerusakan di lingkungan sekitar? Laporkan secara **Anonim** sekarang.
-                    </p>
-                  </div>
-                </div>
-                <div className="mt-3 flex items-center justify-end gap-1.5 text-[9px] font-black text-red-500 uppercase tracking-widest">
-                  Lapor Sekarang <ChevronRight size={10} className="group-hover/card:translate-x-1 transition-transform" />
-                </div>
-              </Link>
-            </div>
-
             <div className="flex items-center justify-between mb-5 md:mb-6 relative z-10">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center">
@@ -190,13 +170,9 @@ const Dashboard = () => {
                 </div>
                 <h2 className="text-sm md:text-base font-bold">Aktivitas Terkini</h2>
               </div>
-              <div className="flex items-center gap-3">
-                <Link to="/riwayat" className="text-[10px] text-gray-400 hover:text-emerald-400 font-bold uppercase tracking-wider transition-colors">
-                  Surat
-                </Link>
-                <div className="w-1 h-1 rounded-full bg-white/10" />
-                <Link to="/pengaduan/riwayat" className="text-[10px] text-gray-400 hover:text-orange-400 font-bold uppercase tracking-wider transition-colors">
-                  Laporan
+              <div className="flex items-center gap-2 px-3 py-1 bg-white/[0.03] border border-white/10 rounded-xl">
+                <Link to="/riwayat" className="flex items-center gap-1 text-[10px] text-gray-400 hover:text-emerald-400 font-bold uppercase tracking-wider transition-colors">
+                  Surat <ChevronRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
             </div>

@@ -1,3 +1,4 @@
+// APP CONFIGURATION: File ini berisi semua pengaturan framework Express, middleware, dan routing
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -11,7 +12,6 @@ import userRoutes from './routes/user.js';
 import recoveryRoutes from './routes/recovery.js';
 import pengajuanRoutes from './routes/pengajuan.js';
 import pengumumanRoutes from './routes/pengumuman.js';
-import pengaduanRoutes from './routes/pengaduan.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import rateLimit from 'express-rate-limit';
@@ -19,7 +19,7 @@ import rateLimit from 'express-rate-limit';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Create Express app
+// Inisialisasi instance framework Express
 const app = express();
 
 // Load environment variables
@@ -43,6 +43,8 @@ const allowedOrigins = Array.isArray(rawCorsOrigin)
       .filter(Boolean)
   : defaultOrigins;
 
+// KEAMANAN: Konfigurasi CORS (Cross-Origin Resource Sharing)
+// Membatasi domain apa saja (contoh: domain frontend localhost/vercel) yang diizinkan mengakses API ini.
 const corsOptions = {
   origin: (origin, callback) => {
     // Allow non-browser requests or same-origin (no origin header)
@@ -61,7 +63,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// Middleware
+// Middleware untuk memparsing body pada HTTP request yang berformat JSON
 app.use(express.json());
 
 // Security headers
@@ -85,6 +87,8 @@ app.set('trust proxy', 1); // penting di Railway / Vercel
 const sessionSecret = process.env.SESSION_SECRET || 'change_this_secret';
 const isProduction = (process.env.NODE_ENV || 'development') === 'production';
 
+// MANAJEMEN SESI: Konfigurasi express-session
+// Digunakan untuk menyimpan sesi sementara, terutama penting untuk menyimpan 'challenge' pada proses WebAuthn
 app.use(
   session({
     name: 'sid',
@@ -113,6 +117,7 @@ app.get('/', (req, res) => {
 app.get(['/favicon.ico', '/favicon.png'], (req, res) => res.status(204).end());
 // Rate limiting (hanya aktif di production)
 if (isProduction) {
+// KEAMANAN: Rate limiter untuk mencegah serangan DoS (Denial of Service) atau brute-force
   const globalLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 menit
     max: 300, // Maks 300 request per IP per window
@@ -134,7 +139,8 @@ if (isProduction) {
   app.use('/auth', authLimiter);
 }
 
-// Routes - support both /api/* and /* for backward compatibility
+// ROUTING: Mendaftarkan semua kumpulan endpoint/API yang tersedia di backend
+// Auth & User Management
 app.use('/api/auth', authRoutes);
 app.use('/auth', authRoutes); // Alias for client compatibility
 app.use('/api/user', userRoutes);
@@ -146,8 +152,6 @@ app.use('/pengajuan', pengajuanRoutes); // Alias for client compatibility
 app.use('/api/pengumuman', pengumumanRoutes);
 app.use('/pengumuman', pengumumanRoutes); // Alias for client compatibility
 
-app.use('/api/pengaduan', pengaduanRoutes);
-app.use('/pengaduan', pengaduanRoutes);
 
 // Static file serving for uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

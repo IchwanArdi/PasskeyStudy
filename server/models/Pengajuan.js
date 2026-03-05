@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { encrypt, decrypt } from '../utils/encryption.js';
-
+// SCHEMA SURAT: Struktur data untuk menyimpan riwayat permohonan surat warga
 const pengajuanSchema = new mongoose.Schema(
   {
     userId: {
@@ -13,7 +13,8 @@ const pengajuanSchema = new mongoose.Schema(
       required: true,
       enum: ['domisili', 'tidak_mampu', 'kelahiran', 'kematian', 'usaha'],
     },
-    // Data pemohon (Wajib untuk semua surat)
+    // ENKRIPSI DATA MENTAH: Data sensitif (Nama, NIK, TTL, Alamat) dienkripsi secara dua arah menggunakan AES-256-CBC
+    // sebelum benar-benar di-save ke dalam disk memori Database
     namaLengkap: {
       type: String,
       required: true,

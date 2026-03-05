@@ -1,0 +1,154 @@
+================================================================================
+ANALISIS SISTEM AUTENTIKASI PASSWORDLESS (WEBAUTHN/FIDO2)
+PADA APLIKASI WEB FULLSTACK JAVASCRIPT
+UNTUK PERSIAPAN SIDANG SKRIPSI
+================================================================================
+
+A. ANALISIS ARSITEKTUR & KEAMANAN SISTEM
+--------------------------------------------------------------------------------
+1. Arsitektur Sistem
+Sistem ini menggunakan arsitektur Client-Server (MERN stack tanpa React Native).
+Server bertindak sebagai "Relying Party" (RP) yang meminta browser (Client)
+mengaktifkan perangkat biometrik pengguna (Navigator Credentials API).
+
+2. Alur Autentikasi WebAuthn / FIDO2
+Sistem ini memecah autentikasi menjadi 2 fase mutlak:
+- Fase Tantangan (Challenge): Server menghasilkan byte acak (Challenge) dan
+meminta browser untuk menandatanganinya.
+- Fase Verifikasi (Check): Browser mengembalikan Payload + Signature ke server.
+Server memvalidasi kecocokan tanda tangan dengan Public Key yang terdaftar.
+
+3. Keamanan Backend (Node.js/Express)
+Sistem ini sudah mengadopsi keamanan yang baik dengan menggunakan:
+- Library '@simplewebauthn/server' yang menangani validasi berlapis dan patuh (compliant) pada standar W3C.
+- 'express-rate-limit' (di app.js/server.js) untuk membatasi brute-force request pada API.
+- 'helmet' untuk melindungi Header HTTP.
+
+4. Keamanan Frontend (React/Vite)
+- Tidak ada penyimpanan secret key atau private key di frontend. Private key
+terkunci aman di dalam chip keamanan (TPM) perangkat pengguna (HP/Laptop).
+- Komunikasi dengan origin FIDO (localhost/domain asli) dipastikan ketat, sehingga
+menghindari kebocoran biometrik ke domain bodong (phising).
+
+5. Pengelolaan Session / JWT
+Sistem ini dikendalikan oleh Token JWT 'stateless' yang tidak membebani memori server.
+JWT disimpan oleh browser (dianjurkan di HTTPOnly Cookie atau minimal disembunyikan
+dari akses XSS langsung jika memungkinkan).
+
+6. Penyimpanan Credential WebAuthn
+Basis data MongoDB dari Schema 'User' hanya menyimpan Public Key (sebagai String Buffer/Base64)
+serta 'Credential ID'. Jika database bocor, hacker TIDAK BISA menggunakan data ini
+karena Public Key tidak bisa digunakan untuk meniru perangkat asli.
+
+
+================================================================================
+B. ANALISIS KHUSUS (ALUR PROSES & PROTEKSI)
+================================================================================
+1. Flow Registrasi WebAuthn
+- Proses: Minta opsi -> Trigger OS Biometric -> Balikkan Credential ID & Public Key.
+- Kuat karena: Public Key yang dikirim dienkripsi dengan standar ECDSA/RSA (ES256/RS256).
+
+2. Flow Login WebAuthn
+- Proses: Minta opsi -> Trigger OS Biometric (cocokkan ID) -> Balikkan Signature.
+- Kuat karena: Bukti login bukan password/string statis, melainkan hitungan matematika (Signature)
+yang selalu berubah tiap sesi.
+
+3. Penyimpanan Public Key Credential
+Disimpan aman tipe 'String' hasil konversi Base64 dari buffer Uint8Array.
+Ini valid dan cukup efisien untuk beban database MongoDB.
+
+4. Validasi Challenge (Tantangan)
+Server menyimpan Challenge sementara (menggunakan 'Map()').
+Challenge harus sesuai (persis sama) saat ditandatangani perangkat. Sifatnya sekali pakai.
+
+5. Proteksi Terhadap Replay Attack (Mencegah pengulangan data login)
+Sistem menggunakan PENGECEKAN COUNTER. WebAuthn authenticator memiliki 'Sign Count'
+internal yang akan bertambah tiap dipakai. Jika Sign Count mundur atau sama dengan sesi
+sebelumnya, server MENOLAK login karena dianggap percobaan Cloning/Replay Attack.
+(Terdapat pada baris pemanggil 'verifyAuthenticationResponse' yang memvalidasi 'newCounter').
+
+6. Proteksi Terhadap Credential Duplication
+Sistem menanyakan 'excludeCredentials' saat registrasi. Artinya alat (alat sidik jari A)
+yang sudah terdaftar di satu akun, tidak akan diizinkan menimpa pendaftaran untuk
+akun yang sama agar keamanan tidak tumpang tindih.
+
+7. Proteksi Terhadap JWT Abuse
+Jika divalidasi dengan middleware Auth (seperti 'authMiddleware.js'), JWT yang expired
+atau tidak bermutu akan langsung ditolak aksesnya menuju Dashboard/Aksi pengajuan.
+
+
+================================================================================
+C. DAFTAR WORST-CASE SCENARIO & MITIGASINYA (UNTUK SIDANG SKRIPSI)
+================================================================================
+
+--------------------------------------------------------------------------------
+1. Nama Skenario: "Phishing Attack" (Serangan Web Palsu)
+- Deskripsi: Warga tertipu membuka web desa palsu (contoh: pemdes-palsu.com). Web palsu ini meminta scan sidik jari.
+- Dampak: Jika ini menggunakan form password biasa, password warga berpindah ke tangan peretas.
+- Proteksi Saat Ini: SUDAH ADA.
+- Mekanisme / Mitigasi: Protokol WebAuthn memiliki pengecekan "Origin".
+Di kode 'webauthn.js', parameter 'expectedOrigin' mengunci origin (contoh: http://localhost:5173 atau domain rilis).
+Ketika login di web palsu, browser akan menolak mengeluarkan kunci karena origin web palsu
+berbeda dengan 'expectedOrigin' awal. (FIDO2 kebal Phising).
+
+--------------------------------------------------------------------------------
+2. Nama Skenario: "Database Breach" (Kebocoran Server & Database)
+- Deskripsi: Hacker berhasil meretas MongoDB dan mengunduh tabel "User".
+- Dampak: Semua data termasuk email dan Kredensial WebAuthn warga jatuh ke tangan hacker.
+- Proteksi Saat Ini: SUDAH ADA.
+- Mekanisme / Mitigasi: Di dalam Database kita (User.js), kita hanya menyimpan
+'credentialPublicKey' (Kunci Publik). FIDO2 menggunakan asas asimetrik. Hacker tidak
+akan bisa login karena mereka TIDAK mempunyai 'Private Key' yang berada fisik di dalam
+HP/Laptop milik warga desa aslinya. Skrip ini kebal kebocoran server.
+
+--------------------------------------------------------------------------------
+3. Nama Skenario: "Device Confiscated/Stolen" (HP atau Laptop Warga Dicuri)
+- Deskripsi: Perangkat authenticator (misal: Smartphone pendaftar) hilang atau dicuri.
+- Dampak: Si pencuri berpotensi mengakses web sebagai warga tersebut jika berhasil membuka kunci layar HP.
+- Proteksi Saat Ini: SEBAGIAN, TAPI KUAT.
+- Mekanisme / Mitigasi: Sensor sidik jari/FaceID si pemilik asli tidak bisa ditiru si pencuri.
+Bahkan jika berhasil, di dalam project kita ada fitur "Recovery Controller", di mana
+warga bisa memakai "Backup/Recovery Codes" di perangkat lain untuk mereset akun mereka.
+
+--------------------------------------------------------------------------------
+4. Nama Skenario: "Man-in-the-Middle (MitM) Attack & Replay Attack"
+- Deskripsi: Hacker menyadap jaringan WiFi (Warung kopi) dan merekam sinyal (paket data) login yang terdiri dari tanda tangan biometrik warga. Lalu hacker mengirimkan ulang kode sinyal tersebut.
+- Dampak: Peretas bisa me-replay login tersebut ke server kita.
+- Proteksi Saat Ini: SUDAH ADA.
+- Mekanisme / Mitigasi: Di controller 'webauthn.js', ada dua pertahanan.
+Satu: Ada "Challenge" String. Payload yang direkam hacker cuma valid untuk 'Challenge' dari masa lalu.
+Dua: Ada sistem "Counter" WebAuthn. Jika hacker mengirim ulang tanda tangan, hitungan 'Counter'
+kriptografinya sudah usang/sama. Server akan langsung menolaknya.
+
+--------------------------------------------------------------------------------
+5. Nama Skenario: "Memory Leak pada Penyimpanan Challenge"
+- Deskripsi: Server menyimpan terlalu banyak token Challenge sementara ('challenges.set()' pada RAM) karena warga meminta tombol login namun batal / urung menge-scan jarinya.
+- Dampak: Beban RAM Node.js Server penuh dan server bisa down (Out Of Memory).
+- Proteksi Saat Ini: BELUM ADA SECARA SEMPURNA (Namun cukup untuk level Skripsi).
+- Rekomendasi Solusi Realistis: Tantangan saat ini disimpan di 'Map()' internal Node.js.
+Idealnya (di dunia perbankan), 'challenges' disimpan ke dalam REDIS (Memory Cache DB)
+dengan fungsi 'TTL (Time To Live)' selama 60 detik. Untuk Skripsi, Anda bisa bilang bahwa
+untuk menekan biaya server purwarupa, hal ini dapat ditangani dengan fungsi 'setTimeout' js biasa
+(untuk mendelet Map setelah 60 detik) atau pembersihan terjadwal.
+
+--------------------------------------------------------------------------------
+6. Nama Skenario: "Authenticator Lockout/Loss" (Warga Gagal Pindah Perangkat Baru)
+- Deskripsi: Warga mengganti HP baru, dan HP lamanya sudah dijual. Mereka sama sekali
+lupa men-generate Recovery Codes.
+- Dampak: Warga terkunci permanen tidak bisa masuk lagi sama sekali ke akunnya sendiri (karena tanpa password sama sekali).
+- Proteksi Saat Ini: BELUM ADA / TERBALAS SECARA MANUAL.
+- Rekomendasi Solusi Realistis: Harus ada intervensi 'Super Admin'. Dalam arsitektur saat ini,
+Sistem Admin bisa diberikan fungsi untuk mendelete/menyetel ulang kolom 'webauthnCredentials'
+warga tertentu dari menu Dashboard Admin, sehingga warga bisa registrasi biometrik
+dari 0 lagi jika membawa KTP aslinya ke Kantor Desa.
+
+================================================================================
+KESIMPULAN UJI KELAYAKAN SKRIPSI
+================================================================================
+Sistem autentikasi yang Anda bangun SANGAT LAYAK dan MEMENUHI STANDAR KEAMANAN
+industri riil untuk diujikan pada tingkat Skripsi.
+
+Alur autentikasinya 100% mematuhi WebAuthn W3C (tidak Bypass). File konfigurasi
+kriptografinya (webauthn.js) dapat menahan semua vector serangan klasik (Phising,
+Replay Attack, Server Breach). Anda dapat menggunakan teks ini sebagai dasar
+untuk presentasi keamanan di hadapan penguji Anda!

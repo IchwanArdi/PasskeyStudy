@@ -84,7 +84,7 @@ const faqSections = [
       },
       {
         q: 'Saya mau ganti ke HP baru, bagaimana caranya?',
-        a: '1. Sebelum ganti HP, pastikan Anda punya Kunci Cadangan (8 karakter unik yang didapat saat mendaftar)\n2. Di HP baru, buka aplikasi → pilih "Pemulihan Akun"\n3. Masukkan email dan Kunci Cadangan Anda\n4. Daftarkan sidik jari di HP baru\n5. (Opsional) Hapus HP lama dari daftar perangkat di menu Keamanan Perangkat',
+        a: '1. Sebelum ganti HP, pastikan Anda punya Kunci Cadangan (4 karakter unik yang didapat saat mendaftar)\n2. Di HP baru, buka aplikasi → pilih "Pemulihan Akun"\n3. Masukkan email dan Kunci Cadangan Anda\n4. Daftarkan sidik jari di HP baru\n5. (Opsional) Hapus HP lama dari daftar perangkat di menu Keamanan Perangkat',
       },
       {
         q: 'Bagaimana cara menghapus HP yang sudah tidak dipakai?',
@@ -126,7 +126,7 @@ const faqSections = [
     items: [
       {
         q: 'Apa itu Kunci Cadangan?',
-        a: 'Kunci Cadangan adalah kode unik berisi 8 karakter (huruf dan angka) yang berfungsi sebagai "kunci darurat" jika Anda tidak bisa login dengan sidik jari. Anggap saja seperti kunci cadangan rumah — simpan di tempat aman!',
+        a: 'Kunci Cadangan adalah kode unik berisi 4 karakter (huruf dan angka) yang berfungsi sebagai "kunci darurat" jika Anda tidak bisa login dengan sidik jari. Anggap saja seperti kunci cadangan rumah — simpan di tempat aman!',
       },
       {
         q: 'Kapan saya perlu menggunakan Kunci Cadangan?',
@@ -134,7 +134,7 @@ const faqSections = [
       },
       {
         q: 'Bagaimana cara menggunakan Kunci Cadangan?',
-        a: '1. Di halaman login, tekan "Pemulihan Akun"\n2. Masukkan alamat email yang terdaftar\n3. Masukkan Kunci Cadangan 8 karakter Anda\n4. Sistem akan memverifikasi dan meminta Anda mendaftarkan sidik jari baru\n5. Setelah berhasil, Anda bisa login seperti biasa',
+        a: '1. Di halaman login, tekan "Pemulihan Akun"\n2. Masukkan alamat email yang terdaftar\n3. Masukkan Kunci Cadangan 4 karakter Anda\n4. Sistem akan memverifikasi dan meminta Anda mendaftarkan sidik jari baru\n5. Setelah berhasil, Anda bisa login seperti biasa',
       },
     ],
   },

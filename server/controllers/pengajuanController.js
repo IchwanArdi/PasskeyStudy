@@ -5,8 +5,8 @@ import { decrypt } from '../utils/encryption.js';
 // ─── WARGA ────────────────────────────────────────────────────────────────────
 
 /**
- * POST /api/pengajuan
- * Warga membuat pengajuan surat baru
+ * ALUR PELAYANAN 1 (WARGA): Endpoint POST /api/pengajuan
+ * Warga (yang sudah authentikasi via FIDO) mengunggah formulir pengajuan surat baru ke database
  */
 export const buatPengajuan = async (req, res) => {
   try {
@@ -70,8 +70,8 @@ export const getPengajuanSaya = async (req, res) => {
 // ─── ADMIN ────────────────────────────────────────────────────────────────────
 
 /**
- * GET /api/pengajuan/admin
- * Admin melihat semua pengajuan (bisa filter by status)
+ * ALUR PELAYANAN 2 (ADMIN): Endpoint GET /api/pengajuan/admin
+ * Admin melihat seluruh antrian pengajuan surat yang masuk. (Data yang diambil dari DB akan di-dekripsi)
  */
 export const semuaPengajuan = async (req, res) => {
   try {
@@ -102,8 +102,8 @@ export const semuaPengajuan = async (req, res) => {
 };
 
 /**
- * PATCH /api/pengajuan/:id/status
- * Admin mengubah status pengajuan: diproses | disetujui | ditolak
+ * ALUR PELAYANAN 3 (ADMIN): Endpoint PATCH /api/pengajuan/:id/status
+ * Admin mengeksekusi nasib surat (mengubah status dari 'diproses' ke 'disetujui' atau 'ditolak')
  */
 export const updateStatusPengajuan = async (req, res) => {
   try {
@@ -172,8 +172,9 @@ export const detailPengajuan = async (req, res) => {
 };
 
 /**
- * GET /api/pengajuan/:id/pdf
- * Unduh surat balasan PDF jika status disetujui
+ * ALUR PELAYANAN 4 (SISTEM): Endpoint GET /api/pengajuan/:id/pdf
+ * Secara otomatis menghasilkan sebuah file PDF layout Surat Keterangan Desa resmi (menggunakan pdf-lib) 
+ * jika status permohonan sudah 'disetujui'
  */
 export const downloadSuratPDF = async (req, res) => {
   try {

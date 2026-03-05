@@ -1,10 +1,9 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, FileText, Bell, Users, User, ShieldAlert } from 'lucide-react';
+import { Home, FileText, Bell, Users, User } from 'lucide-react';
 
 const navItems = [
   { to: '/admin', icon: Home, label: 'Beranda' },
   { to: '/admin/pengajuan', icon: FileText, label: 'Pengajuan' },
-  { to: '/admin/pengaduan', icon: ShieldAlert, label: 'Aduan' },
   { to: '/admin/pengumuman', icon: Bell, label: 'Berita' },
   { to: '/admin/users', icon: Users, label: 'Warga' },
   { to: '/admin/profile', icon: User, label: 'Profil' },

@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-
+// SCHEMA WEBAUTHN: Menyimpan blueprint public key dari authenticator perangkat (sidik jari, FaceID) yang didaftarkan user
 const webauthnCredentialSchema = new mongoose.Schema({
   credentialID: {
     type: String,
     required: true,
-    // Remove unique from subdocument - we'll handle uniqueness at application level
+    // Hindari duplikat id dalam subdokumen - dicek otomatis di level aplikasi
   },
   credentialPublicKey: {
     type: String,
@@ -37,7 +37,7 @@ const webauthnCredentialSchema = new mongoose.Schema({
     default: null,
   },
 });
-
+// SCHEMA UTAMA: Struktur hierarki data entitas User dalam database MongoDB
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -64,13 +64,13 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
-  // Role-based access: 'warga' (citizen) or 'admin'
+  // RBAC (Role-Based Access Control): Menentukan tingkat wewenang akses pengguna ('warga' atau 'admin')
   role: {
     type: String,
     enum: ["warga", "admin"],
     default: "warga",
   },
-  // Citizen identity fields
+  // Atribut kelengkapan sistem autentikasi warga
   authMethod: {
     type: String,
     enum: ["webauthn", "password", "hybrid"],
@@ -100,21 +100,21 @@ const userSchema = new mongoose.Schema({
   ],
 });
 
-// Hash password before saving
+// HOOK MONGOOSE: Secara otomatis mengenkripsi (hash) password sebelum di-save ke database menggunakan library bcrypt
 userSchema.pre("save", async function (next) {
   try {
-    // Only hash password if it's modified and exists
+    // Hanya enkripsi (hash) jika string password diupdate dan ada isinya
     if (this.isModified("password") && this.password) {
       const salt = await bcrypt.genSalt(10);
       this.password = await bcrypt.hash(this.password, salt);
     }
 
-    // Update timestamp
+    // Perbarui stempel waktu
     if (this.isNew || this.isModified()) {
       this.updatedAt = Date.now();
     }
 
-    // Ensure next is a function before calling
+    // Pastikan antrian 'next' adalah fungsi sebelum dipanggil
     if (typeof next === "function") {
       next();
     }
@@ -128,38 +128,38 @@ userSchema.pre("save", async function (next) {
   }
 });
 
-// Note: We allow users to be created without password for WebAuthn flow
-// The credential will be added in the next step, so validation happens at application level
+// Catatan: Warga bebas mendaftar tanpa kata sandi via rute Passwordless (WebAuthn). 
+// FIDO biometrik kredensial akan otomatis ditambahkan dalam flow di belakang layar.
 
-// Method to compare password
+// FUNGSI DOMAIN: Membandingkan password yang di-input dengan enkripsi di DB
 userSchema.methods.comparePassword = async function (candidatePassword) {
   if (!this.password) return false;
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-// Method to add WebAuthn credential
+// FUNGSI DOMAIN: Mendaftarkan perangkat baru (HP/Laptop) ke array credentials akun user
 userSchema.methods.addWebAuthnCredential = async function (credential) {
-  // Check if credentialID already exists for this user
+  // Cek apakah kredensial yang sama sudah didaftarkan user ini
   const existingCred = this.webauthnCredentials.find(
     (cred) => cred.credentialID === credential.credentialID,
   );
 
   if (existingCred) {
-    throw new Error("This credential is already registered for this user");
+    throw new Error("Kredensial atau perangkat ini sudah didaftarkan sebelumnya");
   }
 
   this.webauthnCredentials.push(credential);
   return this.save();
 };
 
-// Method to find credential by ID
+// FUNGSI DOMAIN: Cari data spesifik alat FIDO berdasarkan Credential ID
 userSchema.methods.findCredential = function (credentialID) {
   return this.webauthnCredentials.find(
     (cred) => cred.credentialID === credentialID,
   );
 };
 
-// Method to update credential counter
+// FUNGSI DOMAIN: Tingkatkan total jumlah klik alat FIDO tiap kali user sukses login
 userSchema.methods.updateCredentialCounter = function (credentialID, counter) {
   const credential = this.findCredential(credentialID);
   if (credential) {
@@ -169,7 +169,7 @@ userSchema.methods.updateCredentialCounter = function (credentialID, counter) {
   return null;
 };
 
-// Method to remove a WebAuthn credential
+// FUNGSI DOMAIN: Menghancurkan pendaftaran satu spesifik FIDO device
 userSchema.methods.removeWebAuthnCredential = async function (credentialID) {
   const index = this.webauthnCredentials.findIndex(
     (cred) => cred.credentialID === credentialID,
@@ -179,7 +179,7 @@ userSchema.methods.removeWebAuthnCredential = async function (credentialID) {
     throw new Error("Credential tidak ditemukan");
   }
 
-  // Prevent deleting last credential for WebAuthn-only users
+  // Hindari menghapus perangkat satu-satunya bagi pengguna murni passwordless
   if (!this.password && this.webauthnCredentials.length <= 1) {
     throw new Error(
       "Tidak dapat menghapus credential terakhir. Tambahkan perangkat lain terlebih dahulu.",
@@ -190,11 +190,11 @@ userSchema.methods.removeWebAuthnCredential = async function (credentialID) {
   return this.save();
 };
 
-// Method to generate recovery codes
+// FUNGSI DOMAIN: Membuat 4 kode alfanumerik acak (Recovery Codes) jika user kehilangan semua perangkat FIDO-nya
 userSchema.methods.generateRecoveryCodes = async function () {
   const codes = [];
-  for (let i = 0; i < 8; i++) {
-    const code = crypto.randomBytes(4).toString("hex").toUpperCase();
+  for (let i = 0; i < 4; i++) {
+    const code = crypto.randomBytes(2).toString("hex").toUpperCase();
     codes.push(code);
   }
 
@@ -205,10 +205,10 @@ userSchema.methods.generateRecoveryCodes = async function () {
   }));
 
   await this.save();
-  return codes; // Return plain codes (only shown once)
+  return codes; // Beri array kodenya (hanya terlihat sekali saat generate)
 };
 
-// Method to verify and use a recovery code
+// FUNGSI DOMAIN: Memverifikasi satu kode rekovery jika user terkunci out
 userSchema.methods.useRecoveryCode = async function (plainCode) {
   const hashed = crypto
     .createHash("sha256")

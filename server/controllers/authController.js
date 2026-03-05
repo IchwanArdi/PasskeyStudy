@@ -1,5 +1,4 @@
 import User from '../models/User.js';
-import AuthLog from '../models/AuthLog.js';
 import { validationResult } from 'express-validator';
 import { generateToken } from '../utils/tokenHelper.js';
 
@@ -52,16 +51,6 @@ export const register = async (req, res) => {
 
     const token = generateToken(user._id);
 
-    // Log registration
-    await AuthLog.create({
-      userId: user._id,
-      method: 'password',
-      duration: 0,
-      success: true,
-      ipAddress: req.ip || req.connection.remoteAddress,
-      userAgent: req.get('user-agent'),
-    });
-
     res.status(201).json({
       message: 'User registered successfully',
       token,
@@ -92,30 +81,12 @@ export const login = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) {
       const duration = Date.now() - startTime;
-      await AuthLog.create({
-        userId: null,
-        method: 'password',
-        duration,
-        success: false,
-        ipAddress: req.ip || req.connection.remoteAddress,
-        userAgent: req.get('user-agent'),
-        errorMessage: 'User not found',
-      });
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
     // Check if user has password
     if (!user.password) {
       const duration = Date.now() - startTime;
-      await AuthLog.create({
-        userId: user._id,
-        method: 'password',
-        duration,
-        success: false,
-        ipAddress: req.ip || req.connection.remoteAddress,
-        userAgent: req.get('user-agent'),
-        errorMessage: 'Password not set for this user',
-      });
       return res.status(401).json({ message: 'Password authentication not available for this user' });
     }
 
@@ -123,15 +94,6 @@ export const login = async (req, res) => {
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       const duration = Date.now() - startTime;
-      await AuthLog.create({
-        userId: user._id,
-        method: 'password',
-        duration,
-        success: false,
-        ipAddress: req.ip || req.connection.remoteAddress,
-        userAgent: req.get('user-agent'),
-        errorMessage: 'Invalid password',
-      });
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
@@ -156,16 +118,6 @@ export const login = async (req, res) => {
     }
     await user.save();
 
-    // Log successful login
-    const authLog = await AuthLog.create({
-      userId: user._id,
-      method: 'password',
-      duration,
-      success: true,
-      ipAddress: currentIP,
-      userAgent: currentUA
-    });
-
     res.json({
       message: 'Login successful',
       token,
@@ -179,16 +131,6 @@ export const login = async (req, res) => {
   } catch (error) {
     const duration = Date.now() - startTime;
     console.error('Login error:', error);
-
-    await AuthLog.create({
-      userId: null,
-      method: 'password',
-      duration,
-      success: false,
-      ipAddress: req.ip || req.connection.remoteAddress,
-      userAgent: req.get('user-agent'),
-      errorMessage: error.message,
-    });
 
     res.status(500).json({ message: 'Server error', error: error.message });
   }

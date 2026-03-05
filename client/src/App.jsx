@@ -1,3 +1,4 @@
+// ROUTER UTAMA: Memetakan hierarki navigasi (URL ke Komponen Spesifik) untuk seluruh aplikasi React
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { ToastContainer } from 'react-toastify';
@@ -22,9 +23,7 @@ import Profile from './pages/user/Profile';
 import ManageDevices from './pages/user/ManageDevices';
 import Layanan from './pages/user/Layanan';
 import FormPengajuan from './pages/user/FormPengajuan';
-import FormPengaduan from './pages/user/FormPengaduan';
 import RiwayatPengajuan from './pages/user/RiwayatPengajuan';
-import RiwayatPengaduan from './pages/user/RiwayatPengaduan';
 import Pengumuman from './pages/user/Pengumuman';
 import DetailPengumuman from './pages/user/DetailPengumuman';
 import PanduanWarga from './pages/user/PanduanWarga';
@@ -33,19 +32,18 @@ import PanduanWarga from './pages/user/PanduanWarga';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminPengajuan from './pages/admin/Pengajuan.jsx';
 import AdminPengumuman from './pages/admin/Pengumuman.jsx';
-import AdminPengaduan from './pages/admin/Pengaduan.jsx';
 import AdminProfile from './pages/admin/Profile.jsx';
 import AdminUsers from './pages/admin/ManageUsers.jsx';
 import AdminNavLayout from './components/AdminNavLayout.jsx';
 
 import './App.css';
 
-// Guard: wajib login
+// GUARD ROUTE WARGA: Middle-man komponen yang akan melempar user ke halaman login jika mereka belum terautentikasi
 const PrivateRoute = ({ children }) => {
   return isAuthenticated() ? children : <Navigate to="/login" replace />;
 };
 
-// Guard: wajib login + role admin
+// GUARD ROUTE ADMIN: Mengecek lapis dua; selain harus login, role user di localStorage harus persis 'admin'
 const AdminRoute = ({ children }) => {
   if (!isAuthenticated()) return <Navigate to="/login" replace />;
   const userStr = localStorage.getItem('user');
@@ -72,6 +70,7 @@ function App() {
       <div className="App">
         <InstallAppBanner />
         <ScrollToTop />
+        {/* BUNDEL ROUTING: Daftar pemetaan URL (path) ke Komponen UI (element). Dikelompokkan per Role. */}
         <Routes>
           {/* Onboarding — halaman awal (skip jika sudah login) */}
           <Route path="/" element={
@@ -92,17 +91,13 @@ function App() {
           <Route element={<NavLayout><ManageDevices /></NavLayout>} path="/manage-devices" />
           <Route element={<NavLayout><Layanan /></NavLayout>} path="/layanan" />
           <Route element={<NavLayout><FormPengajuan /></NavLayout>} path="/layanan/ajukan" />
-          <Route element={<NavLayout><FormPengaduan /></NavLayout>} path="/pengaduan/ajukan" />
-          <Route element={<NavLayout><RiwayatPengaduan /></NavLayout>} path="/pengaduan/riwayat" />
-          <Route element={<NavLayout><RiwayatPengajuan /></NavLayout>} path="/riwayat" />
-          <Route element={<NavLayout><Pengumuman /></NavLayout>} path="/pengumuman" />
+          <Route element={<NavLayout><RiwayatPengajuan /></NavLayout>} path="/riwayat" />          <Route element={<NavLayout><Pengumuman /></NavLayout>} path="/pengumuman" />
           <Route element={<NavLayout><DetailPengumuman /></NavLayout>} path="/pengumuman/:id" />
           <Route element={<NavLayout><PanduanWarga /></NavLayout>} path="/panduan" />
 
           {/* Admin */}
           <Route path="/admin" element={<AdminRoute><AdminNavLayout><AdminDashboard /></AdminNavLayout></AdminRoute>} />
           <Route path="/admin/pengajuan" element={<AdminRoute><AdminNavLayout><AdminPengajuan /></AdminNavLayout></AdminRoute>} />
-          <Route path="/admin/pengaduan" element={<AdminRoute><AdminNavLayout><AdminPengaduan /></AdminNavLayout></AdminRoute>} />
           <Route path="/admin/pengumuman" element={<AdminRoute><AdminNavLayout><AdminPengumuman /></AdminNavLayout></AdminRoute>} />
           <Route path="/admin/profile" element={<AdminRoute><AdminNavLayout><AdminProfile /></AdminNavLayout></AdminRoute>} />
           <Route path="/admin/users" element={<AdminRoute><AdminNavLayout><AdminUsers /></AdminNavLayout></AdminRoute>} />

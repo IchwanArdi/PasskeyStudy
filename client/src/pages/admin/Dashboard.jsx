@@ -4,7 +4,7 @@ import { isAuthenticated, clearAuth } from '../../utils/auth';
 import { toast } from 'react-toastify';
 import {
   FileText, Bell, Users, ChevronRight, LogOut, Clock, CheckCircle, XCircle,
-  ArrowRight, Hourglass, Settings, ClipboardList, ShieldAlert
+  ArrowRight, Hourglass, Settings, ClipboardList
 } from 'lucide-react';
 import LetterIcon from '../../components/LetterIcon';
 
@@ -121,17 +121,6 @@ const AdminDashboard = () => {
                     <p className="text-xs text-gray-500 mt-1">Buat dan edit pengumuman desa</p>
                   </div>
                   <ChevronRight className="w-5 h-5 text-gray-600 group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
-                </Link>
-
-                <Link to="/admin/pengaduan" className="flex items-center gap-4 p-5 md:p-6 bg-white/[0.03] border border-white/[0.06] rounded-3xl hover:border-red-500/20 hover:bg-white/[0.05] transition-all group">
-                  <div className="w-12 h-12 rounded-2xl bg-red-500/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                    <ShieldAlert className="w-6 h-6 text-red-400" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm md:text-base font-bold text-gray-200 group-hover:text-white transition-colors">Kelola Pengaduan</p>
-                    <p className="text-xs text-gray-500 mt-1">Tinjau laporan anonim warga</p>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-gray-600 group-hover:text-red-400 group-hover:translate-x-1 transition-all" />
                 </Link>
               </div>
             </div>

@@ -1,0 +1,75 @@
+================================================================================
+DRAFT INTI SKRIPSI: IMPLEMENTASI SISTEM AUTENTIKASI PASSWORDLESS 
+(WEBAUTHN/FIDO2) PADA APLIKASI WEB FULLSTACK JAVASCRIPT
+(Studi Kasus: Layanan Desa Digital)
+================================================================================
+
+--------------------------------------------------------------------------------
+1. RUMUSAN MASALAH
+Berdasarkan arsitektur dan fungsionalitas aplikasi layanan desa digital yang dibangun, rumusan masalah yang difokuskan adalah:
+  a. Bagaimana merancang dan mengimplementasikan sistem autentikasi passwordless berbasis protokol WebAuthn/FIDO2 menggunakan arsitektur Fullstack JavaScript (MERN Stack) pada aplikasi layanan desa digital?
+  b. Bagaimana tingkat ketahanan dan keamanan sistem autentikasi passwordless yang dibangun dalam memitigasi berbagai skenario ancaman siber (worst-case scenarios) seperti phishing, credential theft, dan replay attacks pada tingkat aplikasi web?
+
+--------------------------------------------------------------------------------
+2. TUJUAN PENELITIAN
+Tujuan penelitian ini langsung menjawab rumusan masalah di atas:
+  a. Mengimplementasikan dan membuktikan kelayakan (proof of concept) sistem autentikasi passwordless berbasis protokol WebAuthn/FIDO2 secara end-to-end (dari sensor biometrik perangkat hingga validasi database) pada platform Fullstack JavaScript.
+  b. Mengevaluasi dan menganalisis tingkat keamanan sistem terhadap kerentanan autentikasi tradisional melalui pemodelan ancaman (threat modeling) dan mitigasi skenario terburuk (worst-case considerations).
+
+--------------------------------------------------------------------------------
+3. BATASAN MASALAH
+Agar ruang lingkup penelitian jelas, realistis, dan berfokus pada hasil project:
+  a. Penelitian difokuskan pada implementasi autentikasi passwordless (WebAuthn/FIDO2) memanfaatkan library `@simplewebauthn` untuk proses registrasi dan login.
+  b. Pengujian keamanan sistem dibatasi pada analisis skenario serangan teknis (worst-case consideration) di level logika aplikasi (Application Layer), tidak mencakup pengujian penetrasi (penetration testing) skala penuh pada infrastruktur fisik jaringan server atau DoS attack.
+  c. Alur pemulihan akun (Account Recovery) pengguna saat kehilangan perangkat authenticator saat ini dibatasi pada mekanisme penggunaan Backup Codes statis, belum mencakup integrasi sistem pemulihan identitas fisik otomatis (misal: face recognition e-KTP mandiri).
+
+--------------------------------------------------------------------------------
+4. METODE PENELITIAN
+Metode yang paling cocok untuk skripsi ini adalah: Research and Development (R&D) dengan Pendekatan Prototyping (Metode Purwarupa).
+
+Mengapa Metode ini Paling Cocok?
+Skripsi ini berfokus pada "pembuktian konsep / pembuatan alat bantu" menggunakan teknologi WebAuthn yang relatif kompleks untuk sebuah studi kasus layanan publik (masyarakat desa). R&D dengan Prototyping memungkinkan iterasi cepat dari rancangan antarmuka pendaftaran biometrik hingga validasi logika kriptografi di backend Node.js.
+
+Bagaimana Metode ini Diterapkan dalam Project (Fakta Project):
+  a. Analisis Kebutuhan: Mengidentifikasi masalah nyata, yaitu warga desa sering lupa password yang mengakibatkan pelayanan digital terhambat.
+  b. Perancangan Purwarupa (Desain): Membangun struktur 'Credential Schema' di database MongoDB (menyimpan Public Key & Counter), merancang rute backend (Express.js), dan membuat komponen UI WebAuthnAuth di sisi klien (React.js).
+  c. Pembuatan Purwarupa (Implementasi): Menulis fungsi getRegistrationOptions, verifyRegistration, getAuthenticationOptions, dan verifyAuthentication yang memfasilitasi pertukaran 'Challenge' dan 'Signature' antara browser dan server.
+  d. Evaluasi Purwarupa (Pengujian/Analisis): Menguji coba flow login menggunakan hardware biometrik (Windows Hello/Fingerprint/FaceID) dan mengevaluasi ketahanannya terhadap simulasi serangan.
+
+--------------------------------------------------------------------------------
+5. ALASAN PEMILIHAN TEKNOLOGI
+  a. WebAuthn / FIDO2: Standar industri resmi dari W3C yang menggunakan kriptografi asimetris (Public-Private Key pair). Kunci rahasia (Private Key) tidak pernah meninggalkan perangkat warga, sehingga secara teknis kebal terhadap serangan Phishing dan Credential Stuffing (kebocoran password massal) yang menjadi ancaman terbesar web saat ini.
+  b. Fullstack JavaScript (React & Node.js/Express): Pertukaran data FIDO2 sangat bergantung pada manipulasi objek primitif biner (Buffer, Uint8Array) dan format Base64URL. Menggunakan ekosistem JavaScript dari ujung ke ujung (frontend ke backend) menyederhanakan proses konversi dan serialisasi data kriptografi yang rumit dibandingkan multi-bahasa.
+  c. Sistem Passwordless: Masyarakat desa memiliki profil tingkat literasi digital yang beragam. Menghapus kewajiban menghafal kata sandi kompleks dan menggantinya dengan kebiasaan alami "sentuh sidik jari" secara drastis meningkatkan User Experience (UX) sekaligus memperkuat User Security (Keamanan tingkat Hardware).
+
+--------------------------------------------------------------------------------
+6. KONTRIBUSI PENELITIAN
+  a. Keamanan Autentikasi Web: Memberikan cetak biru (blueprint) nyata bagaimana aplikasi layanan publik tingkat komunitas/desa dapat beralih ke standar keamanan Enterprise-Grade yang tahan phishing.
+  b. Implementasi Passwordless: Menghasilkan referensi implementasi best-practice pertukaran 'Challenge-Signature' pada framework MERN Stack lengkap dengan pengelolaan state JSON Web Token (JWT) stateless.
+  c. Penerapan WebAuthn secara Nyata: Penelitian ini tidak hanya berupa kajian teoritis autentikasi asimetris, melainkan menghasilkan modul komprehensif lengkap dengan penanganan (error handling) kasus nyata seperti pendaftaran duplikat perangkat atau sinkronisasi passkey lintas platform.
+
+--------------------------------------------------------------------------------
+7. WORST CASE CONSIDERATION (RISIKO KEAMANAN & MITIGASINYA)
+Berdasarkan analisis kondisi riil pada source code project yang telah dibangun:
+
+  Skenario 1: Replay Attack (Pemutaran Ulang Tanda Tangan Biometrik)
+  - Deskripsi: Peretas dalam satu jaringan WiFi menyadap lalu memutar ulang payload biometrik sah milik warga menuju server.
+  - Mitigasi Sistem (SUDAH ADA MUTLAK): Server (berada di utilitas `webauthn.js`) menerapkan validasi dua lapis. Pertama, pengecekan 'Challenge' (bersifat one-time pad/sekali pakai). Kedua, pengecekan angka urut 'Counter'. Jika peretas memutar ulang paket data, hitungan counter akan tertahan/stagnan, dan server secara otomatis menolak akses karena terdeteksi sebagai cloning alat.
+  
+  Skenario 2: Database Server Compromise (Peretasan Database MongoDB)
+  - Deskripsi: Hacker berhasil menembus celah keamanan cloud dan mengunduh seluruh Collection "User".
+  - Mitigasi Sistem (SUDAH ADA MUTLAK): Jika ini sistem password biasa (walau sudah di-hash bcrypt), peretas masih bisa melakukan brute-force. Namun pada project FIDO2 ini, database murni hanya menyimpan tipe rentetan string 'Public Key'. Sang hacker sama sekali tidak bisa membuat 'Signature' login dari Public Key tersebut tanpa menggunakan perangkat fisik (HP/Laptop) milik sang warga. Dampak peretasan turun secara drastis.
+
+  Skenario 3: JWT Token Hijacking (Pencurian Sesi Login via Cookie/Storage)
+  - Deskripsi: Peretas berhasil mencuri JSON Web Token warga dari LocalStorage melalui serangan lintas-situs (XSS).
+  - Mitigasi Sistem (SUDAH TERBATAS/JUJUR): Sistem ini menggunakan JWT stateless berdurasi pendek. Namun saat ini JWT disimpan di memori klien yang bisa diakses skrip.
+  - Rekomendasi Solusi: Sebagai bahan saran skripsi (future work), implementasi selanjutnya direkomendasikan merubah penyampaian JWT dari LocalStorage menjadi HTTPOnly Cookies yang kebal terhadap serangan ekstraksi XSS.
+
+  Skenario 4: Memory Leak pada Penyimpanan Challenge (Crash Server)
+  - Deskripsi: Modul `webauthnController.js` saat ini menyimpan Challenge string sementara menggunakan fungsi bawaan `const challenges = new Map()`. Jika ribuan peretas (Botnet) melakukan spam request halaman "Register" tanpa merespon tantangannya, memori RAM Node.js (sebesar ~1.5 GB) pada server purwarupa ini akan penuh dan lumpuh (OOM Error).
+  - Mitigasi Sistem (BELUM ADA SECARA SEMPURNA): Karena ini adalah proyek purwarupa dan keterbatasan resource pengembangan, penyimpanan masih menggunakan RAM lokal.
+  - Rekomendasi Solusi: Untuk standar produksi nyata, `Map()` internal harus diganti dengan server penyimpanan caching khusus (seperti Redis) yang dilengkapi mekanisme batas kedaluwarsa otomatis (TTL - Time To Live) per tantangan selama 60 detik (auto-flush memory).
+
+================================================================================
+DRAFT INI DISUSUN BERDASARKAN FAKTA SOURCE CODE PROJECT ANDA.
+================================================================================

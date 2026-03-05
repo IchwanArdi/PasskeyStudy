@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Shield, Smartphone, HelpCircle, Key, Info, ArrowLeft, MessageCircle } from 'lucide-react';
+import { Shield, Smartphone, HelpCircle, Key, Info, ArrowLeft, MessageCircle, Lock } from 'lucide-react';
 
 const Help = () => {
   const scenarios = [
@@ -18,7 +18,7 @@ const Help = () => {
     {
       id: 'kunci-cadangan',
       title: 'Fungsi Kunci Cadangan',
-      content: 'Gunakan 8 karakter Kunci Cadangan jika Anda ganti HP atau biometrik tidak terbaca. Simpan kode ini di tempat yang sangat aman dan rahasia.',
+      content: 'Gunakan 4 karakter Kunci Cadangan jika Anda ganti HP atau biometrik tidak terbaca. Simpan kode ini di tempat yang sangat aman dan rahasia.',
       icon: <Key className="w-6 h-6 text-emerald-500" />
     },
     {

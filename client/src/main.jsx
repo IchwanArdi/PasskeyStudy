@@ -1,3 +1,4 @@
+// ENTRY POINT: File utama React yang melakukan render pertama kali ke DOM browser (index.html)
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { registerSW } from 'virtual:pwa-register';
@@ -10,7 +11,8 @@ createRoot(document.getElementById('root')).render(
   </StrictMode>
 );
 
-// PWA Service Worker — auto-update via vite-plugin-pwa
+// PWA CONFIG: Registrasi Service Worker lewat manifest Vite
+// Berfungsi mengatur caching agar web bisa di-install layaknya aplikasi native dan mendukung mode offline
 registerSW({
   onRegisteredSW(swUrl, registration) {
     // Check for updates every 60 minutes
@@ -21,6 +23,6 @@ registerSW({
     }
   },
   onOfflineReady() {
-    console.log('App ready to work offline');
+
   },
 });

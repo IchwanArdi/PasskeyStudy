@@ -1,5 +1,4 @@
 import User from '../models/User.js';
-import AuthLog from '../models/AuthLog.js';
 import { getRegistrationOptions, verifyRegistration } from '../utils/webauthn.js';
 import { generateToken } from '../utils/tokenHelper.js';
 
@@ -17,16 +16,6 @@ export const generateCodes = async (req, res) => {
     }
 
     const codes = await user.generateRecoveryCodes();
-
-    await AuthLog.create({
-      userId: user._id,
-      method: 'webauthn',
-      duration: 0,
-      success: true,
-      ipAddress: req.ip || req.connection.remoteAddress,
-      userAgent: req.get('user-agent'),
-      errorMessage: 'Recovery codes generated',
-    });
 
     res.json({
       message: 'Recovery codes generated successfully',
@@ -58,30 +47,11 @@ export const verifyCode = async (req, res) => {
 
     const isValid = await user.useRecoveryCode(code);
     if (!isValid) {
-      await AuthLog.create({
-        userId: user._id,
-        method: 'webauthn',
-        duration: 0,
-        success: false,
-        ipAddress: req.ip || req.connection.remoteAddress,
-        userAgent: req.get('user-agent'),
-        errorMessage: 'Invalid recovery code',
-      });
       return res.status(401).json({ message: 'Kode pemulihan tidak valid atau sudah digunakan' });
     }
 
     // Generate a temporary token (1 hour) to allow re-registration
     const tempToken = generateToken(user._id, '1h');
-
-    await AuthLog.create({
-      userId: user._id,
-      method: 'webauthn',
-      duration: 0,
-      success: true,
-      ipAddress: req.ip || req.connection.remoteAddress,
-      userAgent: req.get('user-agent'),
-      errorMessage: 'Recovery code verified',
-    });
 
     const remainingCodes = user.backupCodes.filter((c) => !c.used).length;
 
@@ -151,16 +121,6 @@ export const reRegister = async (req, res) => {
 
     const duration = Date.now() - startTime;
     const token = generateToken(user._id);
-
-    await AuthLog.create({
-      userId: user._id,
-      method: 'webauthn',
-      duration,
-      success: true,
-      ipAddress: req.ip || req.connection.remoteAddress,
-      userAgent: req.get('user-agent'),
-      errorMessage: 'New authenticator registered via recovery',
-    });
 
     // Generate new recovery codes
     const newCodes = await user.generateRecoveryCodes();

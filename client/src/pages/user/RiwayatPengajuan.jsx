@@ -164,7 +164,7 @@ const RiwayatPengajuan = () => {
 
       <div className="px-5 md:px-0 mt-8">
         <Link to="/layanan" className="w-full py-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-extrabold rounded-2xl flex items-center justify-center text-sm hover:bg-emerald-500/20 transition-all uppercase tracking-widest">
-          + Ajukan Surat Baru
+          Ajukan Surat Baru
         </Link>
       </div>
       </div>

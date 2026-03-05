@@ -110,9 +110,9 @@ const Recovery = () => {
                       value={code}
                       onChange={(e) => { setCode(e.target.value.toUpperCase()); setError(''); }}
                       required
-                      maxLength={8}
+                      maxLength={4}
                       className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all text-sm font-mono tracking-widest text-center text-lg"
-                      placeholder="XXXXXXXX"
+                      placeholder="XXXX"
                     />
                   </div>
                   {error && (

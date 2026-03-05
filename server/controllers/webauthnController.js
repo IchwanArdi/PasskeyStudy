@@ -1,12 +1,12 @@
 import User from '../models/User.js';
-import AuthLog from '../models/AuthLog.js';
 import { getRegistrationOptions, verifyRegistration, getAuthenticationOptions, verifyAuthentication } from '../utils/webauthn.js';
 import { generateToken } from '../utils/tokenHelper.js';
 
-// Store challenges temporarily
+// Simpan tantangan/challenge sementara
 // NOTE: Untuk production multi-instance, gunakan Redis atau MongoDB TTL collection
 const challenges = new Map();
 
+// CONTROLLER REGISTRASI 1: Endpoint awal registrasi. Menyiapkan parameter WebAuthn (seperti challenge & RP ID) untuk merangsang authenticator perangkat.
 export const getRegisterOptions = async (req, res) => {
   try {
     const { email, username: inputUsername } = req.body;
@@ -15,17 +15,17 @@ export const getRegisterOptions = async (req, res) => {
       return res.status(400).json({ message: 'Email dan Nama tidak boleh kosong' });
     }
 
-    // Find existing user by email (case-insensitive)
+    // Cari user berdasarkan email (abaikan huruf besar/kecil)
     let user = await User.findOne({ email: email.toLowerCase().trim() });
 
     if (!user) {
-      // Validate and clean username
+      // Validasi dan bersihkan spasi pada nama
       const username = inputUsername.trim();
       if (username.length < 3) {
         return res.status(400).json({ message: 'Nama harus terdiri dari minimal 3 karakter' });
       }
 
-      // Check if username is already taken
+      // Cek apakah nama sudah dipakai
       const existingName = await User.findOne({ username });
       if (existingName) {
         return res.status(400).json({ message: 'Nama ini sudah terdaftar. Silakan gunakan nama lain atau tambahkan angka di belakang nama Anda.' });
@@ -37,7 +37,7 @@ export const getRegisterOptions = async (req, res) => {
           email: email.toLowerCase().trim(),
         });
         await user.save();
-        console.log('User created successfully for WebAuthn:', user.email);
+        await user.save();
       } catch (saveError) {
         console.error('Error saving user (WebAuthn registration):', saveError);
         
@@ -53,18 +53,18 @@ export const getRegisterOptions = async (req, res) => {
         return res.status(500).json({ message: 'Gagal membuat akun' });
       }
     } else {
-      // User already exists, use existing user for WebAuthn credential addition
-      console.log('User already exists, adding WebAuthn credential to existing user:', user.email);
+      // Jika user sudah ada, gunakan user tersebut untuk menambah perangkat WebAuthn baru
+
     }
 
-    // Ensure user has _id
+    // Pastikan user memiliki ID (_id)
     if (!user._id) {
-      return res.status(500).json({ message: 'User ID not found' });
+      return res.status(500).json({ message: 'ID User tidak ditemukan' });
     }
 
     const options = await getRegistrationOptions(user);
 
-    // Store challenge
+    // Simpan challenge ke memori
     challenges.set(user._id.toString(), options.challenge);
 
     res.json(options);
@@ -78,6 +78,8 @@ export const getRegisterOptions = async (req, res) => {
   }
 };
 
+// CONTROLLER REGISTRASI 2: Endpoint kedua registrasi. Mengurai data biometrik yang dibalikan oleh browser.
+// Jika valid, Public Key dan Credential ID dari perangkat user akan di-save permanen ke DB.
 export const verifyRegister = async (req, res) => {
   const startTime = Date.now();
 
@@ -85,22 +87,21 @@ export const verifyRegister = async (req, res) => {
     const { email, credential } = req.body;
 
     if (!email || !credential) {
-      return res.status(400).json({ message: 'Email and credential are required' });
+      return res.status(400).json({ message: 'Email dan kredensial FIDO wajib dikirim' });
     }
 
     // Find user with normalized email (case-insensitive)
     const user = await User.findOne({ email: email.toLowerCase().trim() });
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: 'Pengguna tidak ditemukan' });
     }
 
     const expectedChallenge = challenges.get(user._id.toString());
     if (!expectedChallenge) {
-      return res.status(400).json({ message: 'Challenge not found. Please start registration again.' });
+      return res.status(400).json({ message: 'Sesi habis. Silakan ulangi proses pendaftaran.' });
     }
 
-    console.log('Verifying registration for user:', user.email);
-    console.log('Challenge exists:', !!expectedChallenge);
+
 
     let credentialData;
     try {
@@ -108,22 +109,13 @@ export const verifyRegister = async (req, res) => {
     } catch (verifyError) {
       console.error('Verify registration error:', verifyError);
       const duration = Date.now() - startTime;
-      await AuthLog.create({
-        userId: user._id,
-        method: 'webauthn',
-        duration,
-        success: false,
-        ipAddress: req.ip || req.connection.remoteAddress,
-        userAgent: req.get('user-agent'),
-        errorMessage: verifyError.message,
-      });
       return res.status(400).json({
-        message: 'Registration verification failed',
+        message: 'Verifikasi pendaftaran ditolak klien',
         error: verifyError.message,
       });
     }
 
-    // Add credential to user
+    // Tambahkan kredensial ke akun user
     await user.addWebAuthnCredential(credentialData);
 
     // Clear challenge
@@ -132,18 +124,8 @@ export const verifyRegister = async (req, res) => {
     const duration = Date.now() - startTime;
     const token = generateToken(user._id);
 
-    // Log registration
-    await AuthLog.create({
-      userId: user._id,
-      method: 'webauthn',
-      duration,
-      success: true,
-      ipAddress: req.ip || req.connection.remoteAddress,
-      userAgent: req.get('user-agent'),
-    });
-
     res.json({
-      message: 'WebAuthn credential registered successfully',
+      message: 'Kredensial WebAuthn berhasil didaftarkan',
       token,
       user: {
         id: user._id,
@@ -157,23 +139,11 @@ export const verifyRegister = async (req, res) => {
     const duration = Date.now() - startTime;
     console.error('Verify register error:', error);
 
-    const user = await User.findOne({ email: req.body.email?.toLowerCase().trim() });
-    if (user) {
-      await AuthLog.create({
-        userId: user._id,
-        method: 'webauthn',
-        duration,
-        success: false,
-        ipAddress: req.ip || req.connection.remoteAddress,
-        userAgent: req.get('user-agent'),
-        errorMessage: error.message,
-      });
-    }
-
-    res.status(400).json({ message: 'Registration verification failed', error: error.message });
+    res.status(400).json({ message: 'Verifikasi pendaftaran ditolak klien', error: error.message });
   }
 };
 
+// CONTROLLER LOGIN 1: Endpoint awal login. Meracik parameter challenge khusus untuk user yang mencoba masuk
 export const getLoginOptions = async (req, res) => {
   try {
     const { identifier } = req.body;
@@ -190,14 +160,14 @@ export const getLoginOptions = async (req, res) => {
       ]
     });
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: 'Pengguna tidak ditemukan' });
     }
 
     if (!user.webauthnCredentials || user.webauthnCredentials.length === 0) {
-      return res.status(400).json({ message: 'No WebAuthn credentials found for this user' });
+      return res.status(400).json({ message: 'Tidak ada perangkat WebAuthn yang ditemukan untuk pengguna ini' });
     }
 
-    // Ensure all credentials have counter (set default to 0 if missing)
+    // Pastikan semua perangkat FIDO memiliki counter minimal 0
     user.webauthnCredentials.forEach((cred) => {
       if (cred.counter === undefined || cred.counter === null) {
         cred.counter = 0;
@@ -206,7 +176,7 @@ export const getLoginOptions = async (req, res) => {
 
     const options = await getAuthenticationOptions(user);
 
-    // Store challenge
+    // Simpan challenge ke memori
     challenges.set(user._id.toString(), options.challenge);
 
     res.json(options);
@@ -216,6 +186,8 @@ export const getLoginOptions = async (req, res) => {
   }
 };
 
+// CONTROLLER LOGIN 2: Endpoint penentuan login. Membandingkan "tanda tangan" kriptografi dari browser 
+// dengan Public Key milik user yang sudah tersimpan di database saat registrasi.
 export const verifyLogin = async (req, res) => {
   const startTime = Date.now();
 
@@ -235,81 +207,44 @@ export const verifyLogin = async (req, res) => {
     });
     if (!user) {
       const duration = Date.now() - startTime;
-      await AuthLog.create({
-        userId: null,
-        method: 'webauthn',
-        duration,
-        success: false,
-        ipAddress: req.ip || req.connection.remoteAddress,
-        userAgent: req.get('user-agent'),
-        errorMessage: 'User not found',
-      });
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: 'Pengguna tidak ditemukan' });
     }
 
     if (!user.webauthnCredentials || user.webauthnCredentials.length === 0) {
       const duration = Date.now() - startTime;
-      await AuthLog.create({
-        userId: user._id,
-        method: 'webauthn',
-        duration,
-        success: false,
-        ipAddress: req.ip || req.connection.remoteAddress,
-        userAgent: req.get('user-agent'),
-        errorMessage: 'No WebAuthn credentials found',
-      });
-      return res.status(400).json({ message: 'No WebAuthn credentials found' });
+      return res.status(400).json({ message: 'Tidak ada data perangkat WebAuthn yang terdaftar untuk akun ini' });
     }
 
     const expectedChallenge = challenges.get(user._id.toString());
     if (!expectedChallenge) {
-      return res.status(400).json({ message: 'Challenge not found. Please start login again.' });
+      return res.status(400).json({ message: 'Sesi habis. Silakan mulai ulang login.' });
     }
 
-    // Find the credential being used
-    // credential.id from browser is base64url string
+    // Cari kredensial yang sedang dipakai (format base64url)
     const credentialID = credential?.id;
 
     if (!credentialID) {
       const duration = Date.now() - startTime;
-      await AuthLog.create({
-        userId: user._id,
-        method: 'webauthn',
-        duration,
-        success: false,
-        ipAddress: req.ip || req.connection.remoteAddress,
-        userAgent: req.get('user-agent'),
-        errorMessage: 'Credential ID is missing from request',
-      });
-      return res.status(400).json({ message: 'Credential ID is missing' });
+      return res.status(400).json({ message: 'ID perangkat tidak dikirimkan' });
     }
 
-    // Normalize credentialID for comparison (ensure it's a string)
+    // Normalisasi ID kredensial menjadi string murni
     const normalizedCredentialID = typeof credentialID === 'string' ? credentialID : credentialID.toString();
 
 
-    // Find credential - try exact match first, then try to match by converting both to same format
+    // Cari kredensial yang cocok di database (tepat sama atau setelah di-trim)
     let userCredential = user.webauthnCredentials.find((cred) => {
       if (!cred.credentialID) return false;
-      // Exact match
+      // Pencarian presisi
       if (cred.credentialID === normalizedCredentialID) return true;
-      // Try comparing as strings after trimming
+      // Cadangan: bandingkan bentuk string trim-nya
       return cred.credentialID.trim() === normalizedCredentialID.trim();
     });
 
     if (!userCredential) {
       const duration = Date.now() - startTime;
-      await AuthLog.create({
-        userId: user._id,
-        method: 'webauthn',
-        duration,
-        success: false,
-        ipAddress: req.ip || req.connection.remoteAddress,
-        userAgent: req.get('user-agent'),
-        errorMessage: `Credential not found. Requested ID: ${normalizedCredentialID.substring(0, 20)}...`,
-      });
       return res.status(400).json({
-        message: 'Credential not found. Please make sure you are using the correct authenticator.',
+        message: 'Perangkat tidak dikenali. Pastikan Anda menggunakan kunci FIDO / Authenticator yang tepat.',
         debug:
           process.env.NODE_ENV === 'development'
             ? {
@@ -320,41 +255,32 @@ export const verifyLogin = async (req, res) => {
       });
     }
 
-    // Ensure counter exists (default to 0 if missing)
+    // Setel default counter ke 0 jika kosong
     if (userCredential.counter === undefined || userCredential.counter === null) {
       userCredential.counter = 0;
-      console.log('Counter was missing, set to 0');
+
     }
 
-    // Ensure counter is a number
+    // Pastikan nilai counter adalah angka murni
     userCredential.counter = Number(userCredential.counter) || 0;
 
-    // Validate credential has all required fields
+    // Validasi atribut data kredensial lengkap
     if (!userCredential.credentialID || !userCredential.credentialPublicKey) {
       const duration = Date.now() - startTime;
-      await AuthLog.create({
-        userId: user._id,
-        method: 'webauthn',
-        duration,
-        success: false,
-        ipAddress: req.ip || req.connection.remoteAddress,
-        userAgent: req.get('user-agent'),
-        errorMessage: 'Credential is missing required fields (credentialID or credentialPublicKey)',
-      });
-      return res.status(400).json({ message: 'Credential data is incomplete' });
+      return res.status(400).json({ message: 'Data perangkat login tidak lengkap' });
     }
 
 
     const verification = await verifyAuthentication(credential, expectedChallenge, user, userCredential);
 
     if (verification.verified) {
-      // Update credential counter
+      // Update hitungan keamanan kredensial
       await user.updateCredentialCounter(userCredential.credentialID, verification.newCounter);
 
-      // Update lastUsed timestamp on the credential
+      // Perbarui waktu login terakhir perangkat
       userCredential.lastUsed = new Date();
 
-      // Clear challenge
+      // Bebaskan tantangan dari RAM
       challenges.delete(user._id.toString());
 
       // Assess Risk - Removed Risk Engine Logic
@@ -364,23 +290,13 @@ export const verifyLogin = async (req, res) => {
       const duration = Date.now() - startTime;
       const token = generateToken(user._id);
 
-      // Update user security profile
+      // Simpan catatan IP / perangkat login terakhir user
       user.lastLoginIP = currentIP;
       user.lastLoginUA = currentUA;
       await user.save();
 
-      // Log successful login
-      const authLog = await AuthLog.create({
-        userId: user._id,
-        method: 'webauthn',
-        duration,
-        success: true,
-        ipAddress: currentIP,
-        userAgent: currentUA,
-      });
-
       res.json({
-        message: 'Login successful',
+        message: 'Login berhasil',
         token,
         user: {
           id: user._id,
@@ -391,34 +307,12 @@ export const verifyLogin = async (req, res) => {
         duration,
       });
     } else {
-      throw new Error('Authentication verification failed');
+      throw new Error('Verifikasi sesi login ditolak oleh sistem');
     }
   } catch (error) {
     const duration = Date.now() - startTime;
     console.error('Verify login error:', error);
 
-    const identifier = req.body.identifier;
-    let user = null;
-    if (identifier) {
-      user = await User.findOne({
-        $or: [
-          { email: identifier.toLowerCase().trim() },
-          { username: identifier.trim() }
-        ]
-      });
-    }
-    if (user) {
-      await AuthLog.create({
-        userId: user._id,
-        method: 'webauthn',
-        duration,
-        success: false,
-        ipAddress: req.ip || req.connection.remoteAddress,
-        userAgent: req.get('user-agent'),
-        errorMessage: error.message,
-      });
-    }
-
-    res.status(400).json({ message: 'Authentication verification failed', error: error.message });
+    res.status(400).json({ message: 'Verifikasi sesi login ditolak oleh sistem', error: error.message });
   }
 };
