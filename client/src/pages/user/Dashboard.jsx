@@ -115,6 +115,13 @@ const Dashboard = () => {
                 </div>
                 <span className="text-[9px] md:text-xs font-bold text-gray-500 group-hover:text-orange-400 text-center leading-tight">S. Kelahiran</span>
               </Link>
+              {/* Tombol Detail Pengajuan (Riwayat) */}
+              <Link to="/riwayat" className="flex flex-col items-center group">
+                <div className="w-[50px] h-[50px] md:w-20 md:h-20 bg-purple-500/[0.04] rounded-2xl md:rounded-[2rem] flex items-center justify-center mb-3 group-hover:-translate-y-1 group-hover:bg-purple-500/[0.08] transition-all shadow-inner border border-purple-500/10">
+                  <LetterIcon jenis="riwayat" className="w-6 h-6 md:w-9 md:h-9 text-purple-400 group-hover:scale-110 transition-transform" />
+                </div>
+                <span className="text-[9px] md:text-xs font-bold text-gray-500 group-hover:text-purple-400 text-center leading-tight">Detail Pengajuan</span>
+              </Link>
             </div>
           </section>
 

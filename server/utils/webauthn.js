@@ -13,7 +13,7 @@ const rpID = process.env.RP_ID || 'localhost';
 const origin = process.env.RP_ORIGIN || 'http://localhost:5173';
 
 // 1. Minta opsi registrasi ke browser
-export const getRegistrationOptions = async (user) => {
+export const getRegistrationOptions = async (user, allowExisting = false) => {
   if (!user._id || !user.email || !user.username) {
     throw new Error('Data user tidak lengkap');
   }
@@ -22,7 +22,8 @@ export const getRegistrationOptions = async (user) => {
   const userID = isoUint8Array.fromUTF8String(user._id.toString());
 
   // Kasih tau browser daftar perangkat yang udah ada biar gak duplikat
-  const excludeCredentials = (user.webauthnCredentials || []).map((cred) => ({
+  // HANYA jika allowExisting bernilai false (default)
+  const excludeCredentials = allowExisting ? [] : (user.webauthnCredentials || []).map((cred) => ({
     id: cred.credentialID,
     type: 'public-key',
     transports: cred.transports || [],

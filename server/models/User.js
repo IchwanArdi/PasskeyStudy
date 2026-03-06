@@ -113,6 +113,22 @@ userSchema.methods.generateRecoveryCodes = async function () {
   return codes;
 };
 
+// Generate satu kode pemulihan darurat (biasanya oleh admin)
+userSchema.methods.generateEmergencyCode = async function () {
+  // Bikin kode 4 karakter simpel
+  const code = crypto.randomBytes(2).toString("hex").toUpperCase();
+  
+  // Masukkan ke daftar backupCodes (di-hash)
+  this.backupCodes.push({
+    code: crypto.createHash("sha256").update(code).digest("hex"),
+    used: false,
+    createdAt: new Date(),
+  });
+  
+  await this.save();
+  return code;
+};
+
 // Verifikasi kode pemulihan
 userSchema.methods.useRecoveryCode = async function (plainCode) {
   const hashed = crypto.createHash("sha256").update(plainCode.toUpperCase().trim()).digest("hex");

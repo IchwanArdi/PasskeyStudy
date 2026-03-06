@@ -14,7 +14,6 @@ import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import Recovery from './pages/auth/Recovery';
 import Onboarding from './pages/auth/Onboarding';
-import Help from './pages/Help';
 import InstallAppBanner from './components/InstallAppBanner';
 
 // Warga pages
@@ -80,7 +79,6 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/recovery" element={<Recovery />} />
-          <Route path="/help" element={<Help />} />
 
           {/* Warga - Wrapped in NavLayout */}
           <Route element={<NavLayout><Dashboard /></NavLayout>} path="/dashboard" />

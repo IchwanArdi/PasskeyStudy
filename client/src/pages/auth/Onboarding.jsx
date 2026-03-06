@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FileText, Users, ChevronRight, ArrowRight, Home, ShieldCheck } from 'lucide-react';
-import LetterIcon from '../../components/LetterIcon';
+import { FileText, ChevronRight, ArrowRight, Home, ShieldCheck } from 'lucide-react';
 
+/**
+ * Konten slide untuk pengenalan aplikasi (Onboarding).
+ */
 const slides = [
   {
     icon: Home,
@@ -19,11 +21,11 @@ const slides = [
     title: 'Layanan Surat Online',
     subtitle: 'Tanpa Antre, Tanpa Ribet',
     desa: null,
-    desc: 'Ajukan surat domisili, keterangan tidak mampu, kelahiran, kematian, dan usaha langsung dari HP kamu.',
+    desc: 'Ajukan surat keterangan tidak mampu, kelahiran, dan usaha langsung dari HP kamu.',
     color: 'from-blue-500/20 to-indigo-500/10',
     accent: 'text-blue-400',
     border: 'border-blue-500/20',
-    features: ['Surat Domisili', 'Ket. Tidak Mampu', 'Ket. Kelahiran', 'Ket. Kematian', 'Ket. Usaha'],
+    features: ['Ket. Tidak Mampu', 'Ket. Kelahiran', 'Ket. Usaha'],
   },
   {
     icon: ShieldCheck,
@@ -37,17 +39,22 @@ const slides = [
   },
 ];
 
+/**
+ * Onboarding Component — Menampilkan slider perkenalan fitur aplikasi
+ * buat pengguna baru.
+ */
 const Onboarding = () => {
   const navigate = useNavigate();
   const [current, setCurrent] = useState(0);
 
   useEffect(() => {
-    // Jika sudah pernah onboarding, langsung ke login
+    // Jika user sudah pernah melihat onboarding, langsung arahkan ke halaman login
     if (localStorage.getItem('onboarding_done') === 'true') {
       navigate('/login', { replace: true });
     }
   }, [navigate]);
 
+  // Fungsi untuk berpindah ke slide berikutnya
   const next = () => {
     if (current < slides.length - 1) {
       setCurrent((c) => c + 1);
@@ -56,6 +63,7 @@ const Onboarding = () => {
     }
   };
 
+  // Fungsi untuk menandai onboarding selesai dan pindah ke login
   const finish = () => {
     localStorage.setItem('onboarding_done', 'true');
     navigate('/login');
@@ -66,8 +74,8 @@ const Onboarding = () => {
 
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] font-sans flex flex-col overflow-hidden transition-colors duration-300">
-      {/* Skip */}
-      <div className="flex justify-end px-6 pt-6">
+      {/* Tombol Lewati (Skip) */}
+      <div className="flex justify-end px-6 pt-6 relative z-20">
         <button
           onClick={finish}
           className="text-xs text-gray-600 hover:text-gray-400 transition-colors font-medium tracking-wide"
@@ -76,18 +84,19 @@ const Onboarding = () => {
         </button>
       </div>
 
-      {/* Slide Content */}
-      <div className="flex-1 flex flex-col items-center justify-center px-8 py-6 text-center">
-        {/* Glow orb */}
+      {/* Konten Slide Utama */}
+      <div className="flex-1 flex flex-col items-center justify-center px-8 py-6 text-center relative">
+        {/* Efek Cahaya Latar (Glow orb) */}
         <div className={`absolute inset-0 pointer-events-none flex items-center justify-center opacity-30`}>
           <div className={`w-96 h-96 rounded-full bg-gradient-radial blur-3xl bg-gradient-to-br ${slide.color}`} />
         </div>
 
-        {/* Emoji icon */}
+        {/* Ikon Slide */}
         <div className={`relative z-10 w-24 h-24 rounded-3xl bg-gradient-to-br ${slide.color} border ${slide.border} flex items-center justify-center mb-8 shadow-2xl`}>
           <slide.icon className={`w-12 h-12 ${slide.accent}`} />
         </div>
 
+        {/* Baris Teks Slide */}
         <div className="relative z-10 max-w-sm">
           {slide.desa && (
             <p className={`text-xs font-bold uppercase tracking-widest ${slide.accent} mb-2`}>
@@ -100,11 +109,11 @@ const Onboarding = () => {
           <p className="text-xl font-bold text-gray-300 mb-6">{slide.subtitle}</p>
           <p className="text-gray-400 text-sm leading-relaxed mb-8">{slide.desc}</p>
 
-          {/* Feature list untuk slide 2 */}
+          {/* Daftar Fitur (hanya muncul di slide tertentu) */}
           {slide.features && (
             <div className="flex flex-wrap gap-2 justify-center mb-4">
               {slide.features.map((f) => (
-                <span key={f} className={`px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-br ${slide.color} border ${slide.border} ${slide.accent}`}>
+                <span key={f} className={`px-3 py-1 rounded-full text-[10px] md:text-xs font-semibold bg-gradient-to-br ${slide.color} border ${slide.border} ${slide.accent}`}>
                   {f}
                 </span>
               ))}
@@ -113,9 +122,9 @@ const Onboarding = () => {
         </div>
       </div>
 
-      {/* Bottom Navigation */}
-      <div className="px-8 pb-10 flex flex-col items-center gap-6">
-        {/* Dots */}
+      {/* Navigasi Bawah (Indikator Titik & Tombol Lanjut) */}
+      <div className="px-8 pb-10 flex flex-col items-center gap-6 relative z-20">
+        {/* Titik Indikator (Pagination Dots) */}
         <div className="flex gap-2">
           {slides.map((_, i) => (
             <button
@@ -130,7 +139,7 @@ const Onboarding = () => {
           ))}
         </div>
 
-        {/* CTA Button */}
+        {/* Tombol CTA (Lanjut / Mulai) */}
         <button
           onClick={next}
           className={`w-full max-w-sm py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-3 transition-all active:scale-95 shadow-xl ${

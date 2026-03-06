@@ -79,7 +79,8 @@ export const reRegisterOptions = async (req, res) => {
     }
 
     // Ambil parameter konfigurasi biometrik dari server
-    const options = await getRegistrationOptions(user);
+    // (allowExisting: true agar bisa daftar ulang perangkat yang sama saat recovery)
+    const options = await getRegistrationOptions(user, true);
     
     // Simpan challenge biar nanti bisa dicocokkan saat verifikasi
     recoveryChallenges.set(user._id.toString(), options.challenge);
@@ -116,8 +117,16 @@ export const reRegister = async (req, res) => {
     // Verifikasi data biometrik baru yang dikirim browser
     const credentialData = await verifyRegistration(credential, expectedChallenge, user);
     
-    // Tambahkan perangkat baru ke database user
-    await user.addWebAuthnCredential(credentialData);
+    // Simpan perangkat baru (tapi cek dulu kalau ID-nya sama, jangan error)
+    const existingIndex = user.webauthnCredentials.findIndex(c => c.credentialID === credentialData.credentialID);
+    if (existingIndex !== -1) {
+      // Jika sudah ada, update saja datanya (mungkin counter berubah)
+      user.webauthnCredentials[existingIndex] = { ...user.webauthnCredentials[existingIndex], ...credentialData };
+    } else {
+      // Jika benar-benar baru, tambahkan
+      user.webauthnCredentials.push(credentialData);
+    }
+    await user.save();
 
     // Bersihkan challenge karena sudah dipakai
     recoveryChallenges.delete(user._id.toString());
@@ -145,5 +154,38 @@ export const reRegister = async (req, res) => {
     const duration = Date.now() - startTime;
     console.error('Re-register error:', error);
     res.status(400).json({ message: 'Gagal mendaftarkan perangkat baru', error: error.message });
+  }
+};
+
+// Khusus Admin: Generate kode darurat untuk warga yang hilang segalanya
+export const adminGenerateEmergencyCode = async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({ message: 'User ID wajib diisi' });
+    }
+
+    // Pastikan yang mengakses adalah admin
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Hanya Admin yang dapat membuat kode darurat' });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User tidak ditemukan' });
+    }
+
+    // Buat satu kode darurat
+    const emergencyCode = await user.generateEmergencyCode();
+
+    res.json({
+      message: 'Kode darurat berhasil dibuat',
+      code: emergencyCode,
+      username: user.username
+    });
+  } catch (error) {
+    console.error('Admin generate emergency code error:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };

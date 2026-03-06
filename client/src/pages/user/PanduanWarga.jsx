@@ -259,7 +259,7 @@ const PanduanWarga = () => {
             Hubungi Admin Desa Karangpucung melalui WhatsApp untuk bantuan lebih lanjut.
           </p>
           <a
-            href="https://wa.me/628123456789"
+            href="https://wa.me/6281297988091"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-6 py-3 bg-[#25D366] hover:bg-[#20ba5a] text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-green-500/20 active:scale-95"

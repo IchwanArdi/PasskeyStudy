@@ -25,6 +25,14 @@ const layananList = [
     time: '2 Hari Kerja',
     featured: false
   },
+  {
+    id: 'riwayat',
+    title: 'Detail Pengajuan',
+    desc: 'Lihat status dan riwayat lengkap surat-surat yang pernah Anda ajukan.',
+    time: 'Instan',
+    featured: false,
+    link: '/riwayat'
+  },
 ];
 
 const Layanan = () => {
@@ -43,7 +51,7 @@ const Layanan = () => {
           {layananList.map((item) => (
             <Link
               key={item.id}
-              to={`/layanan/ajukan?jenis=${item.id}`}
+              to={item.link || `/layanan/ajukan?jenis=${item.id}`}
               className="group relative bg-white/[0.02] border border-white/[0.05] rounded-[24px] p-6 hover:bg-white/[0.04] hover:border-blue-500/30 transition-all duration-300 overflow-hidden"
             >
               {/* Dekorasi kartu kalau layanannya lagi populer/penting */}

@@ -13,6 +13,7 @@ const AdminUsers = () => {
   const [search, setSearch] = useState('');
   const [updatingId, setUpdatingId] = useState(null);
   const [roleFilter, setRoleFilter] = useState('semua');
+  const [emergencyResult, setEmergencyResult] = useState(null); // { username, code }
 
   // Ambil semua daftar user dari server (khusus admin)
   const fetchUsers = useCallback(async () => {
@@ -61,6 +62,31 @@ const AdminUsers = () => {
       await fetchUsers(); // Refresh list biar statusnya berubah
     } catch {
       toast.error('Waduh, gagal ngubah role user nih');
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  // Fungsi buat bikin kode darurat untuk warga
+  const handleGenerateEmergencyCode = async (userId, name) => {
+    if (!window.confirm(`kode darurat untuk ${name}? Gunakan jika warga benar-benar kehilangan akses.`)) return;
+    setUpdatingId(userId);
+    setEmergencyResult(null);
+    try {
+      const res = await fetch(`${API_URL}/recovery/admin/emergency-code`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}` 
+        },
+        body: JSON.stringify({ userId }),
+      });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      setEmergencyResult({ username: data.username, code: data.code });
+      toast.success(`Kode darurat untuk ${name} berhasil dibuat!`);
+    } catch {
+      toast.error('Gagal membuat kode darurat');
     } finally {
       setUpdatingId(null);
     }
@@ -126,6 +152,32 @@ const AdminUsers = () => {
         </div>
       </header>
 
+      {/* Tampilan Hasil Kode Darurat */}
+      {emergencyResult && (
+        <div className="p-6 bg-amber-500/10 border border-amber-500/20 rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-4 animate-in slide-in-from-top duration-500">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-amber-500/20 rounded-2xl flex items-center justify-center">
+              <RefreshCw className="w-6 h-6 text-amber-400" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-amber-400 uppercase tracking-widest mb-1">Kode Darurat Dibuat!</p>
+              <p className="text-sm text-gray-400 italic">Berikan kode ini ke <b className="text-white">{emergencyResult.username}</b></p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="px-6 py-3 bg-white/[0.05] border border-white/10 rounded-xl font-mono text-2xl font-black tracking-[0.5em] text-white">
+              {emergencyResult.code}
+            </div>
+            <button 
+              onClick={() => setEmergencyResult(null)}
+              className="p-3 text-gray-500 hover:text-white transition-colors"
+            >
+              Tutup
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Tabel Data User */}
       <div className="bg-white/[0.02] border border-white/[0.04] rounded-[2rem] overflow-hidden">
         {loading ? (
@@ -144,7 +196,7 @@ const AdminUsers = () => {
                 <tr className="bg-white/[0.02] border-b border-white/[0.05]">
                   <th className="px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Identitas Pengguna</th>
                   <th className="px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Hak Akses</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-widest text-right">Tindakan</th>
+                  <th className="px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-widest text-right">Tindakan Tamabahan</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/[0.03]">
@@ -173,16 +225,32 @@ const AdminUsers = () => {
                       )}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      {u.role !== 'admin' && (
-                        <button
-                          onClick={() => handleMakeAdmin(u._id, u.username)}
-                          disabled={updatingId === u._id}
-                          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/20 text-blue-400 hover:bg-blue-500/20 rounded-xl text-[10px] font-black uppercase transition-all disabled:opacity-50"
-                        >
-                          <ShieldCheck className="w-3.5 h-3.5" />
-                          {updatingId === u._id ? 'Memproses...' : 'Jadikan Admin'}
-                        </button>
-                      )}
+                      <div className="flex items-center justify-end gap-2">
+                        {/* Tombol Kode Darurat (Selalu ada buat Admin bantu Warga) */}
+                        {u.role !== 'admin' && (
+                          <button
+                            onClick={() => handleGenerateEmergencyCode(u._id, u.username)}
+                            disabled={updatingId === u._id}
+                            className={`inline-flex items-center gap-2 px-3 py-2 bg-amber-500/10 border border-amber-500/20 text-amber-500 hover:bg-amber-500/20 rounded-xl text-[10px] font-black uppercase transition-all disabled:opacity-50`}
+                            title="Generate kode pemulihan darurat"
+                          >
+                            <RefreshCw className={`w-3.5 h-3.5 ${updatingId === u._id ? 'animate-spin' : ''}`} />
+                            Darurat
+                          </button>
+                        )}
+
+                        {/* Tombol Jadikan Admin */}
+                        {u.role !== 'admin' && (
+                          <button
+                            onClick={() => handleMakeAdmin(u._id, u.username)}
+                            disabled={updatingId === u._id}
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/20 text-blue-400 hover:bg-blue-500/20 rounded-xl text-[10px] font-black uppercase transition-all disabled:opacity-50"
+                          >
+                            <ShieldCheck className="w-3.5 h-3.5" />
+                            {updatingId === u._id ? '...' : 'Jadi Admin'}
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}

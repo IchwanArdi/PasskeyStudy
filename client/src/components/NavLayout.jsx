@@ -1,6 +1,7 @@
 import { useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import BottomNav from './BottomNav';
+import { isAuthenticated } from '../utils/auth';
 
 /**
  * Layout pembungkus utama untuk sisi pengguna (warga).
@@ -10,8 +11,10 @@ const NavLayout = ({ children }) => {
   const location = useLocation();
 
   // Daftar rute di mana navigasi (Sidebar/BottomNav) tidak ditampilkan
+  // Ditambah kondisi: sembunyikan di /panduan jika user belum login (untuk bantuan login)
   const hideNav = ['/', '/login', '/register', '/recovery'].includes(location.pathname) || 
-                  location.pathname.startsWith('/admin');
+                  location.pathname.startsWith('/admin') ||
+                  (location.pathname === '/panduan' && !isAuthenticated());
 
   // Jika rute ada di daftar sembunyi, tampilkan konten tanpa navigasi
   if (hideNav) {

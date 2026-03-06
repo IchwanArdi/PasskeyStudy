@@ -1,4 +1,4 @@
-import { FileText, Baby, Store } from 'lucide-react';
+import { FileText, Baby, Store, ClipboardList } from 'lucide-react';
 
 /**
  * Komponen untuk menampilkan ikon berdasarkan jenis surat.
@@ -13,6 +13,8 @@ const LetterIcon = ({ jenis, className = "w-6 h-6" }) => {
       return <Baby className={className} />;
     case 'usaha':
       return <Store className={className} />;
+    case 'riwayat':
+      return <ClipboardList className={className} />;
     default:
       // Ikon default jika jenis tidak dikenal
       return <FileText className={className} />;

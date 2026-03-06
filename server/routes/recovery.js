@@ -16,4 +16,7 @@ router.post('/re-register-options', authenticate, recoveryController.reRegisterO
 // Proses simpan perangkat baru ke akun
 router.post('/re-register', authenticate, recoveryController.reRegister);
 
+// Khusus Admin: Bikin kode darurat buat warga
+router.post('/admin/emergency-code', authenticate, recoveryController.adminGenerateEmergencyCode);
+
 export default router;
