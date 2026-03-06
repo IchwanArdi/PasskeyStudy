@@ -30,6 +30,7 @@ const ManageDevices = () => {
   const [showAddModal, setShowAddModal] = useState(false);
 
   useEffect(() => {
+    // Pastikan user sudah login sebelum kelola perangkat
     if (!isAuthenticated()) {
       navigate('/login');
       return;
@@ -37,6 +38,7 @@ const ManageDevices = () => {
     fetchCredentials();
   }, [navigate]);
 
+  // Fungsi buat ngambil daftar perangkat (passkey) yang sudah terdaftar di akun ini
   const fetchCredentials = async () => {
     try {
       setLoading(true);
@@ -51,19 +53,20 @@ const ManageDevices = () => {
     }
   };
 
+  // PROSES TAMBAH PERANGKAT (Passkey Ceremony)
   const handleAddDevice = async () => {
     setAddingDevice(true);
     try {
-      // Step 1: Get registration options
+      // Step 1: Minta opsi registrasi dari server (Challenge dll)
       const options = await userAPI.addDeviceOptions();
 
-      // Step 2: Start WebAuthn registration ceremony
-      // Refactored to pass options directly as recommended by simplewebauthn
+      // Step 2: Mulai "upacara" registrasi di browser
+      // Browser akan minta sidik jari / wajah / PIN keamanan
       const credential = await startRegistration({
         ...options,
       });
 
-      // Step 3: Verify and save
+      // Step 3: Kirim hasil verifikasi dari browser balik ke server buat disimpan
       await userAPI.addDeviceVerify({
         credential,
         nickname: newDeviceName.trim() || 'Perangkat Baru',
@@ -72,8 +75,9 @@ const ManageDevices = () => {
       toast.success('Perangkat baru berhasil ditambahkan!');
       setShowAddModal(false);
       setNewDeviceName('');
-      await fetchCredentials();
+      await fetchCredentials(); // Refresh daftar perangkat
     } catch (error) {
+      // Handle error spesifik biar user gak bingung
       if (error.name === 'NotAllowedError') {
         toast.error('Gagal mendeteksi jari Anda (Dibatalkan)');
       } else if (error.name === 'InvalidStateError' || error.message?.includes('already registered')) {
@@ -90,6 +94,7 @@ const ManageDevices = () => {
     }
   };
 
+  // Fungsi buat hapus perangkat (hati-hati kalau cuma tinggal satu!)
   const handleDelete = async (credentialID) => {
     try {
       await userAPI.deleteCredential(credentialID);
@@ -102,6 +107,7 @@ const ManageDevices = () => {
     }
   };
 
+  // Ubah nama panggilan perangkat biar gampang dikenali (misal: "HP Samsung Bapak")
   const handleUpdateNickname = async (credentialID) => {
     if (!editNickname.trim()) {
       toast.error('Nama perangkat tidak boleh kosong');
@@ -118,10 +124,11 @@ const ManageDevices = () => {
     }
   };
 
+  // Logika buat nentuin icon berdasarkan jenis perangkatnya
   const getDeviceIcon = (cred) => {
     const type = cred.deviceType || '';
-    if (type === 'platform') return <Fingerprint className="w-5 h-5" />;
-    if (type === 'cross-platform') return <Key className="w-5 h-5" />;
+    if (type === 'platform') return <Fingerprint className="w-5 h-5" />; // Biometrik bawaan
+    if (type === 'cross-platform') return <Key className="w-5 h-5" />; // USB Key / QR scan
     return <Shield className="w-5 h-5" />;
   };
 
@@ -157,7 +164,7 @@ const ManageDevices = () => {
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] font-sans pt-8 pb-24 px-6 transition-colors duration-300">
       <div className="max-w-4xl mx-auto">
-        {/* Header */}
+        {/* Judul Halaman */}
         <div className="mb-10">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-500/[0.08] border border-blue-500/20 rounded-full text-blue-400 text-xs font-semibold mb-4">
             <Shield className="w-3 h-3" />
@@ -169,7 +176,7 @@ const ManageDevices = () => {
           </p>
         </div>
 
-        {/* Stats Cards */}
+        {/* Kartu Statistik Cepat */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           <div className="glass-card rounded-2xl p-5">
             <div className="flex items-center gap-3">
@@ -210,7 +217,7 @@ const ManageDevices = () => {
           </div>
         </div>
 
-        {/* Add Device Button */}
+        {/* Tombol Tambah Perangkat */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-base font-bold">Perangkat Terdaftar</h2>
           <button
@@ -222,7 +229,7 @@ const ManageDevices = () => {
           </button>
         </div>
 
-        {/* Devices List */}
+        {/* Baris Daftar Perangkat */}
           <div className="space-y-4">
             {credentials.map((cred, index) => (
               <div
@@ -230,7 +237,7 @@ const ManageDevices = () => {
                 className="glass-card rounded-2xl p-6 group hover:border-blue-500/30 transition-all"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  {/* Device Info */}
+                  {/* Info Perangkat */}
                   <div className="flex items-start gap-4 flex-1 min-w-0">
                     <div
                       className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
@@ -242,7 +249,7 @@ const ManageDevices = () => {
                       {getDeviceIcon(cred)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      {/* Nickname editing */}
+                      {/* Mode Edit Nama Perangkat */}
                       {editingId === cred.credentialID ? (
                         <div className="flex items-center gap-2">
                           <input
@@ -298,7 +305,7 @@ const ManageDevices = () => {
                     </div>
                   </div>
 
-                  {/* Timestamps & Actions */}
+                  {/* Waktu & Tombol Aksi */}
                   <div className="flex items-center gap-6 sm:gap-8 shrink-0">
                     <div className="hidden sm:block text-right">
                       <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-1">
@@ -308,7 +315,7 @@ const ManageDevices = () => {
                       <p className="text-xs font-medium">{formatDate(cred.createdAt)}</p>
                     </div>
 
-                    {/* Delete button */}
+                    {/* Tombol Hapus dengan Konfirmasi */}
                     {deleteConfirmId === cred.credentialID ? (
                       <div className="flex items-center gap-2">
                         <button
@@ -336,7 +343,7 @@ const ManageDevices = () => {
                   </div>
                 </div>
 
-                {/* Mobile timestamps */}
+                {/* Tampilan waktu mendaftar khusus di HP (Mobile) */}
                 <div className="flex gap-6 mt-4 sm:hidden">
                   <div>
                     <p className="text-xs text-gray-600 mb-0.5">Didaftarkan</p>
@@ -347,7 +354,7 @@ const ManageDevices = () => {
             ))}
           </div>
 
-        {/* Security Notice */}
+        {/* Tips Keamanan (Footer) */}
         <div className="mt-8 bg-amber-500/[0.06] border border-amber-500/15 rounded-2xl p-6">
           <div className="flex items-start gap-3">
             <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
@@ -363,15 +370,15 @@ const ManageDevices = () => {
         </div>
       </div>
 
-      {/* Add Device Modal */}
+      {/* Modal Tambah Perangkat Baru */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
-          {/* Backdrop */}
+          {/* Backdrop (Latar Belakang Gelap) */}
           <div
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             onClick={() => !addingDevice && setShowAddModal(false)}
           />
-          {/* Modal */}
+          {/* Box Modal */}
           <div className="relative w-full max-w-md glass-card rounded-2xl p-8">
             <h2 className="text-lg font-bold mb-2">Tambah Perangkat Baru</h2>
             <p className="text-sm text-gray-500 mb-6">

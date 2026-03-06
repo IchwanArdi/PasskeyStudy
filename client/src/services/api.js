@@ -1,5 +1,6 @@
 import axios from "axios";
 
+// Ambil URL API dari environment variable atau pakai default localhost
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const api = axios.create({
@@ -9,7 +10,7 @@ const api = axios.create({
   },
 });
 
-// Add token to requests
+// INTERCEPTOR REQUEST: Otomatis nempelin token JWT ke setiap request yang dikirim ke server
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -23,7 +24,7 @@ api.interceptors.request.use(
   },
 );
 
-// Handle token expiration
+// INTERCEPTOR RESPONSE: Kalau server bilang token gak valid (401), otomatis logout dan tendang ke halaman login
 api.interceptors.response.use(
   (response) => response.data,
   (error) => {
@@ -36,7 +37,7 @@ api.interceptors.response.use(
   },
 );
 
-// Auth API — WebAuthn Only (passwordless)
+// API AUTENTIKASI: Khusus WebAuthn (Login & Daftar tanpa password)
 export const authAPI = {
   getRegisterOptions: (email, username) =>
     api.post("/auth/webauthn/register/options", { email, username }),
@@ -46,7 +47,7 @@ export const authAPI = {
   verifyLogin: (data) => api.post("/auth/webauthn/login/verify", data),
 };
 
-// User API
+// API USER: Kelola profil dan perangkat biometrik (Passkey)
 export const userAPI = {
   getProfile: () => api.get("/user/me"),
   updateProfile: (data) => api.put("/user/me", data),
@@ -61,14 +62,7 @@ export const userAPI = {
   addDeviceVerify: (data) => api.post("/user/credentials/add-verify", data),
 };
 
-// Stats API
-export const statsAPI = {
-  getStats: (viewMode = "global") =>
-    api.get(`/stats/${viewMode === "global" ? "global-stats" : "my-stats"}`),
-};
-
-
-// Recovery API
+// API RECOVERY: Untuk urusan kode pemulihan kalau HP/sidik jari bermasalah
 export const recoveryAPI = {
   generateCodes: () => api.post("/recovery/generate-codes"),
   verifyCode: (data) => api.post("/recovery/verify-code", data),
@@ -77,14 +71,10 @@ export const recoveryAPI = {
     api.post("/recovery/re-register-options", { email }),
 };
 
-// Performance API
-export const performanceAPI = {
-  getSummary: () => api.get("/performance/summary"),
-  getComparison: () => api.get("/performance/comparison"),
-};
-
-// Pengajuan API
+// API PENGAJUAN SURAT: Urusan buat baru, liat riwayat, dan download PDF
 export const pengajuanAPI = {
+  createPengajuan: (data) => api.post("/pengajuan", data),
+  getMyPengajuan: () => api.get("/pengajuan/saya"),
   downloadPDF: (id) => api.get(`/pengajuan/${id}/pdf`, { responseType: 'blob' }),
   deletePengajuan: (id) => api.delete(`/pengajuan/${id}`),
 };

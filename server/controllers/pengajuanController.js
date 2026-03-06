@@ -2,25 +2,26 @@ import Pengajuan from '../models/Pengajuan.js';
 import { generateSuratPDF } from '../utils/pdfGenerator.js';
 import { decrypt } from '../utils/encryption.js';
 
-// ─── WARGA 
+// --- BAGIAN UNTUK WARGA ---
 
-/**
- * ALUR PELAYANAN 1 (WARGA): Endpoint POST /api/pengajuan
- * Warga (yang sudah authentikasi via FIDO) mengunggah formulir pengajuan surat baru ke database
- */
+// Fungsi buat bikin pengajuan surat baru
 export const buatPengajuan = async (req, res) => {
   try {
     const { jenisSurat, namaLengkap, nik, tempatLahir, tanggalLahir, alamat, keperluan, dataTambahan } = req.body;
 
+    // Validasi input: Pastikan gak ada data wajib yang kosong
     if (!jenisSurat || !namaLengkap || !nik || !tempatLahir || !tanggalLahir || !alamat || !keperluan) {
       return res.status(400).json({ message: 'Semua field wajib diisi.' });
     }
 
+    // Cek apakah jenis suratnya ada dalam daftar yang diizinkan
     const jenisValid = ['tidak_mampu', 'kelahiran', 'usaha'];
     if (!jenisValid.includes(jenisSurat)) {
       return res.status(400).json({ message: 'Jenis surat tidak valid.' });
     }
 
+    // Simpan data ke database. 
+    // Data sensitif (NIK, dll) otomatis di-enkripsi oleh Mongoose middleware sebelum masuk ke DB.
     const pengajuan = await Pengajuan.create({
       userId: req.user._id,
       jenisSurat,
@@ -30,7 +31,7 @@ export const buatPengajuan = async (req, res) => {
       tanggalLahir: new Date(tanggalLahir),
       alamat: alamat.trim(),
       keperluan: keperluan.trim(),
-      dataTambahan: dataTambahan || {}, // Simpan field dinamis
+      dataTambahan: dataTambahan || {}, 
     });
 
     res.status(201).json({ message: 'Pengajuan berhasil dikirim.', pengajuan });
@@ -40,23 +41,22 @@ export const buatPengajuan = async (req, res) => {
   }
 };
 
-/**
- * GET /api/pengajuan/saya
- * Warga melihat riwayat pengajuannya sendiri
- */
+// Ambil riwayat pengajuan milik user yang sedang login
 export const getPengajuanSaya = async (req, res) => {
   try {
+    // Kita pakai .lean() biar performa lebih cepat (data cuma POJO/Objek JS biasa)
+    // TAPI: Karena pakai .lean(), Mongoose gak otomatis nge-dekripsi datanya. Jadi harus kita dekripsi manual.
     const pengajuan = await Pengajuan.find({ userId: req.user._id })
       .sort({ createdAt: -1 })
       .lean();
 
-    // Pastikan data dekripsi jika mengambil data menggunakan lean()
+    // Proses dekripsi data satu-satu biar bisa dibaca di frontend
     const pengajuanDecrypted = pengajuan.map(p => ({
       ...p,
       nik: decrypt(p.nik),
       namaLengkap: decrypt(p.namaLengkap),
       tempatLahir: decrypt(p.tempatLahir),
-      tanggalLahir: new Date(decrypt(p.tanggalLahir)), // Kembalikan string iso ke Date
+      tanggalLahir: new Date(decrypt(p.tanggalLahir)), 
       alamat: decrypt(p.alamat)
     }));
 
@@ -67,12 +67,9 @@ export const getPengajuanSaya = async (req, res) => {
   }
 };
 
-// ─── ADMIN ────────────────────────────────────────────────────────────────────
+// --- BAGIAN KHUSUS ADMIN ---
 
-/**
- * ALUR PELAYANAN 2 (ADMIN): Endpoint GET /api/pengajuan/admin
- * Admin melihat seluruh antrian pengajuan surat yang masuk. (Data yang diambil dari DB akan di-dekripsi)
- */
+// Admin bisa liat semua pengajuan yang masuk dari warga
 export const semuaPengajuan = async (req, res) => {
   try {
     const { status } = req.query;
@@ -84,13 +81,13 @@ export const semuaPengajuan = async (req, res) => {
       .populate('userId', 'username email namaLengkap')
       .lean();
 
-    // Pastikan data dekripsi jika mengambil data menggunakan lean() untuk admin
+    // Sama seperti di atas, kita harus dekripsi manual karena pakai .lean()
     const pengajuanDecrypted = pengajuan.map(p => ({
       ...p,
       nik: decrypt(p.nik),
       namaLengkap: decrypt(p.namaLengkap),
       tempatLahir: decrypt(p.tempatLahir),
-      tanggalLahir: new Date(decrypt(p.tanggalLahir)), // Kembalikan string iso ke Date
+      tanggalLahir: new Date(decrypt(p.tanggalLahir)), 
       alamat: decrypt(p.alamat)
     }));
 
@@ -101,10 +98,7 @@ export const semuaPengajuan = async (req, res) => {
   }
 };
 
-/**
- * ALUR PELAYANAN 3 (ADMIN): Endpoint PATCH /api/pengajuan/:id/status
- * Admin mengeksekusi nasib surat (mengubah status dari 'diproses' ke 'disetujui' atau 'ditolak')
- */
+// Admin mengubah status pengajuan (Misal: Disetujui atau Ditolak)
 export const updateStatusPengajuan = async (req, res) => {
   try {
     const { id } = req.params;
@@ -120,7 +114,7 @@ export const updateStatusPengajuan = async (req, res) => {
       {
         status,
         catatanAdmin: catatanAdmin?.trim() || '',
-        diprosesoleh: req.user._id,
+        diprosesoleh: req.user._id, // Catat admin mana yang memproses
       },
       { new: true }
     );
@@ -136,10 +130,7 @@ export const updateStatusPengajuan = async (req, res) => {
   }
 };
 
-/**
- * GET /api/pengajuan/:id
- * Lihat detail satu pengajuan (warga = hanya miliknya, admin = semua)
- */
+// Liat detail satu pengajuan secara lengkap
 export const detailPengajuan = async (req, res) => {
   try {
     let pengajuan = await Pengajuan.findById(req.params.id)
@@ -153,11 +144,12 @@ export const detailPengajuan = async (req, res) => {
     const isAdmin = req.user.role === 'admin';
     const isOwner = pengajuan.userId._id.toString() === req.user._id.toString();
 
+    // Proteksi: Cuma pemilik atau admin yang boleh liat detail ini
     if (!isAdmin && !isOwner) {
       return res.status(403).json({ message: 'Akses ditolak.' });
     }
 
-    // Dekripsi NIK karena kita pakai lean()
+    // Dekripsi data biar bisa dibaca di layar detail
     pengajuan.nik = decrypt(pengajuan.nik);
     pengajuan.namaLengkap = decrypt(pengajuan.namaLengkap);
     pengajuan.tempatLahir = decrypt(pengajuan.tempatLahir);
@@ -171,11 +163,7 @@ export const detailPengajuan = async (req, res) => {
   }
 };
 
-/**
- * ALUR PELAYANAN 4 (SISTEM): Endpoint GET /api/pengajuan/:id/pdf
- * Secara otomatis menghasilkan sebuah file PDF layout Surat Keterangan Desa resmi (menggunakan pdf-lib) 
- * jika status permohonan sudah 'disetujui'
- */
+// Bikin file PDF otomatis dan kirim ke user buat didownload
 export const downloadSuratPDF = async (req, res) => {
   try {
     let pengajuan = await Pengajuan.findById(req.params.id)
@@ -193,24 +181,27 @@ export const downloadSuratPDF = async (req, res) => {
       return res.status(403).json({ message: 'Akses ditolak.' });
     }
 
+    // Surat cuma bisa diunduh kalau sudah di-ACC (disetujui) oleh admin
     if (pengajuan.status !== 'disetujui') {
       return res.status(400).json({ message: 'Dokumen belum tersedia atau belum disetujui.' });
     }
 
-    // Dekripsi Data Sensitif
+    // Penting: Dekripsi dulu datanya sebelum dimasukkan ke dalam PDF
     pengajuan.nik = decrypt(pengajuan.nik);
     pengajuan.namaLengkap = decrypt(pengajuan.namaLengkap);
     pengajuan.tempatLahir = decrypt(pengajuan.tempatLahir);
     pengajuan.tanggalLahir = new Date(decrypt(pengajuan.tanggalLahir));
     pengajuan.alamat = decrypt(pengajuan.alamat);
 
-    // Generate PDF buffer
+    // Proses pembuatan PDF (lewat utilitas pdfGenerator)
     const pdfBytes = await generateSuratPDF(pengajuan);
     const pdfBuffer = Buffer.from(pdfBytes);
 
+    // Bikin nama file yang rapi (format: Surat_jenis_nik.pdf)
     const jenisSafe = pengajuan.jenisSurat.replace(/[^a-z0-9]/gi, '_').toLowerCase();
     const filename = `Surat_${jenisSafe}_${pengajuan.nik}.pdf`;
 
+    // Kirim header agar browser mengenali ini sebagai file PDF untuk didownload
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
     res.setHeader('Content-Length', pdfBuffer.length);
@@ -222,10 +213,7 @@ export const downloadSuratPDF = async (req, res) => {
   }
 };
 
-/**
- * DELETE /api/pengajuan/:id
- * Hapus pengajuan (Admin hapus apa saja, Warga hanya miliknya)
- */
+// Hapus pengajuan dari sistem
 export const hapusPengajuan = async (req, res) => {
   try {
     const pengajuan = await Pengajuan.findById(req.params.id);
@@ -237,6 +225,7 @@ export const hapusPengajuan = async (req, res) => {
     const isAdmin = req.user.role === 'admin';
     const isOwner = pengajuan.userId.toString() === req.user._id.toString();
 
+    // Pastikan yang menghapus adalah pemiliknya sendiri atau admin
     if (!isAdmin && !isOwner) {
       return res.status(403).json({ message: 'Akses ditolak. Anda tidak berhak menghapus pengajuan ini.' });
     }

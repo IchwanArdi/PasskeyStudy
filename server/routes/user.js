@@ -14,18 +14,18 @@ import {
 
 const router = express.Router();
 
-// User Profile
+// Update & Ambil data profil user
 router.get('/me', authenticate, getUserProfile);
 router.put('/me', authenticate, updateUserProfile);
 
-// Device Management (Credentials)
+// Manajemen perangkat (WebAuthn / Passkeys)
 router.get('/credentials', authenticate, getUserCredentials);
 router.delete('/credentials/:id', authenticate, deleteCredential);
 router.put('/credentials/:id/nickname', authenticate, updateCredentialNickname);
 router.post('/credentials/add-options', authenticate, getAddDeviceOptions);
 router.post('/credentials/add-verify', authenticate, verifyAddDevice);
 
-// Admin Role Management
+// Khusus Admin (Daftar semua user & ganti role)
 router.get('/admin/semua', authenticate, getAllUsers);
 router.put('/admin/role', authenticate, changeUserRole);
 

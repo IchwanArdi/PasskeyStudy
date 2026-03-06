@@ -4,16 +4,16 @@ import * as recoveryController from '../controllers/recoveryController.js';
 
 const router = express.Router();
 
-// Generate recovery codes (authenticated)
+// Bikin kode pemulihan (harus login dulu)
 router.post('/generate-codes', authenticate, recoveryController.generateCodes);
 
-// Verify recovery code (unauthenticated — user lost their device)
+// Cek kode pemulihan kalo user kehilangan HP/perangkat
 router.post('/verify-code', recoveryController.verifyCode);
 
-// Get re-registration options (authenticated via temp token from recovery)
+// Persiapan daftar ulang perangkat baru (setelah verifikasi kode)
 router.post('/re-register-options', authenticate, recoveryController.reRegisterOptions);
 
-// Re-register new authenticator (authenticated via temp token from recovery)
+// Proses simpan perangkat baru ke akun
 router.post('/re-register', authenticate, recoveryController.reRegister);
 
 export default router;

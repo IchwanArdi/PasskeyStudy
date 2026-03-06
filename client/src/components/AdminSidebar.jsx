@@ -2,7 +2,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Home,
   FileText,
-  Bell,
   Users,
   LogOut,
   ShieldCheck,
@@ -11,6 +10,7 @@ import {
   Sparkles
 } from "lucide-react";
 
+// Item navigasi untuk bilah samping admin
 const navItems = [
   { to: "/admin", icon: Home, label: "Beranda" },
   { to: "/admin/pengajuan", icon: FileText, label: "Pengajuan" },
@@ -22,6 +22,7 @@ const AdminSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Fungsi untuk menangani keluar sistem
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -30,7 +31,7 @@ const AdminSidebar = () => {
 
   return (
     <aside className="hidden md:flex flex-col w-72 h-[calc(100vh-2.5rem)] fixed left-5 top-5 bg-[var(--bg)]/60 backdrop-blur-3xl border border-white/10 rounded-[3rem] z-50 shadow-2xl shadow-red-500/5 overflow-hidden">
-      {/* Brand Section */}
+      {/* Bagian Brand / Identitas Panel */}
       <div className="p-8 pb-6 flex items-center gap-4 relative overflow-hidden group">
         <div className="absolute -top-10 -left-10 w-24 h-24 bg-red-500/10 blur-3xl rounded-full group-hover:bg-red-500/20 transition-all duration-700" />
         <div className="w-12 h-12 bg-gradient-to-br from-red-400 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg shadow-red-500/20 border border-white/10 relative z-10">
@@ -53,7 +54,7 @@ const AdminSidebar = () => {
         <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
       </div>
 
-      {/* Navigation */}
+      {/* Menu Navigasi Utama */}
       <nav className="flex-1 px-6 space-y-2.5 overflow-y-auto custom-scrollbar">
         {navItems.map((item) => {
           const { to, label } = item;
@@ -72,7 +73,7 @@ const AdminSidebar = () => {
                   : 'text-gray-400 hover:text-white hover:bg-white/[0.04]'
               }`}
             >
-              {/* Active Background Glow */}
+              {/* Efek Cahaya Latar saat Aktif */}
               {isActive && (
                 <div className="absolute inset-0 bg-gradient-to-r from-red-500/5 to-transparent opacity-50" />
               )}
@@ -85,12 +86,14 @@ const AdminSidebar = () => {
                 {label}
               </span>
 
+              {/* Indikator Titik Terang saat Aktif */}
               {isActive && (
                 <div className="ml-auto relative z-10">
                   <div className="w-1.5 h-1.5 rounded-full bg-red-400 shadow-[0_0_12px_rgba(248,113,113,0.8)]" />
                 </div>
               )}
               
+              {/* Icon panah saat di-hover (untuk yang tidak aktif) */}
               {!isActive && (
                 <ChevronRight className="ml-auto w-4 h-4 opacity-0 -translate-x-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0 group-hover:text-red-500" />
               )}
@@ -99,10 +102,10 @@ const AdminSidebar = () => {
         })}
       </nav>
 
-      {/* Bottom Section */}
+      {/* Bagian Bawah Bilah Samping */}
       <div className="p-6 mt-auto">
         <div className="flex flex-col gap-3">
-          {/* Admin Info Section */}
+          {/* Info Singkat Admin */}
           <div className="px-4 py-4 bg-white/[0.02] border border-white/[0.05] rounded-3xl mb-1 group/tip">
             <div className="flex items-center gap-2 mb-2">
               <Sparkles className="w-3.5 h-3.5 text-red-400 group-hover/tip:rotate-12 transition-all duration-500" />
@@ -115,6 +118,7 @@ const AdminSidebar = () => {
             </div>
           </div>
 
+          {/* Tombol Logout */}
           <button
             onClick={handleLogout}
             className="flex items-center justify-center gap-3 w-full px-5 py-4 rounded-[1.5rem] text-red-400/80 hover:text-red-400 hover:bg-red-500/10 transition-all duration-300 border border-transparent hover:border-red-500/20 group font-bold text-sm"

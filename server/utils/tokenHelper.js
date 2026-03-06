@@ -1,11 +1,7 @@
 import jwt from 'jsonwebtoken';
 
-/**
- * Generate JWT token for authentication
- * @param {string} userId - MongoDB user ID
- * @param {string} expiresIn - Token expiry duration (default: '7d')
- * @returns {string} JWT token
- */
+// Fungsi buat bikin token login (JWT)
 export const generateToken = (userId, expiresIn = '7d') => {
+  // Masukin userId ke dalam token dan kunci pake JWT_SECRET dari .env
   return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn });
 };

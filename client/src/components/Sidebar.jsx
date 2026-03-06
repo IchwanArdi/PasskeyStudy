@@ -9,6 +9,7 @@ import {
   ChevronRight 
 } from 'lucide-react';
 
+// Item navigasi utama untuk warga
 const navItems = [
   { to: '/dashboard', icon: Home, label: 'Beranda' },
   { to: '/layanan', icon: FileText, label: 'Layanan' },
@@ -19,6 +20,7 @@ const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Fungsi untuk membersihkan sesi dan keluar
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -27,7 +29,7 @@ const Sidebar = () => {
 
   return (
     <aside className="hidden md:flex flex-col w-72 h-[calc(100vh-2.5rem)] fixed left-5 top-5 bg-[var(--bg)]/60 backdrop-blur-3xl border border-white/10 rounded-[3rem] z-50 shadow-2xl shadow-emerald-500/5 overflow-hidden">
-      {/* Brand Section */}
+      {/* Bagian Logo dan Identitas Aplikasi */}
       <div className="p-8 pb-6 flex items-center gap-4 relative overflow-hidden group">
         <div className="absolute -top-10 -left-10 w-24 h-24 bg-emerald-500/10 blur-3xl rounded-full group-hover:bg-emerald-500/20 transition-all duration-700" />
         <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/20 border border-white/10 relative z-10">
@@ -50,11 +52,12 @@ const Sidebar = () => {
         <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
       </div>
 
-      {/* Navigation */}
+      {/* Daftar Menu Navigasi */}
       <nav className="flex-1 px-6 space-y-2.5">
         {navItems.map((item) => {
           const { to, label } = item;
           const NavIcon = item.icon;
+          // Cek apakah rute saat ini aktif
           const isActive = location.pathname === to || (to !== '/dashboard' && location.pathname.startsWith(to));
           
           return (
@@ -67,7 +70,7 @@ const Sidebar = () => {
                   : 'text-gray-400 hover:text-white hover:bg-white/[0.04]'
               }`}
             >
-              {/* Active Background Glow */}
+              {/* Efek cahata latar saat menu dipilih */}
               {isActive && (
                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-transparent opacity-50" />
               )}
@@ -80,12 +83,14 @@ const Sidebar = () => {
                 {label}
               </span>
 
+              {/* Indikator titik di sisi kanan saat aktif */}
               {isActive && (
                 <div className="ml-auto relative z-10">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.8)]" />
                 </div>
               )}
               
+              {/* Panah yang muncul saat navigasi di-hover */}
               {!isActive && (
                 <ChevronRight className="ml-auto w-4 h-4 opacity-0 -translate-x-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0 group-hover:text-emerald-500" />
               )}
@@ -94,10 +99,10 @@ const Sidebar = () => {
         })}
       </nav>
 
-      {/* Bottom Section */}
+      {/* Bagian Bawah Sidebar */}
       <div className="p-6 mt-auto">
         <div className="flex flex-col gap-3">
-          {/* Support Section */}
+          {/* Menu Pintasan Bantuan */}
           <div className="px-4 py-4 bg-white/[0.02] border border-white/[0.05] rounded-3xl mb-1 group/tip">
             <div className="flex items-center gap-2 mb-2">
               <Sparkles className="w-3.5 h-3.5 text-emerald-400 group-hover/tip:rotate-12 transition-all duration-500" />
@@ -110,6 +115,7 @@ const Sidebar = () => {
             </div>
           </div>
 
+          {/* Tombol Logout Akun */}
           <button
             onClick={handleLogout}
             className="flex items-center justify-center gap-3 w-full px-5 py-4 rounded-[1.5rem] text-red-400/80 hover:text-red-400 hover:bg-red-500/10 transition-all duration-300 border border-transparent hover:border-red-500/20 group font-bold text-sm"

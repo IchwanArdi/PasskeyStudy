@@ -1,14 +1,14 @@
 import User from '../models/User.js';
 import { getRegistrationOptions, verifyRegistration } from '../utils/webauthn.js';
 
-// Store challenges temporarily for add-device flow
-// NOTE: Untuk production, gunakan Redis atau MongoDB TTL collection
+// Map buat simpan challenge sementara pas user mau nambah perangkat baru
+// NOTE: Kalau sudah banyak user, sebaiknya pakai Redis biar gak menuhin RAM
 const addDeviceChallenges = new Map();
 
-// Get current user profile
+// Ambil data profil user yang sedang login
 export const getUserProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).select('-password');
+    const user = await User.findById(req.user._id);
     res.json(user);
   } catch (error) {
     console.error('Get user error:', error);
@@ -16,17 +16,19 @@ export const getUserProfile = async (req, res) => {
   }
 };
 
-// Update user profile
+// Update data profil (Username & Email)
 export const updateUserProfile = async (req, res) => {
   try {
     const { username, email } = req.body;
     const user = await User.findById(req.user._id);
 
     if (username) user.username = username;
+    
+    // Kalau email diubah, cek dulu apa sudah dipakai orang lain atau belum
     if (email) {
       const existingUser = await User.findOne({ email, _id: { $ne: user._id } });
       if (existingUser) {
-        return res.status(400).json({ message: 'Email already in use' });
+        return res.status(400).json({ message: 'Email sudah terdaftar di akun lain' });
       }
       user.email = email;
     }
@@ -34,7 +36,7 @@ export const updateUserProfile = async (req, res) => {
     await user.save();
 
     res.json({
-      message: 'Profile updated successfully',
+      message: 'Profil berhasil diperbarui',
       user: {
         id: user._id,
         username: user.username,
@@ -47,7 +49,7 @@ export const updateUserProfile = async (req, res) => {
   }
 };
 
-// Get user's WebAuthn credentials
+// Ambil daftar perangkat biometrik (Passkeys) yang sudah didaftarkan user
 export const getUserCredentials = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select('webauthnCredentials');
@@ -58,7 +60,7 @@ export const getUserCredentials = async (req, res) => {
   }
 };
 
-// Delete a credential (revoke device)
+// Hapus pendaftaran perangkat (Revoke Access)
 export const deleteCredential = async (req, res) => {
   try {
     const { id } = req.params;
@@ -68,6 +70,7 @@ export const deleteCredential = async (req, res) => {
       return res.status(404).json({ message: 'User tidak ditemukan' });
     }
 
+    // Panggil fungsi di model User buat hapus kredensial berdasarkan ID-nya
     await user.removeWebAuthnCredential(id);
 
     res.json({
@@ -76,13 +79,14 @@ export const deleteCredential = async (req, res) => {
     });
   } catch (error) {
     console.error('Delete credential error:', error);
+    // Berikan pesan error yang jelas kalau user coba hapus perangkat terakhir
     const statusCode = error.message.includes('tidak ditemukan') ? 404 : 
                        error.message.includes('Tidak dapat menghapus') ? 400 : 500;
     res.status(statusCode).json({ message: error.message });
   }
 };
 
-// Update credential nickname
+// Ganti nama panggilan (nickname) perangkat biar gampang dikenali
 export const updateCredentialNickname = async (req, res) => {
   try {
     const { id } = req.params;
@@ -106,7 +110,7 @@ export const updateCredentialNickname = async (req, res) => {
     );
 
     if (!credential) {
-      return res.status(404).json({ message: 'Credential tidak ditemukan' });
+      return res.status(404).json({ message: 'Perangkat tidak ditemukan' });
     }
 
     credential.nickname = nickname.trim();
@@ -125,7 +129,7 @@ export const updateCredentialNickname = async (req, res) => {
   }
 };
 
-// Get registration options for adding a new device (user already authenticated)
+// Siapkan opsi pendaftaran untuk nambah perangkat baru (user posisi sudah login)
 export const getAddDeviceOptions = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
@@ -135,7 +139,7 @@ export const getAddDeviceOptions = async (req, res) => {
 
     const options = await getRegistrationOptions(user);
 
-    // Store challenge for this add-device flow
+    // Simpan challenge di Map (memori) untuk verifikasi nanti
     addDeviceChallenges.set(user._id.toString(), options.challenge);
 
     res.json(options);
@@ -145,13 +149,13 @@ export const getAddDeviceOptions = async (req, res) => {
   }
 };
 
-// Verify and save new credential for add-device flow
+// Verifikasi dan simpan kunci biometrik perangkat baru
 export const verifyAddDevice = async (req, res) => {
   try {
     const { credential, nickname } = req.body;
 
     if (!credential) {
-      return res.status(400).json({ message: 'Credential diperlukan' });
+      return res.status(400).json({ message: 'Data kredensial diperlukan' });
     }
 
     const user = await User.findById(req.user._id);
@@ -159,30 +163,33 @@ export const verifyAddDevice = async (req, res) => {
       return res.status(404).json({ message: 'User tidak ditemukan' });
     }
 
+    // Cocokkan challenge yang dikirim browser dengan yang ada di memori server
     const expectedChallenge = addDeviceChallenges.get(user._id.toString());
     if (!expectedChallenge) {
       return res.status(400).json({
-        message: 'Challenge tidak ditemukan. Silakan mulai ulang proses tambah perangkat.',
+        message: 'Tantangan (challenge) kedaluwarsa. Silakan ulangi lagi.',
       });
     }
 
+    // Verifikasi tanda tangan biometrik perangkat baru
     const credentialData = await verifyRegistration(credential, expectedChallenge, user);
 
-    // Set custom nickname if provided
+    // Kasih nama perangkat kalau user input, kalau gak pakai default
     if (nickname && nickname.trim().length > 0) {
       credentialData.nickname = nickname.trim();
     }
 
+    // Simpan ke array kredensial user di database
     await user.addWebAuthnCredential(credentialData);
 
-    // Clear challenge
+    // Hapus challenge dari memori setelah sukses
     addDeviceChallenges.delete(user._id.toString());
 
     res.json({
       message: 'Perangkat baru berhasil ditambahkan',
       credential: {
         credentialID: credentialData.credentialID,
-        nickname: credentialData.nickname || 'My Authenticator',
+        nickname: credentialData.nickname || 'Perangkat Saya',
         deviceType: credentialData.deviceType,
         createdAt: new Date(),
       },
@@ -194,11 +201,12 @@ export const verifyAddDevice = async (req, res) => {
   }
 };
 
-// Get all users (Admin only)
+// Ambil semua daftar user (Hanya untuk Admin)
 export const getAllUsers = async (req, res) => {
   try {
+    // Keamanan: Cek tiap request apakah role-nya beneran admin
     if (req.user.role !== 'admin') {
-      return res.status(403).json({ message: 'Akses ditolak. Hanya untuk Admin.' });
+      return res.status(403).json({ message: 'Akses ditolak. Ini halaman khusus Admin.' });
     }
     const users = await User.find().select('username email role createdAt').sort({ createdAt: -1 });
     res.json({ users });
@@ -208,24 +216,29 @@ export const getAllUsers = async (req, res) => {
   }
 };
 
-// Change user role (Admin only)
+// Ubah jabatan (Role) user (Misal: Jadikan warga biasa menjadi Admin)
 export const changeUserRole = async (req, res) => {
   try {
     if (req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Akses ditolak.' });
     }
     const { userId, role } = req.body;
+    
+    // Pastikan input role cuma 'warga' atau 'admin'
     if (!['warga', 'admin'].includes(role)) {
-      return res.status(400).json({ message: 'Role tidak valid' });
+      return res.status(400).json({ message: 'Pilihan role tidak valid' });
     }
+    
     const userToUpdate = await User.findById(userId);
     if (!userToUpdate) {
       return res.status(404).json({ message: 'User tidak ditemukan' });
     }
+    
     userToUpdate.role = role;
     await userToUpdate.save();
+    
     res.json({ 
-      message: `Role berhasil diubah menjadi ${role}`, 
+      message: `Jabatan berhasil diubah menjadi ${role}`, 
       user: { id: userToUpdate._id, username: userToUpdate.username, role: userToUpdate.role } 
     });
   } catch (error) {

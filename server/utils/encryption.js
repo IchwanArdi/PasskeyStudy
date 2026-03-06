@@ -1,81 +1,59 @@
-// import module crypto untuk proses enkripsi dan dekripsi
+// AES-256-CBC buat enkripsi data sensitif (NIK, Nama, dll) biar aman di DB
 import crypto from 'crypto';
-
-// import dotenv untuk membaca file .env
 import dotenv from 'dotenv';
 dotenv.config();
 
-// mengambil kunci enkripsi dari environment variable
-const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || 'default_secret_key_needs_to_be_32_bytes_long';
+// Ambil secret key dari .env (harus 32 karakter/bytes)
+const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || 'kunci_rahasia_minimal_32_karakter';
+const IV_LENGTH = 16; 
 
-// panjang IV (Initialization Vector)
-const IV_LENGTH = 16;
-
-/**
- * fungsi untuk mengenkripsi teks
- * @param {string} text
- * @returns {string}
- */
+// Fungsi buat ngubah teks biasa jadi kode acak (enkripsi)
 export const encrypt = (text) => {
-  // jika tidak ada teks
   if (!text) return text;
 
-  // membuat key dari ENCRYPTION_KEY
+  // Hash key biar panjangnya pas 32 byte buat AES-256
   const key = crypto.createHash('sha256').update(String(ENCRYPTION_KEY)).digest('base64').substring(0, 32);
 
-  // membuat IV acak
+  // Bikin IV acak biar hasil enkripsi gak selalu sama
   const iv = crypto.randomBytes(IV_LENGTH);
 
-  // membuat cipher AES-256-CBC
+  // Setup cipher algoritma AES-256-CBC
   const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(key), iv);
 
-  // proses enkripsi
   let encrypted = cipher.update(text);
   encrypted = Buffer.concat([encrypted, cipher.final()]);
 
-  // gabungkan iv dan hasil enkripsi
+  // Gabungin IV sama hasil enkripsi pake pemisah ':' buat disimpen di DB
   return iv.toString('hex') + ':' + encrypted.toString('hex');
 };
 
-/**
- * fungsi untuk mendekripsi teks
- * @param {string} text
- * @returns {string}
- */
+// Fungsi buat balikin kode acak jadi teks asli (dekripsi)
 export const decrypt = (text) => {
-  // jika tidak ada teks
   if (!text) return text;
 
   try {
-    // pisahkan iv dan teks terenkripsi
     const textParts = text.split(':');
-
-    // jika format tidak valid
     if (textParts.length !== 2) return text;
 
-    // ambil iv
     const iv = Buffer.from(textParts[0], 'hex');
-
-    // ambil teks terenkripsi
     const encryptedText = Buffer.from(textParts[1], 'hex');
 
-    // buat key dari ENCRYPTION_KEY
     const key = crypto.createHash('sha256').update(String(ENCRYPTION_KEY)).digest('base64').substring(0, 32);
 
-    // membuat decipher
+    // Setup pemecah kode (decipher) pake key & IV yang sama
     const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(key), iv);
 
-    // proses dekripsi
     let decrypted = decipher.update(encryptedText);
     decrypted = Buffer.concat([decrypted, decipher.final()]);
 
-    // kembalikan teks asli
     return decrypted.toString();
   } catch (error) {
-    // jika terjadi error saat dekripsi
-    console.error('Kesalahan dekripsi:', error);
-
-    // kembalikan teks asli
+    // Log error yang lebih informatif untuk debugging (misal: kunci .env salah)
+    if (process.env.ENCRYPTION_KEY === 'kunci_rahasia_minimal_32_karakter' || !process.env.ENCRYPTION_KEY) {
+      console.error('CRITICAL: ENCRYPTION_KEY belum diatur di .env atau masih pakai default!');
+    } else {
+      console.error('Gagal dekripsi (Bad Decrypt): Kunci di .env mungkin beda dengan kunci saat data dibuat.', error.message);
+    }
     return text;
   }
 };

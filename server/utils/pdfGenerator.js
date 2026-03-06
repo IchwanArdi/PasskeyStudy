@@ -1,18 +1,17 @@
+// File ini buat generate file PDF pengajuan surat warga
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 
 export const generateSuratPDF = async (pengajuan) => {
-  // Buat dokumen PDF baru
+  // Bikin dokumen PDF baru (A4)
   const pdfDoc = await PDFDocument.create();
-  
-  // Tambah halaman (A4: 595.28 x 841.89)
   const page = pdfDoc.addPage([595.28, 841.89]);
   const { width, height } = page.getSize();
 
-  // Embed font (Helvetica biasa dan bold)
+  // Pake font standar Helvetica (biasa & bold)
   const fontRegular = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-  // Fungsi utilitas untuk menggambar teks ke tengah
+  // Helper biar gampang bikin tulisan di tengah halaman
   const drawCenteredText = (text, y, font, size) => {
     const textWidth = font.widthOfTextAtSize(text, size);
     page.drawText(text, {
@@ -30,7 +29,7 @@ export const generateSuratPDF = async (pengajuan) => {
   drawCenteredText('KANTOR KEPALA DESA KARANGPUCUNG', height - 100, fontBold, 18);
   drawCenteredText('Jl. Raya Karangpucung No. 1, Kode Pos 53255', height - 120, fontRegular, 10);
 
-  // Garis pemisah kop surat
+  // Garis pembatas kop surat (garis tebal & tipis)
   page.drawLine({
     start: { x: 50, y: height - 130 },
     end: { x: width - 50, y: height - 130 },
@@ -55,7 +54,7 @@ export const generateSuratPDF = async (pengajuan) => {
   const judulY = height - 170;
   drawCenteredText(judulSurat, judulY, fontBold, 14);
   
-  // Garis bawah untuk judul
+  // Garis bawah judul
   const judulWidth = fontBold.widthOfTextAtSize(judulSurat, 14);
   page.drawLine({
     start: { x: (width - judulWidth) / 2, y: judulY - 3 },
@@ -64,13 +63,14 @@ export const generateSuratPDF = async (pengajuan) => {
     color: rgb(0, 0, 0),
   });
 
+  // Generator nomor surat pake dinkes/slice ID terakhir
   const noSurat = `Nomor: 470 / ${pengajuan._id.toString().slice(-4).toUpperCase()} / 2026`;
   drawCenteredText(noSurat, judulY - 15, fontRegular, 11);
 
   // --- ISI SURAT ---
-  let cursorY = height - 220;
+  let cursorY = height - 220; // Posisi vertikal teks
   const leftMargin = 60;
-  const colSize = 130; // Lebar untuk label (misal "Nama Lengkap")
+  const colSize = 130; 
 
   page.drawText('Yang bertanda tangan di bawah ini Kepala Desa Karangpucung, menerangkan dengan', {
     x: leftMargin, y: cursorY, size: 11, font: fontRegular, color: rgb(0, 0, 0),
@@ -82,11 +82,12 @@ export const generateSuratPDF = async (pengajuan) => {
 
   cursorY -= 30;
 
+  // Mapping data dari database ke PDF
   const dataPemohon = [
     { label: 'Nama Lengkap', value: pengajuan.namaLengkap.toUpperCase() },
     { label: 'NIK', value: pengajuan.nik },
     { label: 'Tempat, Tgl Lahir', value: `${pengajuan.tempatLahir}, ${new Date(pengajuan.tanggalLahir).toLocaleDateString('id-ID')}` },
-    { label: 'Alamat KTP', value: '' } // Spacing khusus untuk alamat panjang
+    { label: 'Alamat KTP', value: '' } 
   ];
 
   dataPemohon.forEach(({ label, value }) => {
@@ -98,19 +99,19 @@ export const generateSuratPDF = async (pengajuan) => {
     cursorY -= 20;
   });
 
-  // Handle alamat multilines
+  // Handle alamat kalo panjang (multi-line)
   const alamatLines = pengajuan.alamat.split('\n');
-  cursorY += 20; // reset dari loop atas
+  cursorY += 20; 
   alamatLines.forEach(line => {
     page.drawText(line.trim(), { x: leftMargin + 20 + colSize + 10, y: cursorY, size: 11, font: fontRegular, color: rgb(0, 0, 0) });
     cursorY -= 15;
   });
 
-  // Render Data Tambahan (Dynamic Fields)
+  // Render data tambahan kalo ada (misal nama ayah di surat lahir)
   if (pengajuan.dataTambahan && Object.keys(pengajuan.dataTambahan).length > 0) {
     cursorY -= 10;
     Object.entries(pengajuan.dataTambahan).forEach(([key, value]) => {
-      // Format key like "tujuanUsaha" to "Tujuan Usaha"
+      // Ubah camelCase jadi kalimat (contoh: 'tujuanUsaha' -> 'Tujuan Usaha')
       const formattedLabel = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
       page.drawText(formattedLabel, { x: leftMargin + 20, y: cursorY, size: 11, font: fontRegular, color: rgb(0, 0, 0) });
       page.drawText(':', { x: leftMargin + 20 + colSize, y: cursorY, size: 11, font: fontRegular, color: rgb(0, 0, 0) });
@@ -159,14 +160,13 @@ export const generateSuratPDF = async (pengajuan) => {
     x: ttdX, y: cursorY, size: 11, font: fontBold, color: rgb(0, 0, 0),
   });
 
-  // Area TTD
+  // Tempat TTD kosong
   cursorY -= 60;
-  
   page.drawText('( .................................................. )', {
     x: ttdX - 10, y: cursorY, size: 11, font: fontBold, color: rgb(0, 0, 0),
   });
 
-  // Return byte array
+  // Save PDF jadi biner buat dikirim ke browser
   const pdfBytes = await pdfDoc.save();
   return pdfBytes;
 };

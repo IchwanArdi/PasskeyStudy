@@ -31,9 +31,8 @@ const userSchema = new mongoose.Schema({
     trim: true,
     lowercase: true,
   },
-  password: { type: String, required: false },
   role: { type: String, enum: ["warga", "admin"], default: "warga" },
-  authMethod: { type: String, enum: ["webauthn", "password", "hybrid"], default: "webauthn" },
+  authMethod: { type: String, enum: ["webauthn"], default: "webauthn" },
   webauthnCredentials: [webauthnCredentialSchema],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
@@ -48,22 +47,12 @@ const userSchema = new mongoose.Schema({
   ],
 });
 
-// Hook untuk hash password sebelum disimpan
+// Hook buat update timestamp di database
 userSchema.pre("save", async function () {
-  if (this.isModified("password") && this.password) {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-  }
   if (this.isNew || this.isModified()) {
     this.updatedAt = Date.now();
   }
 });
-
-// Membandingkan password
-userSchema.methods.comparePassword = async function (candidatePassword) {
-  if (!this.password) return false;
-  return await bcrypt.compare(candidatePassword, this.password);
-};
 
 // Menambah kredensial WebAuthn baru
 userSchema.methods.addWebAuthnCredential = async function (credential) {
@@ -95,9 +84,13 @@ userSchema.methods.removeWebAuthnCredential = async function (credentialID) {
   const index = this.webauthnCredentials.findIndex((cred) => cred.credentialID === credentialID);
   if (index === -1) throw new Error("Perangkat tidak ditemukan");
 
-  // Jangan hapus perangkat terakhir jika tidak punya password
-  if (!this.password && this.webauthnCredentials.length <= 1) {
-    throw new Error("Tidak dapat menghapus perangkat terakhir.");
+  // Jaga-jaga: Jangan hapus perangkat terakhir kecuali user punya backup codes
+  // (Asumsi: Selalu ada mekanisme recovery yang tersedia)
+  if (this.webauthnCredentials.length <= 1) {
+    const hasBackupCodes = this.backupCodes.some(c => !c.used);
+    if (!hasBackupCodes) {
+      throw new Error("Tidak dapat menghapus perangkat terakhir tanpa kode pemulihan.");
+    }
   }
 
   this.webauthnCredentials.splice(index, 1);

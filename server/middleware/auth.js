@@ -19,7 +19,7 @@ export const authenticate = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // cari user berdasarkan userId dari token
-    const user = await User.findById(decoded.userId).select('-password -webauthnCredentials');
+    const user = await User.findById(decoded.userId).select('-webauthnCredentials');
 
     // jika user tidak ditemukan
     if (!user) {

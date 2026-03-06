@@ -3,25 +3,19 @@ import { useNavigate, Link } from 'react-router-dom';
 import { isAuthenticated } from '../../utils/auth';
 import { userAPI } from '../../services/api';
 import {
-  FileText, Bell, Key, ChevronRight,
-  Clock, CheckCircle, XCircle, Hourglass, User,
-  LayoutGrid
+  FileText, CheckCircle, XCircle, Hourglass, Clock, ChevronRight
 } from 'lucide-react';
 import LetterIcon from '../../components/LetterIcon';
 import VillageCarousel from '../../components/VillageCarousel';
 
+// Daftar jenis surat yang tersedia di aplikasi
 const layananList = [
   { jenis: 'tidak_mampu', label: 'Ket. Tidak Mampu', desc: 'Keterangan ekonomi' },
   { jenis: 'kelahiran', label: 'Ket. Kelahiran', desc: 'Keterangan anak lahir' },
   { jenis: 'usaha', label: 'Ket. Usaha', desc: 'Keterangan usaha dagang' },
 ];
 
-const StatusIcon = ({ status }) => {
-  if (status === 'disetujui') return <CheckCircle className="w-4 h-4 text-emerald-400" />;
-  if (status === 'ditolak') return <XCircle className="w-4 h-4 text-red-400" />;
-  return <Hourglass className="w-4 h-4 text-blue-400" />;
-};
-
+// Label dan warna status biar simpel diliatnya
 const statusLabel = { diproses: 'Diproses', disetujui: 'Disetujui', ditolak: 'Ditolak' };
 const statusColor = {
   diproses: 'text-blue-400',
@@ -35,32 +29,36 @@ const Dashboard = () => {
   const [riwayat, setRiwayat] = useState([]);
   const [loadingRiwayat, setLoadingRiwayat] = useState(true);
 
+  // Fungsi buat ambil data profil user dan riwayat surat terbaru
   const fetchData = useCallback(async () => {
     try {
       const profileData = await userAPI.getProfile();
       const userData = profileData?.user || profileData;
       setUser(userData);
     } catch {
-      // profil gagal – sudah ada auth guard di App.jsx
+      // Kalau gagal biarin aja, biasanya karena token expired
     }
 
     try {
+      // Ambil riwayat pengajuan khusus buat user yang lagi login
       const res = await fetch(
         `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/pengajuan/saya`,
         { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
       );
       if (res.ok) {
         const data = await res.json();
+        // Cukup tampilkan 3 riwayat terbaru saja biar dashboard gak kepenuhan
         setRiwayat((data.pengajuan || []).slice(0, 3));
       }
     } catch {
-      // tidak kritis
+      // Error riwayat gak terlalu kritis buat dashboard
     } finally {
       setLoadingRiwayat(false);
     }
   }, []);
 
   useEffect(() => {
+    // Keamanan: Kalau belum login, tendang balik ke halaman login
     if (!isAuthenticated()) {
       navigate('/login');
       return;
@@ -70,7 +68,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] font-sans pb-24 md:pb-8 transition-colors duration-300">
-      {/* Header */}
+      {/* Bagian Atas: Sapaan buat User */}
       <header className="px-5 md:px-0 pt-12 md:pt-0 mb-4">
         <div className="flex items-center justify-between mb-6 pb-2 border-b border-[var(--card-border)]">
           <div>
@@ -91,27 +89,26 @@ const Dashboard = () => {
       </header>
 
       <div className="px-5 md:px-0 grid grid-cols-1 md:grid-cols-12 gap-8">
-        {/* Left Column (Main Stats & Actions) */}
         <div className="md:col-span-8 space-y-6 md:space-y-8">
-          {/* Menu Utama (App-like Grid) */}
+          {/* Grid Menu Layanan Utama */}
           <section className="bg-white/[0.01] border border-white/[0.03] rounded-[32px] p-5 md:p-8">
             <h2 className="text-sm md:text-base font-bold mb-5">Layanan Utama</h2>
             <div className="grid grid-cols-4 gap-2 md:gap-6">
-              {/* Tidak Mampu */}
+              {/* Tombol Surat Tidak Mampu */}
               <Link to="/layanan/ajukan?jenis=tidak_mampu" className="flex flex-col items-center group">
                 <div className="w-[50px] h-[50px] md:w-20 md:h-20 bg-emerald-500/[0.04] rounded-2xl md:rounded-[2rem] flex items-center justify-center mb-3 group-hover:-translate-y-1 group-hover:bg-emerald-500/[0.08] transition-all shadow-inner border border-emerald-500/10">
                   <LetterIcon jenis="tidak_mampu" className="w-6 h-6 md:w-9 md:h-9 text-emerald-400 group-hover:scale-110 transition-transform" />
                 </div>
                 <span className="text-[9px] md:text-xs font-bold text-gray-500 group-hover:text-emerald-400 text-center leading-tight">S. Tidak Mampu</span>
               </Link>
-              {/* Usaha */}
+              {/* Tombol Surat Keterangan Usaha */}
               <Link to="/layanan/ajukan?jenis=usaha" className="flex flex-col items-center group">
                 <div className="w-[50px] h-[50px] md:w-20 md:h-20 bg-blue-500/[0.04] rounded-2xl md:rounded-[2rem] flex items-center justify-center mb-3 group-hover:-translate-y-1 group-hover:bg-blue-500/[0.08] transition-all shadow-inner border border-blue-500/10">
                   <LetterIcon jenis="usaha" className="w-6 h-6 md:w-9 md:h-9 text-blue-400 group-hover:scale-110 transition-transform" />
                 </div>
                 <span className="text-[9px] md:text-xs font-bold text-gray-500 group-hover:text-blue-400 text-center leading-tight">S. Usaha</span>
               </Link>
-              {/* Kelahiran */}
+              {/* Tombol Surat Keterangan Kelahiran */}
               <Link to="/layanan/ajukan?jenis=kelahiran" className="flex flex-col items-center group">
                 <div className="w-[50px] h-[50px] md:w-20 md:h-20 bg-orange-500/[0.04] rounded-2xl md:rounded-[2rem] flex items-center justify-center mb-3 group-hover:-translate-y-1 group-hover:bg-orange-500/[0.08] transition-all shadow-inner border border-orange-500/10">
                   <LetterIcon jenis="kelahiran" className="w-6 h-6 md:w-9 md:h-9 text-orange-400 group-hover:scale-110 transition-transform" />
@@ -121,20 +118,17 @@ const Dashboard = () => {
             </div>
           </section>
 
-          {/* Hero Slider */}
+          {/* Slider Foto Desa biar lebih estetik */}
           <div className="grid grid-cols-1 gap-6 md:gap-8 min-h-[300px] md:min-h-[340px]">
-            {/* Village Slider (NEW) */}
             <div className="h-full">
               <VillageCarousel />
             </div>
           </div>
         </div>
 
-        {/* Right Column (Notifications/Status / Update Terkini) */}
+        {/* Kolom Kanan: Riwayat Aktivitas HP/Warga */}
         <div className="md:col-span-4 space-y-6 md:space-y-8">
-          {/* Riwayat terbaru */}
           <section className="bg-white/[0.01] border border-white/[0.03] rounded-[32px] p-5 md:p-8 h-full flex flex-col relative overflow-hidden group">
-            {/* Subtle glow background */}
             <div className="absolute -top-20 -right-20 w-40 h-40 bg-emerald-500/5 blur-[50px] rounded-full pointer-events-none transition-all group-hover:bg-emerald-500/10" />
 
             <div className="flex items-center justify-between mb-5 md:mb-6 relative z-10">
@@ -171,8 +165,8 @@ const Dashboard = () => {
                       key={r._id}
                       className="group flex flex-col p-4 bg-white/[0.02] border border-white/[0.04] rounded-2xl focus:bg-white/[0.04] hover:bg-white/[0.03] transition-colors relative overflow-hidden"
                     >
-                      {/* Status Accent Line */}
-                      <div className={`absolute left-0 top-0 bottom-0 w-1 ${statusColor[r.status].replace('text-', 'bg-')} opacity-50`} />
+                      {/* Garis warna di pinggir buat indikator status */}
+                      <div className={`absolute left-0 top-0 bottom-0 w-1 ${statusColor[r.status]?.replace('text-', 'bg-') || 'bg-blue-400'} opacity-50`} />
 
                       <div className="flex items-start justify-between gap-3 font-medium mb-1.5 pl-2">
                         <div className="flex-1 min-w-0">

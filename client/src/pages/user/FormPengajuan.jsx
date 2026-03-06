@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { isAuthenticated } from '../../utils/auth';
+import { pengajuanAPI } from '../../services/api';
 import { toast } from 'react-toastify';
-import { ArrowLeft, Send, ShieldCheck, User, MapPin, Calendar, FileText, Info, Loader2 } from 'lucide-react';
+import { ArrowLeft, Send, MapPin, Info, Loader2 } from 'lucide-react';
 import LetterIcon from '../../components/LetterIcon';
 
 const jenisList = {
@@ -11,7 +12,7 @@ const jenisList = {
   usaha: { label: 'Ket. Usaha' },
 };
 
-// Konfigurasi Field Dinamis
+// Pengaturan kolom tambahan yang muncul otomatis tergantung jenis suratnya
 const dynamicFieldsConfig = {
   kelahiran: [
     { name: 'namaAnak', label: 'Nama Anak', type: 'text', placeholder: 'Sesuai Akta Kelahiran' },
@@ -23,10 +24,7 @@ const dynamicFieldsConfig = {
     { name: 'jenisUsaha', label: 'Jenis Usaha', type: 'text', placeholder: 'Contoh: Makanan / Kelontong' },
     { name: 'alamatUsaha', label: 'Alamat Usaha', type: 'textarea', placeholder: 'Detail lokasi usaha' },
   ],
-  // domisili dan tidak_mampu hanya pakai form default
 };
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const FormPengajuan = () => {
   const navigate = useNavigate();
@@ -46,10 +44,12 @@ const FormPengajuan = () => {
   const [dynamicForm, setDynamicForm] = useState({});
 
   useEffect(() => {
+    // Pastikan user sudah login
     if (!isAuthenticated()) { navigate('/login'); return; }
+    // Kalau jenis surat gak ada di daftar, balikin ke halaman layanan
     if (!jenisList[jenisSurat]) { navigate('/layanan', { replace: true }); }
     
-    // Reset dynamic form when type changes
+    // Siapkan form tambahan kalau suratnya butuh data ekstra (kayak lahir/usaha)
     if (dynamicFieldsConfig[jenisSurat]) {
       const initialDynamicForm = {};
       dynamicFieldsConfig[jenisSurat].forEach(field => {
@@ -74,26 +74,17 @@ const FormPengajuan = () => {
     setLoading(true);
     try {
       const payload = { ...form, jenisSurat };
+      // Gabungkan data profil umum sama data khusus layanannya
       if (Object.keys(dynamicForm).length > 0) {
         payload.dataTambahan = dynamicForm;
       }
 
-      const res = await fetch(`${API_URL}/pengajuan`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify(payload),
-      });
+      await pengajuanAPI.createPengajuan(payload);
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Gagal mengirim pengajuan');
-
-      toast.success('Pengajuan berhasil dikirim! Silakan cek riwayat pengajuan Anda.');
+      toast.success('Pengajuan berhasil dikirim! Silakan tunggu verifikasi admin.');
       navigate('/riwayat');
     } catch (err) {
-      toast.error(err.message || 'Terjadi kesalahan, coba lagi.');
+      toast.error(err.message || 'Terjadi kesalahan, silakan coba lagi.');
     } finally {
       setLoading(false);
     }
@@ -105,7 +96,7 @@ const FormPengajuan = () => {
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] font-sans pt-12 md:pt-0 pb-24 md:pb-8 transition-colors duration-300">
       <div className="max-w-4xl mx-auto">
-        {/* Header */}
+        {/* Tombol Kembali & Judul Formulir */}
         <header className="px-5 md:px-0 pt-0 pb-6 mb-8 border-b border-white/5">
           <Link to="/layanan" className="inline-flex items-center gap-2 text-gray-500 hover:text-white transition-colors mb-6 text-xs font-bold uppercase tracking-wider">
             <ArrowLeft className="w-4 h-4" /> Kembali ke Layanan
@@ -116,30 +107,30 @@ const FormPengajuan = () => {
             </div>
             <div>
               <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">{info.label}</h1>
-              <p className="text-sm text-gray-500 font-medium">Lengkapi formulir di bawah ini untuk pengisian otomatis surat.</p>
+              <p className="text-sm text-gray-500 font-medium">Lengkapi formulir di bawah ini dengan benar.</p>
             </div>
           </div>
         </header>
 
         <form onSubmit={handleSubmit} className="px-5 md:px-0 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 pb-10">
           <div className="space-y-6">
-            <h2 className="text-sm font-bold text-white border-l-2 border-emerald-500 pl-3">Data Personal</h2>
+            <h2 className="text-sm font-bold text-white border-l-2 border-emerald-500 pl-3">Data Pemohon</h2>
             
-            {/* Nama Lengkap */}
+            {/* Input Nama */}
             <div>
-              <label className="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-[0.15em]">Nama Lengkap</label>
+              <label className="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-[0.15em]">Nama Lengkap (Sesuai KTP)</label>
               <input
                 type="text"
                 name="namaLengkap"
                 value={form.namaLengkap}
                 onChange={handleChange}
                 required
-                placeholder="Sesuai KTP"
+                placeholder="Masukkan nama lengkap"
                 className="appearance-none w-full px-4 py-4 md:py-3.5 bg-white/[0.02] border border-white/[0.06] rounded-[16px] text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all placeholder:text-gray-600 focus:bg-white/[0.04]"
               />
             </div>
 
-            {/* NIK */}
+            {/* Input NIK */}
             <div>
               <label className="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-[0.15em]">NIK (16 Digit)</label>
               <input
@@ -150,12 +141,12 @@ const FormPengajuan = () => {
                 required
                 maxLength={16}
                 inputMode="numeric"
-                placeholder="Masukkan 16 digit NIK"
+                placeholder="Contoh: 3301xxxxxxxxxxxx"
                 className="appearance-none w-full px-4 py-4 md:py-3.5 bg-white/[0.02] border border-white/[0.06] rounded-[16px] text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all placeholder:text-gray-600 font-mono focus:bg-white/[0.04]"
               />
             </div>
 
-            {/* Tempat & Tanggal Lahir */}
+            {/* Input TTL */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-[0.15em]">Tempat Lahir</label>
@@ -184,40 +175,40 @@ const FormPengajuan = () => {
           </div>
 
           <div className="space-y-6">
-            <h2 className="text-sm font-bold text-white border-l-2 border-emerald-500 pl-3">Rincian Pengajuan</h2>
+            <h2 className="text-sm font-bold text-white border-l-2 border-emerald-500 pl-3">Tujuan Pengajuan</h2>
 
-            {/* Alamat */}
+            {/* Input Alamat */}
             <div>
-              <label className="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-[0.15em]">Alamat KTP</label>
+              <label className="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-[0.15em]">Alamat Lengkap</label>
               <textarea
                 name="alamat"
                 value={form.alamat}
                 onChange={handleChange}
                 required
                 rows={3}
-                placeholder="Jl. / RT / RW / Dusun / Desa"
+                placeholder="Jl. / RT / RW / Dusun"
                 className="appearance-none w-full px-4 py-4 md:py-3.5 bg-white/[0.02] border border-white/[0.06] rounded-[16px] text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all placeholder:text-gray-600 resize-none focus:bg-white/[0.04]"
               />
             </div>
 
-            {/* Keperluan */}
+            {/* Input Keperluan */}
             <div>
-              <label className="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-[0.15em]">Tujuan & Keperluan</label>
+              <label className="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-[0.15em]">Keperluan / Alasan</label>
               <textarea
                 name="keperluan"
                 value={form.keperluan}
                 onChange={handleChange}
                 required
                 rows={3}
-                placeholder="Sebutkan alasan atau tujuan pengajuan surat ini..."
+                placeholder="Alasan mengajukan surat ini..."
                 className="appearance-none w-full px-4 py-4 md:py-3.5 bg-white/[0.02] border border-white/[0.06] rounded-[16px] text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all placeholder:text-gray-600 resize-none focus:bg-white/[0.04]"
               />
             </div>
 
-            {/* Dynamic Fields */}
+            {/* Form Tambahan (Khusus untuk jenis surat tertentu) */}
             {dynamicFieldsConfig[jenisSurat] && (
               <div className="pt-6 border-t border-white/5 space-y-6">
-                <h2 className="text-sm font-bold text-white border-l-2 border-emerald-500 pl-3">Data Spesifik Layanan</h2>
+                <h2 className="text-sm font-bold text-white border-l-2 border-emerald-500 pl-3">Data Tambahan Surat</h2>
                 {dynamicFieldsConfig[jenisSurat].map((field) => (
                   <div key={field.name}>
                     <label className="block text-[10px] font-bold text-gray-500 mb-2 uppercase tracking-[0.15em]">{field.label}</label>
@@ -250,17 +241,18 @@ const FormPengajuan = () => {
             <div className="flex items-center gap-3 p-4 bg-emerald-500/[0.04] border border-emerald-500/10 rounded-2xl">
               <Info className="w-5 h-5 text-emerald-400 shrink-0" />
               <p className="text-[10px] md:text-xs text-gray-500 leading-relaxed font-medium">
-                Pastikan data sesuai dengan dokumen resmi untuk mempercepat verifikasi oleh Admin Desa.
+                Data ini akan diproses secara digital. Pastikan sudah benar ya sebelum dikirim.
               </p>
             </div>
 
+            {/* Tombol Kirim */}
             <button
               type="submit"
               disabled={loading}
               className="w-full py-4 bg-emerald-500 text-black font-extrabold rounded-2xl flex items-center justify-center gap-2 hover:bg-emerald-400 transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed shadow-[0_0_30px_rgba(16,185,129,0.2)] md:mt-4"
             >
               {loading ? (
-                <><Loader2 className="w-5 h-5 animate-spin" /> Mengirim...</>
+                <><Loader2 className="w-5 h-5 animate-spin" /> Sedang Mengirim...</>
               ) : (
                 <><Send className="w-5 h-5" /> Kirim Pengajuan Sekarang</>
               )}
