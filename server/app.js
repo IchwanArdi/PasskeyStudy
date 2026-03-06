@@ -11,7 +11,6 @@ import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
 import recoveryRoutes from './routes/recovery.js';
 import pengajuanRoutes from './routes/pengajuan.js';
-import pengumumanRoutes from './routes/pengumuman.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import rateLimit from 'express-rate-limit';
@@ -115,6 +114,8 @@ app.get('/', (req, res) => {
 
 // Handle favicon requests to avoid 404 errors in logs
 app.get(['/favicon.ico', '/favicon.png'], (req, res) => res.status(204).end());
+
+
 // Rate limiting (hanya aktif di production)
 if (isProduction) {
 // KEAMANAN: Rate limiter untuk mencegah serangan DoS (Denial of Service) atau brute-force
@@ -140,21 +141,10 @@ if (isProduction) {
 }
 
 // ROUTING: Mendaftarkan semua kumpulan endpoint/API yang tersedia di backend
-// Auth & User Management
 app.use('/api/auth', authRoutes);
-app.use('/auth', authRoutes); // Alias for client compatibility
 app.use('/api/user', userRoutes);
-app.use('/user', userRoutes); // Alias for client compatibility
 app.use('/api/recovery', recoveryRoutes);
-app.use('/recovery', recoveryRoutes);
 app.use('/api/pengajuan', pengajuanRoutes);
-app.use('/pengajuan', pengajuanRoutes); // Alias for client compatibility
-app.use('/api/pengumuman', pengumumanRoutes);
-app.use('/pengumuman', pengumumanRoutes); // Alias for client compatibility
-
-
-// Static file serving for uploads
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Export app for use in server.js
 export default app;

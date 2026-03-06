@@ -112,16 +112,6 @@ const AdminDashboard = () => {
                   <ChevronRight className="w-5 h-5 text-gray-600 group-hover:text-yellow-400 group-hover:translate-x-1 transition-all" />
                 </Link>
 
-                <Link to="/admin/pengumuman" className="flex items-center gap-4 p-5 md:p-6 bg-white/[0.03] border border-white/[0.06] rounded-3xl hover:border-blue-500/20 hover:bg-white/[0.05] transition-all group">
-                  <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                    <Bell className="w-6 h-6 text-blue-400" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm md:text-base font-bold text-gray-200 group-hover:text-white transition-colors">Kelola Pengumuman</p>
-                    <p className="text-xs text-gray-500 mt-1">Buat dan edit pengumuman desa</p>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-gray-600 group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
-                </Link>
               </div>
             </div>
           </div>

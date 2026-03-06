@@ -5,7 +5,7 @@ import { userAPI } from '../../services/api';
 import {
   FileText, Bell, Key, ChevronRight,
   Clock, CheckCircle, XCircle, Hourglass, User,
-  Megaphone, LayoutGrid
+  LayoutGrid
 } from 'lucide-react';
 import LetterIcon from '../../components/LetterIcon';
 import VillageCarousel from '../../components/VillageCarousel';
@@ -118,41 +118,15 @@ const Dashboard = () => {
                 </div>
                 <span className="text-[9px] md:text-xs font-bold text-gray-500 group-hover:text-orange-400 text-center leading-tight">S. Kelahiran</span>
               </Link>
-              {/* Berita Desa */}
-              <Link to="/pengumuman" className="flex flex-col items-center group">
-                <div className="w-[50px] h-[50px] md:w-20 md:h-20 bg-indigo-500/[0.04] rounded-2xl md:rounded-[2rem] flex items-center justify-center mb-3 group-hover:-translate-y-1 group-hover:bg-indigo-500/[0.08] transition-all shadow-inner border border-indigo-500/10">
-                  <Megaphone className="w-6 h-6 md:w-9 md:h-9 text-indigo-400 group-hover:scale-110 transition-transform" />
-                </div>
-                <span className="text-[9px] md:text-xs font-bold text-gray-500 group-hover:text-indigo-400 text-center leading-tight">Berita Desa</span>
-              </Link>
             </div>
           </section>
 
-          {/* Hero Slider & Section Berita */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 min-h-[300px] md:min-h-[340px]">
+          {/* Hero Slider */}
+          <div className="grid grid-cols-1 gap-6 md:gap-8 min-h-[300px] md:min-h-[340px]">
             {/* Village Slider (NEW) */}
             <div className="h-full">
               <VillageCarousel />
             </div>
-
-            {/* Banner Pengumuman Desa (Berita Desa) */}
-            <section className="glass-panel p-6 md:p-8 rounded-[32px] relative overflow-hidden group border border-blue-500/10 hover:border-blue-500/20 transition-all flex flex-col justify-center h-full">
-              <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/10 blur-[50px] rounded-full -mr-10 -mt-20 pointer-events-none transition-all group-hover:bg-blue-500/20" />
-              <div className="relative z-10">
-                <div className="flex items-center gap-3 mb-3 md:mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                    <Megaphone className="w-5 h-5 text-blue-400" />
-                  </div>
-                  <h2 className="text-base md:text-lg font-bold">Berita Desa</h2>
-                </div>
-                <p className="text-xs md:text-sm text-gray-400 leading-relaxed font-medium mb-5 md:mb-6 max-w-sm">
-                  Temukan informasi penting, jadwal kegiatan, dan pengumuman terbaru langsung dari Pemerintah Desa Karangpucung.
-                </p>
-                <Link to="/pengumuman" className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-500 text-white text-xs font-bold rounded-xl hover:bg-blue-400 transition-all shadow-[0_0_15px_rgba(59,130,246,0.3)]">
-                  Baca Pengumuman <ChevronRight className="w-4 h-4" />
-                </Link>
-              </div>
-            </section>
           </div>
         </div>
 

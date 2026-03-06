@@ -2,7 +2,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Home, 
   FileText, 
-  Bell, 
   User, 
   LogOut, 
   ShieldCheck, 
@@ -13,7 +12,6 @@ import {
 const navItems = [
   { to: '/dashboard', icon: Home, label: 'Beranda' },
   { to: '/layanan', icon: FileText, label: 'Layanan' },
-  { to: '/pengumuman', icon: Bell, label: 'Berita' },
   { to: '/profile', icon: User, label: 'Profil' },
 ];
 

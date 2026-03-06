@@ -24,14 +24,11 @@ import ManageDevices from './pages/user/ManageDevices';
 import Layanan from './pages/user/Layanan';
 import FormPengajuan from './pages/user/FormPengajuan';
 import RiwayatPengajuan from './pages/user/RiwayatPengajuan';
-import Pengumuman from './pages/user/Pengumuman';
-import DetailPengumuman from './pages/user/DetailPengumuman';
 import PanduanWarga from './pages/user/PanduanWarga';
 
 // Admin pages
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminPengajuan from './pages/admin/Pengajuan.jsx';
-import AdminPengumuman from './pages/admin/Pengumuman.jsx';
 import AdminProfile from './pages/admin/Profile.jsx';
 import AdminUsers from './pages/admin/ManageUsers.jsx';
 import AdminNavLayout from './components/AdminNavLayout.jsx';
@@ -85,20 +82,18 @@ function App() {
           <Route path="/recovery" element={<Recovery />} />
           <Route path="/help" element={<Help />} />
 
-          {/* Warga & Pengumuman - Wrapped in NavLayout */}
+          {/* Warga - Wrapped in NavLayout */}
           <Route element={<NavLayout><Dashboard /></NavLayout>} path="/dashboard" />
           <Route element={<NavLayout><Profile /></NavLayout>} path="/profile" />
           <Route element={<NavLayout><ManageDevices /></NavLayout>} path="/manage-devices" />
           <Route element={<NavLayout><Layanan /></NavLayout>} path="/layanan" />
           <Route element={<NavLayout><FormPengajuan /></NavLayout>} path="/layanan/ajukan" />
-          <Route element={<NavLayout><RiwayatPengajuan /></NavLayout>} path="/riwayat" />          <Route element={<NavLayout><Pengumuman /></NavLayout>} path="/pengumuman" />
-          <Route element={<NavLayout><DetailPengumuman /></NavLayout>} path="/pengumuman/:id" />
+          <Route element={<NavLayout><RiwayatPengajuan /></NavLayout>} path="/riwayat" />
           <Route element={<NavLayout><PanduanWarga /></NavLayout>} path="/panduan" />
 
           {/* Admin */}
           <Route path="/admin" element={<AdminRoute><AdminNavLayout><AdminDashboard /></AdminNavLayout></AdminRoute>} />
           <Route path="/admin/pengajuan" element={<AdminRoute><AdminNavLayout><AdminPengajuan /></AdminNavLayout></AdminRoute>} />
-          <Route path="/admin/pengumuman" element={<AdminRoute><AdminNavLayout><AdminPengumuman /></AdminNavLayout></AdminRoute>} />
           <Route path="/admin/profile" element={<AdminRoute><AdminNavLayout><AdminProfile /></AdminNavLayout></AdminRoute>} />
           <Route path="/admin/users" element={<AdminRoute><AdminNavLayout><AdminUsers /></AdminNavLayout></AdminRoute>} />
           <Route path="/admin/manage-devices" element={<AdminRoute><AdminNavLayout><ManageDevices /></AdminNavLayout></AdminRoute>} />

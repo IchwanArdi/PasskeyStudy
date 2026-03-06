@@ -11,7 +11,7 @@ const pengajuanSchema = new mongoose.Schema(
     jenisSurat: {
       type: String,
       required: true,
-      enum: ['domisili', 'tidak_mampu', 'kelahiran', 'kematian', 'usaha'],
+      enum: ['tidak_mampu', 'kelahiran', 'usaha'],
     },
     // ENKRIPSI DATA MENTAH: Data sensitif (Nama, NIK, TTL, Alamat) dienkripsi secara dua arah menggunakan AES-256-CBC
     // sebelum benar-benar di-save ke dalam disk memori Database

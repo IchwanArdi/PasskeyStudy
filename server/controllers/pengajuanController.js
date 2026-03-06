@@ -2,7 +2,7 @@ import Pengajuan from '../models/Pengajuan.js';
 import { generateSuratPDF } from '../utils/pdfGenerator.js';
 import { decrypt } from '../utils/encryption.js';
 
-// ─── WARGA ────────────────────────────────────────────────────────────────────
+// ─── WARGA 
 
 /**
  * ALUR PELAYANAN 1 (WARGA): Endpoint POST /api/pengajuan

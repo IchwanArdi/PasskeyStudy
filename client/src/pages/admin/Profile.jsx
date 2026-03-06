@@ -199,41 +199,6 @@ const AdminProfile = () => {
               )}
             </div>
 
-            {/* Credentials Card */}
-            <div className="glass-card rounded-2xl p-8">
-              <h2 className="text-base font-bold flex items-center gap-2.5 mb-8">
-                <Key className="w-5 h-5 text-red-400" />
-                Kredensial Aktif
-              </h2>
-
-              {!credentials || !Array.isArray(credentials) || credentials.length === 0 ? (
-                <div className="text-center py-12 border border-dashed border-[var(--card-border)] rounded-xl">
-                  <Lock className="w-10 h-10 text-gray-700 mx-auto mb-3" />
-                  <p className="text-sm font-medium text-gray-600">Belum ada kunci kredensial terdaftar.</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {credentials.map((cred, index) => (
-                    <div key={index} className="p-5 glass-card rounded-xl flex items-center justify-between group">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl flex items-center justify-center">
-                          <Shield className="w-5 h-5 text-gray-500 group-hover:text-red-400 transition-colors" />
-                        </div>
-                        <div>
-                          <p className="text-xs font-medium text-gray-500 mb-0.5">Alat Masuk</p>
-                          <p className="text-sm font-semibold truncate max-w-[140px]">{cred.nickname || 'Perangkat Tanpa Nama'}</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <span className="text-xs font-semibold text-emerald-400 block mb-0.5">Aktif</span>
-                        <span className="text-xs font-mono text-gray-600">ID: {cred.credentialID?.slice(0, 8)}...</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
             {/* Settings Section */}
             <div className="glass-card rounded-2xl p-8">
               <h2 className="text-base font-bold flex items-center gap-2.5 mb-8">

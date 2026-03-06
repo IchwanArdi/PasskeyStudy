@@ -14,7 +14,6 @@ import {
 const navItems = [
   { to: "/admin", icon: Home, label: "Beranda" },
   { to: "/admin/pengajuan", icon: FileText, label: "Pengajuan" },
-  { to: "/admin/pengumuman", icon: Bell, label: "Berita" },
   { to: "/admin/users", icon: Users, label: "Warga" },
   { to: "/admin/profile", icon: User, label: "Profil" },
 ];

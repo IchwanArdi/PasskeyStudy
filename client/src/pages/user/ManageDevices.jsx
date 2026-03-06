@@ -11,15 +11,11 @@ import {
   Edit3,
   Check,
   X,
-  Smartphone,
-  Monitor,
   Key,
   Fingerprint,
-  Clock,
   Calendar,
   AlertTriangle,
   Usb,
-  Wifi,
 } from 'lucide-react';
 
 const ManageDevices = () => {
@@ -136,18 +132,6 @@ const ManageDevices = () => {
     return 'Alat Masuk';
   };
 
-  const getTransportIcons = (transports) => {
-    if (!transports || transports.length === 0) return null;
-    return (
-      <div className="flex items-center gap-1.5 mt-1">
-        {transports.includes('usb') && <Usb className="w-3 h-3 text-gray-500" title="USB" />}
-        {transports.includes('nfc') && <Wifi className="w-3 h-3 text-gray-500" title="NFC" />}
-        {transports.includes('internal') && <Monitor className="w-3 h-3 text-gray-500" title="Internal" />}
-        {transports.includes('ble') && <Smartphone className="w-3 h-3 text-gray-500" title="Bluetooth" />}
-      </div>
-    );
-  };
-
   const formatDate = (dateStr) => {
     if (!dateStr) return '-';
     return new Date(dateStr).toLocaleDateString('id-ID', {
@@ -157,19 +141,6 @@ const ManageDevices = () => {
       hour: '2-digit',
       minute: '2-digit',
     });
-  };
-
-  const getTimeAgo = (dateStr) => {
-    if (!dateStr) return 'Belum pernah';
-    const diff = Date.now() - new Date(dateStr).getTime();
-    const minutes = Math.floor(diff / 60000);
-    if (minutes < 1) return 'Baru saja';
-    if (minutes < 60) return `${minutes} menit lalu`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours} jam lalu`;
-    const days = Math.floor(hours / 24);
-    if (days < 30) return `${days} hari lalu`;
-    return formatDate(dateStr);
   };
 
   if (loading) {
@@ -252,21 +223,6 @@ const ManageDevices = () => {
         </div>
 
         {/* Devices List */}
-        {credentials.length === 0 ? (
-          <div className="glass-card rounded-2xl p-12 text-center">
-            <Key className="w-12 h-12 text-gray-700 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Belum Ada Perangkat</h3>
-            <p className="text-sm text-gray-500 mb-6">
-              Tambahkan perangkat pertama Anda untuk mengamankan akun.
-            </p>
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-semibold transition-all"
-            >
-              Tambah Perangkat Pertama
-            </button>
-          </div>
-        ) : (
           <div className="space-y-4">
             {credentials.map((cred, index) => (
               <div
@@ -338,12 +294,7 @@ const ManageDevices = () => {
                         }`}>
                           {getDeviceLabel(cred)}
                         </span>
-                        <span className="text-xs text-gray-600 font-mono">
-                          ID: {cred.credentialID?.slice(0, 12)}...
-                        </span>
                       </div>
-
-                      {getTransportIcons(cred.transports)}
                     </div>
                   </div>
 
@@ -355,13 +306,6 @@ const ManageDevices = () => {
                         Didaftarkan
                       </div>
                       <p className="text-xs font-medium">{formatDate(cred.createdAt)}</p>
-                    </div>
-                    <div className="hidden sm:block text-right">
-                      <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-1">
-                        <Clock className="w-3 h-3" />
-                        Terakhir Dipakai
-                      </div>
-                      <p className="text-xs font-medium">{getTimeAgo(cred.lastUsed)}</p>
                     </div>
 
                     {/* Delete button */}
@@ -398,15 +342,10 @@ const ManageDevices = () => {
                     <p className="text-xs text-gray-600 mb-0.5">Didaftarkan</p>
                     <p className="text-xs font-medium">{formatDate(cred.createdAt)}</p>
                   </div>
-                  <div>
-                    <p className="text-xs text-gray-600 mb-0.5">Terakhir Dipakai</p>
-                    <p className="text-xs font-medium">{getTimeAgo(cred.lastUsed)}</p>
-                  </div>
                 </div>
               </div>
             ))}
           </div>
-        )}
 
         {/* Security Notice */}
         <div className="mt-8 bg-amber-500/[0.06] border border-amber-500/15 rounded-2xl p-6">
@@ -436,7 +375,7 @@ const ManageDevices = () => {
           <div className="relative w-full max-w-md glass-card rounded-2xl p-8">
             <h2 className="text-lg font-bold mb-2">Tambah Perangkat Baru</h2>
             <p className="text-sm text-gray-500 mb-6">
-              Gunakan Sidik Jari/Wajah di HP lain (seperti HP anak atau pasangan) agar akun tetap bisa dibuka jika HP utama hilang.
+              Gunakan Sidik Jari/Wajah di HP, Laptop, atau Tablet lainnya.
             </p>
 
             <div className="mb-6">
