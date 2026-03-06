@@ -142,9 +142,13 @@ if (isProduction) {
 
 // ROUTING: Mendaftarkan semua kumpulan endpoint/API yang tersedia di backend
 app.use('/api/auth', authRoutes);
+app.use('/auth', authRoutes); // Alias untuk kompatibilitas client (Vercel)
 app.use('/api/user', userRoutes);
+app.use('/user', userRoutes); // Alias untuk kompatibilitas client (Vercel)
 app.use('/api/recovery', recoveryRoutes);
+app.use('/recovery', recoveryRoutes); // Alias untuk kompatibilitas client (Vercel)
 app.use('/api/pengajuan', pengajuanRoutes);
+app.use('/pengajuan', pengajuanRoutes); // Alias untuk kompatibilitas client (Vercel)
 
 // Export app for use in server.js
 export default app;
