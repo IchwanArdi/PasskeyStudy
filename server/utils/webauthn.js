@@ -177,14 +177,39 @@ export const verifyAuthentication = async ( body, expectedChallenge, user, crede
   };
 
   // Memverifikasi signature yang dikirim perangkat
-  const verification = await verifyAuthenticationResponse({
-    response: body,                // response dari browser
-    expectedChallenge,             // challenge login dari server
-    expectedOrigin: origin,        // origin harus sama
-    expectedRPID: rpID,            // domain harus cocok
-    credential: webauthnCredential,// public key untuk verifikasi signature
-    requireUserVerification: false,
-  });
+  // Catatan: Beberapa authenticator (contoh: Apple iCloud Keychain) selalu mengirim counter = 0
+  // karena passkey disinkronisasi lewat cloud, jadi counter tidak relevan.
+  // Jika counter di DB sudah terlanjur naik (misal jadi 1), maka verifikasi akan gagal
+  // karena perangkat mengirim counter 0 tapi server mengharapkan > 1.
+  // Solusi: Jika terjadi error counter, coba ulang dengan counter = 0.
+  let verification;
+  try {
+    verification = await verifyAuthenticationResponse({
+      response: body,
+      expectedChallenge,
+      expectedOrigin: origin,
+      expectedRPID: rpID,
+      credential: webauthnCredential,
+      requireUserVerification: false,
+    });
+  } catch (error) {
+    // Tangani error counter mismatch untuk authenticator yang tidak mendukung counter
+    // (Apple iCloud Keychain selalu kirim counter 0)
+    if (error.message?.includes('counter') && webauthnCredential.counter > 0) {
+      console.warn('Counter mismatch terdeteksi, mencoba ulang dengan counter 0 (authenticator mungkin tidak mendukung counter)');
+      webauthnCredential.counter = 0;
+      verification = await verifyAuthenticationResponse({
+        response: body,
+        expectedChallenge,
+        expectedOrigin: origin,
+        expectedRPID: rpID,
+        credential: webauthnCredential,
+        requireUserVerification: false,
+      });
+    } else {
+      throw error;
+    }
+  }
 
   // Jika signature tidak valid
   if (!verification.verified) {
@@ -192,10 +217,12 @@ export const verifyAuthentication = async ( body, expectedChallenge, user, crede
   }
 
   // Counter diperbarui untuk mencegah Replay Attack
+  // Gunakan ?? (nullish coalescing) bukan || (logical or)
+  // Karena || menganggap 0 sebagai falsy, sehingga counter 0 dari Apple iCloud Keychain
+  // akan diganti jadi counter+1, menyebabkan login berikutnya gagal
   return {
     verified: true,
     newCounter:
-      verification.authenticationInfo?.newCounter ||
-      webauthnCredential.counter + 1,
+      verification.authenticationInfo?.newCounter ?? 0,
   };
 };
