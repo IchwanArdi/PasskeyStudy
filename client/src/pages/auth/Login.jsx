@@ -37,16 +37,16 @@ const Login = () => {
         {/* Bagian Judul */}
         <div className="text-center mb-8">
           <h1 className="text-2xl font-black tracking-tight mb-2">Masuk ke Akun</h1>
-          <p className="text-sm text-gray-500">Layanan Desa Digital Karangpucung</p>
+          <p className="text-sm text-gray-500">Layanan Desa Digital</p>
         </div>
 
         {/* Kartu Login */}
-        <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-6 backdrop-blur-sm">
+        <div className="glass-card rounded-[24px] p-6 sm:p-8">
           {/* Banner Informasi Keamanan */}
-          <div className="flex items-center gap-3 p-3.5 bg-emerald-500/[0.06] border border-emerald-500/10 rounded-xl mb-6">
-            <Shield className="w-4 h-4 text-emerald-400 shrink-0" />
-            <p className="text-xs text-gray-400 leading-relaxed">
-              Masuk cukup pakai <span className="text-white font-semibold">Sidik Jari atau Wajah</span> — aman tanpa perlu hafal password.
+          <div className="flex items-center gap-3 p-3.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl mb-6">
+            <Shield className="w-4 h-4 text-emerald-500 shrink-0" />
+            <p className="text-xs text-gray-500 leading-relaxed font-medium">
+              Masuk cukup pakai <span className="text-gray-900 dark:text-white font-bold">Sidik Jari atau Wajah</span> — aman tanpa perlu hafal password.
             </p>
           </div>
 

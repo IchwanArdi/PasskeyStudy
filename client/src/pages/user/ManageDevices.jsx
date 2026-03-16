@@ -1,22 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { userAPI } from '../../services/api';
-import { isAuthenticated } from '../../utils/auth';
+import { isAuthenticated, api, clearAuth } from '../../utils/auth';
 import { startRegistration } from '@simplewebauthn/browser';
 import { toast } from 'react-toastify';
-import {
-  Shield,
-  Plus,
-  Trash2,
-  Edit3,
-  Check,
-  X,
-  Key,
-  Fingerprint,
-  Calendar,
-  AlertTriangle,
-  Usb,
-} from 'lucide-react';
+import { Shield, Plus, Trash2, Edit3, Check, X, Key, Fingerprint, Calendar, AlertTriangle } from 'lucide-react';
 
 const ManageDevices = () => {
   const navigate = useNavigate();
@@ -28,6 +15,8 @@ const ManageDevices = () => {
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [newDeviceName, setNewDeviceName] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
 
   useEffect(() => {
     // Pastikan user sudah login sebelum kelola perangkat
@@ -42,7 +31,7 @@ const ManageDevices = () => {
   const fetchCredentials = async () => {
     try {
       setLoading(true);
-      const data = await userAPI.getCredentials();
+      const data = await api.get("/user/credentials");
       const credsArray = Array.isArray(data) ? data : data?.credentials || [];
       setCredentials(credsArray);
     } catch (error) {
@@ -58,7 +47,7 @@ const ManageDevices = () => {
     setAddingDevice(true);
     try {
       // Step 1: Minta opsi registrasi dari server (Challenge dll)
-      const options = await userAPI.addDeviceOptions();
+      const options = await api.post("/user/credentials/add-options");
 
       // Step 2: Mulai "upacara" registrasi di browser
       // Browser akan minta sidik jari / wajah / PIN keamanan
@@ -67,7 +56,7 @@ const ManageDevices = () => {
       });
 
       // Step 3: Kirim hasil verifikasi dari browser balik ke server buat disimpan
-      await userAPI.addDeviceVerify({
+      await api.post("/user/credentials/add-verify", {
         credential,
         nickname: newDeviceName.trim() || 'Perangkat Baru',
       });
@@ -97,15 +86,33 @@ const ManageDevices = () => {
   // Fungsi buat hapus perangkat (hati-hati kalau cuma tinggal satu!)
   const handleDelete = async (credentialID) => {
     try {
-      await userAPI.deleteCredential(credentialID);
+      await api.delete(`/user/credentials/${encodeURIComponent(credentialID)}`);
       toast.success('Perangkat berhasil dihapus');
       setDeleteConfirmId(null);
       await fetchCredentials();
     } catch (error) {
-      toast.error('Gagal menghapus perangkat');
+      toast.error(error.response?.data?.message || 'Gagal menghapus perangkat');
       console.error('Delete credential error:', error);
+      setDeleteConfirmId(null); // Tutup konfirmasi kalau gagal (terutama kalau ini perangkat terakhir)
     }
   };
+
+  // Fungsi menghapus akun permanen jika user menghapus perangkat terakhir
+  const handleDeleteAccount = async () => {
+    setDeletingAccount(true);
+    try {
+      await api.delete('/user/me');
+      clearAuth();
+      toast.success('Akun Anda telah berhasil dihapus secara permanen');
+      navigate('/login');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Gagal menghapus akun');
+      console.error('Delete account error:', error);
+      setDeletingAccount(false);
+      setShowDeleteAccountModal(false);
+    }
+  };
+
 
   // Ubah nama panggilan perangkat biar gampang dikenali (misal: "HP Samsung Bapak")
   const handleUpdateNickname = async (credentialID) => {
@@ -114,7 +121,9 @@ const ManageDevices = () => {
       return;
     }
     try {
-      await userAPI.updateNickname(credentialID, editNickname.trim());
+      await api.put(`/user/credentials/${encodeURIComponent(credentialID)}/nickname`, {
+        nickname: editNickname.trim(),
+      });
       toast.success('Nama perangkat berhasil diubah');
       setEditingId(null);
       await fetchCredentials();
@@ -174,47 +183,6 @@ const ManageDevices = () => {
           <p className="text-gray-500 text-base">
             Kelola kunci keamanan dan authenticator yang terdaftar pada akun Anda.
           </p>
-        </div>
-
-        {/* Kartu Statistik Cepat */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <div className="glass-card rounded-2xl p-5">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-center justify-center">
-                <Key className="w-5 h-5 text-blue-400" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">{credentials.length}</p>
-                <p className="text-xs text-gray-500">Total Perangkat</p>
-              </div>
-            </div>
-          </div>
-          <div className="glass-card rounded-2xl p-5">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center justify-center">
-                <Fingerprint className="w-5 h-5 text-emerald-400" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">
-                  {credentials.filter((c) => c.deviceType === 'platform').length}
-                </p>
-                <p className="text-xs text-gray-500">Biometrik</p>
-              </div>
-            </div>
-          </div>
-          <div className="glass-card rounded-2xl p-5">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-purple-500/10 border border-purple-500/20 rounded-xl flex items-center justify-center">
-                <Usb className="w-5 h-5 text-purple-400" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">
-                  {credentials.filter((c) => c.deviceType === 'cross-platform').length}
-                </p>
-                <p className="text-xs text-gray-500">Hardware Key</p>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Tombol Tambah Perangkat */}
@@ -333,7 +301,13 @@ const ManageDevices = () => {
                       </div>
                     ) : (
                       <button
-                        onClick={() => setDeleteConfirmId(cred.credentialID)}
+                        onClick={() => {
+                          if (credentials.length <= 1) {
+                            setShowDeleteAccountModal(true);
+                          } else {
+                            setDeleteConfirmId(cred.credentialID);
+                          }
+                        }}
                         className="p-2 text-gray-600 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all opacity-0 group-hover:opacity-100"
                         title="Hapus perangkat"
                       >
@@ -422,6 +396,41 @@ const ManageDevices = () => {
                 onClick={() => setShowAddModal(false)}
                 disabled={addingDevice}
                 className="px-5 py-3 bg-white/[0.04] text-gray-400 rounded-xl text-sm font-medium hover:bg-white/[0.08] transition-all disabled:opacity-50"
+              >
+                Batal
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Hapus Akun (Peringatan Kritis) */}
+      {showDeleteAccountModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
+          <div
+            className="absolute inset-0 bg-red-950/60 backdrop-blur-sm"
+            onClick={() => !deletingAccount && setShowDeleteAccountModal(false)}
+          />
+          <div className="relative w-full max-w-md bg-[var(--bg)] border border-red-500/20 rounded-2xl p-8 shadow-2xl shadow-red-500/10">
+            <div className="w-16 h-16 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <AlertTriangle className="w-8 h-8 text-red-500 animate-pulse" />
+            </div>
+            <h2 className="text-xl font-bold text-center text-red-500 mb-4">Peringatan Kritis!</h2>
+            <p className="text-sm border-l-2 border-red-500 pl-4 py-2 text-gray-400 mb-8 leading-relaxed bg-red-500/[0.03]">
+              Ini adalah <strong>satu-satunya alat masuk Anda</strong>. Menghapus alat keamanan terakhir ini akan <strong className="text-red-400">Menghapus Seluruh Akun dan Data Anda secara Permanen</strong> dari sistem desa. Tindakan ini tidak dapat dibatalkan.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={handleDeleteAccount}
+                disabled={deletingAccount}
+                className="flex-1 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold text-sm transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {deletingAccount ? 'Menghapus...' : 'Ya, Hapus Akun'}
+              </button>
+              <button
+                onClick={() => setShowDeleteAccountModal(false)}
+                disabled={deletingAccount}
+                className="px-5 py-3 bg-white/[0.04] border border-white/10 text-gray-300 rounded-xl text-sm font-semibold hover:bg-white/[0.08] transition-all disabled:opacity-50"
               >
                 Batal
               </button>

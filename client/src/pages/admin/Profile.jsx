@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { userAPI } from '../../services/api';
-import { isAuthenticated, clearAuth } from '../../utils/auth';
+import { isAuthenticated, clearAuth, api } from '../../utils/auth';
 import { toast } from 'react-toastify';
 import { 
   Edit, Check, Shield, User, Mail, Calendar, 
@@ -48,8 +47,8 @@ const AdminProfile = () => {
   const fetchProfile = useCallback(async () => {
     try {
       setLoading(true);
-      const profileData = await userAPI.getProfile();
-      const userData = profileData?.user || profileData;
+      const profileData = await api.get("/user/me");
+      const userData = profileData.user || profileData;
       setUser(userData);
       
       setFormData({
@@ -58,7 +57,7 @@ const AdminProfile = () => {
       });
 
       // Ambil daftar kunci keamanan (WebAuthn)
-      const credsData = await userAPI.getCredentials();
+      const credsData = await api.get("/user/credentials");
       const credsArray = Array.isArray(credsData) ? credsData : credsData?.credentials || [];
       setCredentials(credsArray);
     } catch (error) {
@@ -87,7 +86,7 @@ const AdminProfile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await userAPI.updateProfile(formData);
+      await api.put("/user/me", formData);
       setUser({ ...user, ...formData });
       setEditMode(false);
       toast.success('Profil admin berhasil diperbarui');
@@ -102,7 +101,7 @@ const AdminProfile = () => {
       <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-red-500 mx-auto mb-4" />
-          <p className="text-xs font-bold uppercase tracking-widest text-gray-500 italic">Memuat Profil Admin...</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-gray-500">Memuat Profil Admin...</p>
         </div>
       </div>
     );
@@ -116,10 +115,10 @@ const AdminProfile = () => {
             <Shield className="w-3 h-3" />
             Administrator Utama
           </div>
-          <h1 className="text-3xl md:text-5xl font-black tracking-tighter mb-2 italic bg-gradient-to-r from-[var(--heading-from)] to-[var(--heading-to)] bg-clip-text text-transparent uppercase">
+          <h1 className="text-3xl md:text-5xl font-black tracking-tighter mb-2 bg-gradient-to-r from-[var(--heading-from)] to-[var(--heading-to)] bg-clip-text text-transparent uppercase">
             Pengaturan Akun
           </h1>
-          <p className="text-gray-500 text-sm md:text-base font-bold italic">Kelola informasi pribadi dan keamanan autentikasi kunci Anda.</p>
+          <p className="text-gray-500 text-sm md:text-base font-bold">Kelola informasi pribadi dan keamanan autentikasi kunci Anda.</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -185,21 +184,21 @@ const AdminProfile = () => {
                       <Shield className="w-4 h-4" />
                       <span className="text-[10px] font-black uppercase tracking-widest">Username</span>
                     </div>
-                    <span className="text-sm font-bold italic">{user?.username}</span>
+                    <span className="text-sm font-bold">{user?.username}</span>
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between py-5 border-b border-white/5">
                     <div className="flex items-center gap-2.5 text-gray-500 mb-1.5 sm:mb-0">
                       <Mail className="w-4 h-4" />
                       <span className="text-[10px] font-black uppercase tracking-widest">Email Terdaftar</span>
                     </div>
-                    <span className="text-sm font-bold italic">{user?.email}</span>
+                    <span className="text-sm font-bold">{user?.email}</span>
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between py-5">
                     <div className="flex items-center gap-2.5 text-gray-500 mb-1.5 sm:mb-0">
                       <Calendar className="w-4 h-4" />
                       <span className="text-[10px] font-black uppercase tracking-widest">Bergabung Sejak</span>
                     </div>
-                    <span className="text-sm font-bold italic">{new Date(user?.createdAt).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                    <span className="text-sm font-bold">{new Date(user?.createdAt).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                   </div>
                 </div>
               )}
@@ -223,7 +222,7 @@ const AdminProfile = () => {
                       {isDark ? <Moon className="w-6 h-6" /> : <Sun className="w-6 h-6" />}
                     </div>
                     <div className="text-left">
-                      <span className="text-sm font-black italic block">Visual Tema Gelap</span>
+                      <span className="text-sm font-black block">Visual Tema Gelap</span>
                       <span className="text-[9px] font-black uppercase tracking-widest text-gray-500">{isDark ? 'Saat ini: Aktif' : 'Saat ini: Nonaktif'}</span>
                     </div>
                   </div>
@@ -242,7 +241,7 @@ const AdminProfile = () => {
                       <HelpCircle className="w-6 h-6" />
                     </div>
                     <div className="text-left">
-                      <span className="text-sm font-black italic block">Panduan Admin</span>
+                      <span className="text-sm font-black block">Panduan Admin</span>
                       <span className="text-[9px] font-black uppercase tracking-widest text-gray-500">Tata cara pengelolaan surat</span>
                     </div>
                   </div>
@@ -259,7 +258,7 @@ const AdminProfile = () => {
                       <Shield className="w-6 h-6" />
                     </div>
                     <div className="text-left">
-                      <span className="text-sm font-black italic block">Keamanan Kunci Perangkat</span>
+                      <span className="text-sm font-black block">Keamanan Kunci Perangkat</span>
                       <span className="text-[9px] font-black uppercase tracking-widest text-gray-500">Daftar kunci biometrik aktif</span>
                     </div>
                   </div>
@@ -276,7 +275,7 @@ const AdminProfile = () => {
                       <LogOut className="w-6 h-6" />
                     </div>
                     <div className="text-left">
-                      <span className="text-sm font-black italic block text-red-400">Keluar Kelola</span>
+                      <span className="text-sm font-black block text-red-400">Keluar Kelola</span>
                       <span className="text-[9px] font-black uppercase tracking-widest text-red-400/60">Tutup sesi administrasi</span>
                     </div>
                   </div>
@@ -293,7 +292,7 @@ const AdminProfile = () => {
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)] animate-pulse" />
-                  <span className="text-xs font-bold text-gray-300 italic">{credentials.length} Kunci Terdaftar</span>
+                  <span className="text-xs font-bold text-gray-300">{credentials.length} Kunci Terdaftar</span>
                 </div>
                 <div className="p-4 bg-white/[0.02] rounded-2xl border border-white/5">
                   <p className="text-[10px] text-gray-500 font-bold uppercase tracking-tighter leading-relaxed">
@@ -305,7 +304,7 @@ const AdminProfile = () => {
 
             <div className="p-7 rounded-[2rem] border border-white/5 bg-white/[0.01]">
               <p className="text-[9px] font-black text-gray-600 uppercase tracking-widest mb-2">Informasi Sistem</p>
-              <p className="text-xs text-gray-500 font-medium italic leading-relaxed">
+              <p className="text-xs text-gray-500 font-medium leading-relaxed">
                 Segala perubahan informasi admin akan dicatat dalam log sistem desa untuk keperluan audit keamanan.
               </p>
             </div>

@@ -52,12 +52,12 @@ const Register = () => {
 
   // Unduh kode pemulihan dalam bentuk file .txt
   const handleDownloadCodes = () => {
-    const text = `Layanan Desa Digital Karangpucung — Kode Pemulihan Akun\nDibuat: ${new Date().toLocaleString('id-ID')}\n${'='.repeat(45)}\n\n${recoveryCodes.map((c, i) => `${i + 1}. ${c}`).join('\n')}\n\n${'='.repeat(45)}\nPERINGATAN: Simpan kode ini di tempat yang sangat aman.\nSetiap kode hanya dapat digunakan satu kali untuk memulihkan akses akun Anda.`;
+    const text = `Layanan Desa Digital — Kode Pemulihan Akun\nDibuat: ${new Date().toLocaleString('id-ID')}\n${'='.repeat(45)}\n\n${recoveryCodes.map((c, i) => `${i + 1}. ${c}`).join('\n')}\n\n${'='.repeat(45)}\nPERINGATAN: Simpan kode ini di tempat yang sangat aman.\nSetiap kode hanya dapat digunakan satu kali untuk memulihkan akses akun Anda.`;
     const blob = new Blob([text], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'kode-pemulihan-desa-karangpucung.txt';
+    a.download = 'kode-pemulihan-desa.txt';
     a.click();
     URL.revokeObjectURL(url);
     toast.success('File kode pemulihan telah diunduh');
@@ -80,14 +80,14 @@ const Register = () => {
             <p className="text-sm text-gray-500 mt-1">Wajib simpan kode pemulihan di bawah ini.</p>
           </div>
 
-          <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-6 backdrop-blur-md">
+          <div className="glass-card rounded-[24px] p-6 sm:p-8">
             {/* Box Peringatan */}
             <div className="p-3.5 bg-yellow-500/[0.06] border border-yellow-500/10 rounded-xl mb-5 flex gap-3">
               <AlertTriangle className="w-5 h-5 text-yellow-400 shrink-0" />
               <div className="flex-1 text-left">
                 <p className="text-[10px] text-yellow-400 font-bold mb-1 uppercase tracking-wider">Peringatan Penting</p>
-                <p className="text-[11px] text-gray-400 leading-relaxed font-medium">
-                   Kode ini adalah <b className="text-white">satu-satunya cara</b> memulihkan akun jika perangkat Anda hilang. Setiap kode hanya bisa dipakai 1x.
+                <p className="text-[11px] text-gray-500 leading-relaxed font-medium">
+                   Kode ini adalah <b className="text-gray-900 dark:text-white">satu-satunya cara</b> memulihkan akun jika perangkat Anda hilang. Setiap kode hanya bisa dipakai 1x.
                 </p>
               </div>
             </div>
@@ -130,15 +130,15 @@ const Register = () => {
       <div className="relative z-10 w-full max-w-sm">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-black tracking-tight mb-2">Daftar Akun</h1>
-          <p className="text-sm text-gray-500">Layanan Desa Digital Karangpucung</p>
+          <p className="text-sm text-gray-500">Layanan Desa Digital</p>
         </div>
 
-        <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-6 backdrop-blur-sm">
+        <div className="glass-card rounded-[24px] p-6 sm:p-8">
           {/* Banner Informasi WebAuthn */}
-          <div className="flex items-center gap-3 p-3.5 bg-emerald-500/[0.06] border border-emerald-500/10 rounded-xl mb-6">
-            <Shield className="w-4 h-4 text-emerald-400 shrink-0" />
-            <p className="text-xs text-gray-400 leading-relaxed">
-              Akun Anda dilindungi dengan <span className="text-white font-semibold">Passkey</span> — aman tanpa password konvensional.
+          <div className="flex items-center gap-3 p-3.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl mb-6">
+            <Shield className="w-4 h-4 text-emerald-500 shrink-0" />
+            <p className="text-xs text-gray-500 leading-relaxed font-medium">
+              Akun Anda dilindungi dengan <span className="text-gray-900 dark:text-white font-bold">Passkey</span> — aman tanpa password konvensional.
             </p>
           </div>
 

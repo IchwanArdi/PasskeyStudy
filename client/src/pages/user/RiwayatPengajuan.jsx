@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { pengajuanAPI } from '../../services/api';
-import { isAuthenticated } from '../../utils/auth';
+import { isAuthenticated, api } from '../../utils/auth';
 import { toast } from 'react-toastify';
 import { 
   FileText, Clock, CheckCircle2, XCircle, Trash2, 
@@ -22,7 +21,7 @@ const RiwayatPengajuan = () => {
   const fetchRiwayat = async () => {
     try {
       setLoading(true);
-      const data = await pengajuanAPI.getMyPengajuan();
+      const data = await api.get("/pengajuan/saya");
       // Data dari backend itu bentuknya { pengajuan: [...] }
       const list = data?.pengajuan || data || [];
       setPengajuan(Array.isArray(list) ? list : []);
@@ -48,10 +47,19 @@ const RiwayatPengajuan = () => {
     e.stopPropagation(); // Biar gak trigger expand card
     try {
       setDownloadingId(id);
-      const res = await pengajuanAPI.downloadPDF(id);
+      const token = localStorage.getItem("token");
+      const apiUrl = `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/pengajuan/${id}/pdf`;
       
-      // Bikin link download otomatis di browser
-      const url = window.URL.createObjectURL(new Blob([res]));
+      const res = await fetch(apiUrl, {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+      
+      if (!res.ok) throw new Error("Gagal mengunduh PDF");
+      
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
       
@@ -78,7 +86,7 @@ const RiwayatPengajuan = () => {
     if (!window.confirm('Yakin ingin membatalkan pengajuan ini?')) return;
     
     try {
-      await pengajuanAPI.deletePengajuan(id);
+      await api.delete(`/pengajuan/${id}`);
       toast.success('Pengajuan berhasil dibatalkan');
       // Refresh list setelah dihapus
       fetchRiwayat();
@@ -101,7 +109,7 @@ const RiwayatPengajuan = () => {
   };
 
   // Filter data berdasarkan jenis surat dan pencarian keperluan
-  const filteredPengajuan = pengajuan
+  const filteredPengajuan = (Array.isArray(pengajuan) ? pengajuan : [])
     .filter(p => filter === 'semua' || p.jenisSurat === filter)
     .filter(p => p.keperluan?.toLowerCase().includes(searchTerm.toLowerCase()) || 
                  p.jenisSurat?.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -193,10 +201,10 @@ const RiwayatPengajuan = () => {
                         <LetterIcon jenis={item.jenisSurat} className="w-6 h-6 text-blue-400" />
                       </div>
                       <div className="min-w-0">
-                        <h3 className="text-sm md:text-base font-bold text-gray-100 italic truncate">
+                        <h3 className="text-sm md:text-base font-bold text-gray-100 truncate">
                           {item.jenisSurat?.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
                         </h3>
-                        <p className="text-xs text-gray-500 italic max-w-sm line-clamp-1">{item.keperluan || 'Tanpa keterangan tambahan'}</p>
+                        <p className="text-xs text-gray-500 max-w-sm line-clamp-1">{item.keperluan || 'Tanpa keterangan tambahan'}</p>
                       </div>
                     </div>
 
@@ -305,7 +313,7 @@ const RiwayatPengajuan = () => {
           </div>
         ) : (
           /* Tampilan kalau riwayatnya kosong */
-          <div className="py-20 text-center glass-card rounded-[32px] border-dashed border-white/10">
+          <div className="py-20 text-center glass-card rounded-[32px] border-dashed border-white/10 text-white">
             <div className="w-16 h-16 bg-gray-500/5 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <FileText className="w-8 h-8 text-gray-600" />
             </div>

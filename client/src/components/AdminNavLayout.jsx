@@ -7,7 +7,7 @@ import AdminBottomNav from './AdminBottomNav';
  */
 const AdminNavLayout = ({ children }) => {
   return (
-    <div className="min-h-screen bg-[var(--bg)]">
+    <div className="min-h-screen bg-[var(--bg)] font-sans text-[var(--text)] transition-colors duration-300">
       {/* Tampilan Layout Desktop */}
       <div className="hidden md:flex">
         <AdminSidebar />

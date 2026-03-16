@@ -1,4 +1,4 @@
-const CACHE_NAME = 'karangpucung-v1';
+const CACHE_NAME = 'desa-digital-v1';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -18,3 +18,4 @@ self.addEventListener('fetch', (event) => {
       .then((response) => response || fetch(event.request))
   );
 });
+

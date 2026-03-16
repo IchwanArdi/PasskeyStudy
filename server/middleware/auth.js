@@ -36,14 +36,4 @@ export const authenticate = async (req, res, next) => {
     res.status(401).json({ message: 'Token tidak valid' });
   }
 };
-
-// middleware untuk mengecek apakah user adalah admin
-export const admin = (req, res, next) => {
-  // cek apakah user memiliki role admin
-  if (req.user && req.user.role === 'admin') {
-    next();
-  } else {
-    // jika bukan admin
-    res.status(403).json({ message: 'Akses ditolak, hanya untuk admin' });
-  }
-};
+

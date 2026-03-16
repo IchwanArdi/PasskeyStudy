@@ -3,8 +3,6 @@ import { Download, X } from 'lucide-react';
 
 /**
  * InstallAppBanner — Menampilkan banner "Install Aplikasi" jika PWA bisa diinstal.
- * Menangkap event `beforeinstallprompt` dan memberikan tombol install yang mudah diakses.
- * Banner ini hanya muncul jika browser mendukung instalasi PWA dan belum terinstal.
  */
 const InstallAppBanner = () => {
   const [deferredPrompt, setDeferredPrompt] = useState(null);

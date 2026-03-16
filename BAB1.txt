@@ -1,0 +1,188 @@
+IMPLEMENTASI SISTEM AUTENTIKASI PASSWORDLESS
+MENGGUNAKAN FIDO2/WEBAUTHN PADA
+WEBSITE LAYANAN DESA DIGITAL
+
+HALAMAN SAMPUL
+
+Skripsi
+
+Disusun oleh
+
+Ichwan Ardianto
+22SA31A011
+
+PROGRAM STUDI TEKNOLOGI INFORMASI
+FAKULTAS ILMU KOMPUTER
+UNIVERSITAS AMIKOM PURWOKERTO
+
+PURWOKERTO
+2026
+
+BAB I
+PENDAHULUAN
+
+A. Latar Belakang Masalah
+
+Pemerintah Indonesia telah menetapkan transformasi digital sebagai
+agenda prioritas nasional, termasuk digitalisasi layanan administrasi publik
+hingga tingkat desa. Penerapan Sistem Informasi Desa (SID) menjadi
+instrumen krusial dalam digitalisasi ini, hingga tahun 2023 sebanyak 45%
+dari total 74.961 desa di Indonesia telah mengimplementasikan SID dalam
+berbagai tingkatan (Aidin, 2025) . Platform SID berbasis website
+memungkinkan masyarakat mengakses informasi publik desa secara terbuka
+dan efisien, sekaligus menjadi instrumen strategis untuk mendorong tata
+kelola pemerintahan desa yang transparan dan akuntabel (Azis dkk., 2025) .
+Meskipun digitalisasi layanan desa memberikan berbagai kemudahan,
+proses ini belum sepenuhnya diimbangi dengan penerapan mekanisme
+keamanan yang memadai. Layanan desa digital mengelola data
+kependudukan yang sangat sensitif seperti Nomor Induk Kependudukan
+(NIK), alamat lengkap, tanggal lahir, dan riwayat bantuan sosial, namun
+banyak masyarakat desa belum memahami risiko kebocoran data yang
+menyertainya (Novantara dan Sugiharto, 2025) . Rendahnya kesiapan
+infrastruktur keamanan siber serta minimnya literasi digital dapat memicu
+ketidakpercayaan masyarakat terhadap layanan digital (Isma dkk., 2025) .
+bahkan dapat berujung pada kejahatan identitas seperti pembukaan akun
+
+pinjaman online ilegal yang paling banyak menyasar masyarakat desa
+(Dananjoyo dkk., 2022) .
+Permasalahan ini diperparah oleh rendahnya tingkat literasi digital
+masyarakat Indonesia. Indeks literasi digital nasional hanya mencapai skor
+3,54 dari skala 5,00, menunjukkan kemampuan digital masyarakat masih
+berada pada kategori sedang (Komdigi, 2025) . Survei dari Asosiasi
+Penyelenggara Jasa Internet Indonesia (APJII) tahun 2023 mencatat bahwa
+66,82% pengguna internet Indonesia belum pernah mengganti kata sandi dan
+hanya 16,47% yang menggunakan kata sandi yang kuat (APJII, 2023) .
+Fenomena ini mencerminkan password fatigue, kondisi di mana pengguna
+cenderung menggunakan kata sandi yang lemah atau sama di berbagai
+platform, yang meningkatkan risiko pencurian kredensial dan akses tidak sah
+terhadap sistem digital (Asy’hary dkk., 2023) .
+Ancaman siber terhadap infrastruktur digital Indonesia terus meningkat
+secara signifikan. Sepanjang tahun 2024, Badan Siber dan Sandi Negara
+(BSSN) mencatat 330.527.636 anomali trafik, 514.508 aktivitas ransomware,
+26.771.610 aktivitas phishing, serta 56.128.160 data kredensial dari 461
+instansi terekspos di darknet dengan sektor administrasi pemerintahan
+menjadi sektor paling terdampak sebesar 58,34% (BSSN, 2024) . Puncaknya,
+ransomware LockBit 3.0 menyerang PDNS 2 Surabaya pada Juni 2024,
+melumpuhkan 282 instansi pemerintah dengan lebih dari 50 juta data warga
+berisiko bocor (Puspita dkk., 2025) . Kondisi ini menunjukkan bahwa sistem
+
+layanan publik digital, termasuk layanan administrasi desa, memerlukan
+mekanisme keamanan yang jauh lebih kuat.
+Merespons urgensi perlindungan data, pemerintah menetapkan Undang-
+Undang Nomor 27 Tahun 2022 tentang Pelindungan Data Pribadi yang
+mewajibkan setiap pengendali data menerapkan langkah teknis yang
+memadai untuk mencegah akses tidak sah (Indonesia, 2022) . Regulasi ini
+hadir di tengah pergeseran paradigma privasi dari sekadar right to be let alone
+menuju right to data self-determination, yakni hak individu mengontrol
+penuh penggunaan data pribadinya (Muslim, 2025) . Kepatuhan terhadap UU
+PDP bukan sekadar kewajiban hukum, melainkan fondasi kepercayaan
+masyarakat terhadap sistem digital pemerintah.
+Salah satu komponen kritis dalam keamanan sistem digital adalah
+mekanisme autentikasi pengguna. Sebagian besar sistem layanan berbasis
+web, termasuk sistem layanan administrasi desa digital, masih menggunakan
+autentikasi konvensional berbasis kata sandi yang terbukti rentan terhadap
+berbagai serangan siber. Hasil pengujian menunjukkan bahwa tanpa
+mekanisme keamanan tambahan, tingkat keberhasilan serangan brute force
+mencapai 63%, sniffing 50%, dan Man-in-the-Middle 65% (Arianto dkk.,
+2025) . Kondisi ini menunjukkan bahwa pendekatan autentikasi tradisional
+sudah tidak lagi memadai untuk melindungi sistem yang mengelola data
+sensitif masyarakat desa. Autentikasi satu faktor berbasis kata sandi terbukti
+rentan terhadap berbagai serangan seperti phishing, credential stuffing,
+
+maupun akses tidak sah yang berpotensi mengekspos data pribadi pengguna
+(Akmal dkk., 2026) .
+Sebagai respons atas kelemahan autentikasi berbasis kata sandi, FIDO
+Alliance bersama W3C mengembangkan standar WebAuthn sebagai bagian
+dari ekosistem FIDO2. Teknologi ini menggunakan kriptografi kunci public
+dan privat di mana kunci privat tersimpan lokal di perangkat pengguna dan
+tidak pernah dikirimkan ke server, sehingga mengeliminasi risiko pencurian
+kredensial melalui serangan phishing maupun Man-in-the-Middle (Wagner
+dkk., 2021) . Pada tahun 2024, passkeys berbasis FIDO2 telah digunakan
+untuk mengakses lebih dari 15 miliar akun daring dengan Google mencatat
+peningkatan keberhasilan sign-in sebesar 30% pasca implementasi (Fido
+Alliance, 2024) . Di konteks Indonesia, protokol FIDO terbukti mampu
+melindungi privasi data biometrik selama transmisi dengan memisahkan
+server autentikasi dari server utama aplikasi (Atmawijaya dan Radiyah.,
+2025) .
+Meskipun kajian WebAuthn dan FIDO2 telah berkembang di tingkat
+global, penelitian yang secara spesifik mengimplementasikan teknologi ini
+pada layanan desa digital di Indonesia masih sangat terbatas. Sebagian
+besar literatur lokal baru sebatas kajian teoritis atau perancangan
+konseptual tanpa menghasilkan sistem yang dapat dioperasikan secara
+nyata. Selain aspek keamanan, aspek usabilitas juga menjadi pertimbangan
+penting mengingat pengguna layanan desa digital memiliki tingkat literasi
+digital yang beragam, karena sistem yang aman namun sulit digunakan
+
+tidak akan memberikan manfaat nyata bagi masyarakat desa. Oleh karena
+itu, penelitian ini bertujuan merancang dan mengimplementasikan sistem
+autentikasi passwordless berbasis WebAuthn/FIDO2 pada website layanan
+desa digital menggunakan metode Research and Development (R&amp;D)
+dengan model Prototyping, dengan tujuan mendukung pengembangan
+layanan publik digital yang lebih aman di tingkat desa.
+
+B. Rumusan Masalah
+
+Berdasarkan uraian latar belakang di atas, rumusan masalah dalam
+penelitian ini adalah sebagai berikut:
+a. Bagaimana mengimplementasikan sistem autentikasi passwordless
+menggunakan FIDO2/WebAuthn pada website layanan desa digital?
+b. Bagaimana mekanisme keamanan FIDO2/WebAuthn dalam menghadapi
+ancaman phishing, replay attack, dan database breach?
+c. Bagaimana tingkat usabilitas sistem autentikasi passwordless yang
+diimplementasikan berdasarkan pengujian System Usability Scale (SUS)?
+
+C. Batasan Masalah
+
+Agar penelitian ini tetap terfokus, maka ditetapkan batasan masalah
+sebagai berikut:
+a. Sistem autentikasi yang diimplementasikan menggunakan
+FIDO2/WebAuthn sebagai satu-satunya mekanisme autentikasi pada
+website layanan desa digital.
+
+b. Pengujian dilakukan menggunakan biometrik sidik jari dan tidak
+mencakup penggunaan security key. Perangkat yang tidak memiliki fitur
+biometrik atau menggunakan browser lama yang tidak mendukung
+WebAuthn tidak dapat menggunakan sistem ini.
+c. Pengujian keamanan terbatas pada tiga skenario yaitu phishing, replay
+attack, dan simulasi database breach, tidak mencakup penetration testing
+terhadap infrastruktur.
+d. Mekanisme pemulihan akun menggunakan recovery codes tanpa
+menggunakan SMS OTP atau verifikasi email.
+e. Pengujian usabilitas menggunakan metode System Usability Scale (SUS)
+dengan melibatkan responden umum minimal 15 orang.
+f. Fitur layanan desa yang diimplementasikan mencakup pengajuan surat
+(Tidak Mampu, Kelahiran, Usaha).
+
+D. Tujuan Penelitian
+
+Berdasarkan rumusan masalah yang telah ditetapkan, tujuan penelitian
+ini adalah:
+a. Merancang dan mengimplementasikan sistem autentikasi passwordless
+menggunakan FIDO2/WebAuthn pada website layanan desa digital.
+b. Menganalisis mekanisme keamanan FIDO2/WebAuthn dalam
+menghadapi ancaman phishing, replay attack, dan database breach.
+c. Mengukur tingkat usabilitas sistem autentikasi passwordless yang
+diimplementasikan menggunakan metode System Usability Scale (SUS).
+
+E. Manfaat Penelitian
+1. Manfaat Teoritis
+a) Memberikan kontribusi literatur akademis berbahasa Indonesia
+tentang implementasi FIDO2/WebAuthn pada layanan publik
+digital tingkat desa.
+b) Menjadi referensi penelitian lanjutan tentang autentikasi
+passwordless dalam konteks layanan publik digital tingkat desa di
+Indonesia.
+2. Manfaat Praktis
+a) Menyediakan referensi teknis dan kode sumber secara terbuka
+(open source) bagi pengembang yang ingin mengadopsi autentikasi
+passwordless pada aplikasi web layanan publik.
+b) Memberikan bukti empiris bahwa teknologi autentikasi
+passwordless dapat diimplementasikan pada layanan publik digital
+tingkat desa.
+c) Menghasilkan prototipe sistem layanan desa digital yang dapat
+dijadikan contoh penerapan autentikasi passwordless bagi desa-
+desa lain di Indonesia.
+d) Mendukung kepatuhan pengelola layanan desa digital terhadap
+Undang-Undang Nomor 27 Tahun 2022 tentang Pelindungan Data
+Pribadi (UU PDP) melalui penerapan mekanisme autentikasi yang
+aman.

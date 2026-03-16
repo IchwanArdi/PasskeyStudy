@@ -11,12 +11,7 @@ import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
 import recoveryRoutes from './routes/recovery.js';
 import pengajuanRoutes from './routes/pengajuan.js';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import rateLimit from 'express-rate-limit';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 // Inisialisasi instance framework Express
 const app = express();
@@ -142,13 +137,16 @@ if (isProduction) {
 
 // ROUTING: Mendaftarkan semua kumpulan endpoint/API yang tersedia di backend
 app.use('/api/auth', authRoutes);
-app.use('/auth', authRoutes); // Alias untuk kompatibilitas client (Vercel)
+app.use('/auth', authRoutes); // Alias untuk kompatibilitas
+
 app.use('/api/user', userRoutes);
-app.use('/user', userRoutes); // Alias untuk kompatibilitas client (Vercel)
+app.use('/user', userRoutes); // Alias untuk kompatibilitas
+
 app.use('/api/recovery', recoveryRoutes);
-app.use('/recovery', recoveryRoutes); // Alias untuk kompatibilitas client (Vercel)
+app.use('/recovery', recoveryRoutes); // Alias untuk kompatibilitas
+
 app.use('/api/pengajuan', pengajuanRoutes);
-app.use('/pengajuan', pengajuanRoutes); // Alias untuk kompatibilitas client (Vercel)
+app.use('/pengajuan', pengajuanRoutes); // Alias untuk kompatibilitas
 
 // Export app for use in server.js
 export default app;

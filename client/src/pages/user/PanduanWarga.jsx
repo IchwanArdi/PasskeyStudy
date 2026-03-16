@@ -16,7 +16,7 @@ const faqSections = [
     items: [
       {
         q: 'Apa itu Layanan Desa Digital?',
-        a: 'Layanan Desa Digital adalah platform online yang memudahkan warga Desa Karangpucung untuk mengurus surat-surat administrasi (seperti Keterangan Tidak Mampu, Kelahiran, dll.) langsung dari HP, tanpa harus antre di kantor desa.',
+        a: 'Layanan Desa Digital adalah platform online yang memudahkan warga Desa untuk mengurus surat-surat administrasi (seperti Keterangan Tidak Mampu, Kelahiran, dll.) langsung dari HP, tanpa harus antre di kantor desa.',
       },
       {
         q: 'Apa bedanya dengan login pakai password biasa?',
@@ -256,7 +256,7 @@ const PanduanWarga = () => {
           </div>
           <h2 className="text-lg font-bold mb-2">Punya Masalah Lain?</h2>
           <p className="text-sm text-gray-500 mb-6 max-w-sm mx-auto">
-            Hubungi Admin Desa Karangpucung melalui WhatsApp untuk bantuan lebih lanjut.
+            Hubungi Admin melalui WhatsApp untuk bantuan lebih lanjut.
           </p>
           <a
             href="https://wa.me/6281297988091"

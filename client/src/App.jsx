@@ -5,7 +5,6 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { isAuthenticated } from './utils/auth';
 
-import BottomNav from './components/BottomNav';
 import NavLayout from './components/NavLayout';
 import ScrollToTop from './components/ScrollToTop';
 
@@ -33,11 +32,6 @@ import AdminUsers from './pages/admin/ManageUsers.jsx';
 import AdminNavLayout from './components/AdminNavLayout.jsx';
 
 import './App.css';
-
-// GUARD ROUTE WARGA: Middle-man komponen yang akan melempar user ke halaman login jika mereka belum terautentikasi
-const PrivateRoute = ({ children }) => {
-  return isAuthenticated() ? children : <Navigate to="/login" replace />;
-};
 
 // GUARD ROUTE ADMIN: Mengecek lapis dua; selain harus login, role user di localStorage harus persis 'admin'
 const AdminRoute = ({ children }) => {

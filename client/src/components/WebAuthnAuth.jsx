@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { startRegistration, startAuthentication } from '@simplewebauthn/browser';
-import { authAPI } from '../services/api';
-import { setAuth } from '../utils/auth';
+import { setAuth, api } from '../utils/auth';
 import { Fingerprint } from 'lucide-react';
 
 /**
@@ -42,7 +41,7 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
 
     try {
       setMessage('Meminta opsi registrasi...');
-      const options = await authAPI.getRegisterOptions(email, username);
+      const options = await api.post("/auth/webauthn/register/options", { email, username });
       
       // Memulai proses pembuatan kunci di perangkat (pop-up biometrik)
       const credential = await startRegistration({
@@ -50,7 +49,7 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
       });
 
       setMessage('Menyimpan kunci aman ke server...');
-      const verifyResponse = await authAPI.verifyRegister({
+      const verifyResponse = await api.post("/auth/webauthn/register/verify", {
         email,
         credential,
       });
@@ -98,7 +97,7 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
 
     try {
       setMessage('Menghubungkan ke sistem desa...');
-      const options = await authAPI.getLoginOptions(email);
+      const options = await api.post("/auth/webauthn/login/options", { identifier: email });
 
       if (!options || !options.challenge) {
         throw new Error('Gagal mendapatkan respon dari server.');
@@ -110,7 +109,7 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
       });
 
       setMessage('Memverifikasi autentikasi...');
-      const verifyResponse = await authAPI.verifyLogin({
+      const verifyResponse = await api.post("/auth/webauthn/login/verify", {
         identifier: email,
         credential,
       });
@@ -138,7 +137,7 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
         {/* Input Nama Lengkap (Hanya saat Registrasi) */}
         {mode === 'register' && (
           <div>
-            <label htmlFor="webauthn-username" className="block text-sm font-medium text-gray-300 mb-2">
+            <label htmlFor="webauthn-username" className="block text-sm font-bold text-gray-500 mb-2 uppercase tracking-widest text-[10px]">
               Nama Lengkap
             </label>
             <input
@@ -160,7 +159,7 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
 
         {/* Input Email atau Nama (Untuk Login/Register) */}
         <div>
-          <label htmlFor="webauthn-email" className="block text-sm font-medium text-gray-300 mb-2">
+          <label htmlFor="webauthn-email" className="block text-sm font-bold text-gray-500 mb-2 uppercase tracking-widest text-[10px]">
             {mode === 'register' ? 'Alamat Email' : 'Nama atau Email'}
           </label>
           <input
@@ -193,9 +192,9 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
         <button
           type="submit"
           disabled={loading || !email || (mode === 'register' && !username)}
-          className="w-full px-6 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-sm transition-all disabled:opacity-50 disabled:hover:bg-emerald-600 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 flex items-center justify-center gap-2"
+          className="w-full px-6 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 flex items-center justify-center gap-2"
         >
-          <Fingerprint className="w-4 h-4" />
+          <Fingerprint className="w-5 h-5" />
           {loading ? 'Memproses...' : mode === 'register' ? 'Daftar dengan Biometrik' : 'Masuk dengan Biometrik'}
         </button>
       </form>

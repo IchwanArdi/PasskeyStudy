@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { userAPI } from '../../services/api';
-import { isAuthenticated, clearAuth } from '../../utils/auth';
+import { isAuthenticated, clearAuth, api } from '../../utils/auth';
 import { toast } from 'react-toastify';
 import { 
   Check, Shield, User, Mail, Calendar, 
@@ -51,7 +50,7 @@ const Profile = () => {
   const fetchProfile = useCallback(async () => {
     try {
       setLoading(true);
-      const profileData = await userAPI.getProfile();
+      const profileData = await api.get("/user/me");
       const userData = profileData?.user || profileData;
       setUser(userData);
       setFormData({
@@ -59,7 +58,7 @@ const Profile = () => {
         email: userData?.email || '',
       });
       // Ambil daftar perangkat buat kasih info status keamanan
-      const credsData = await userAPI.getCredentials();
+      const credsData = await api.get("/user/credentials");
       const credsArray = Array.isArray(credsData) ? credsData : credsData?.credentials || [];
       setCredentials(credsArray);
     } catch (error) {
@@ -87,7 +86,7 @@ const Profile = () => {
     e.preventDefault();
     try {
       // Update data di server
-      await userAPI.updateProfile(formData);
+      await api.put("/user/me", formData);
       setUser({ ...user, ...formData });
       setEditMode(false);
       toast.success('Profil berhasil diperbarui!');

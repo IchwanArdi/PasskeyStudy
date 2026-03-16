@@ -1,10 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { isAuthenticated } from '../../utils/auth';
-import { userAPI } from '../../services/api';
-import {
-  FileText, CheckCircle, XCircle, Hourglass, Clock, ChevronRight
-} from 'lucide-react';
+import { isAuthenticated, api } from '../../utils/auth';
+import { FileText, Clock, ChevronRight } from 'lucide-react';
 import LetterIcon from '../../components/LetterIcon';
 import VillageCarousel from '../../components/VillageCarousel';
 
@@ -32,8 +29,8 @@ const Dashboard = () => {
   // Fungsi buat ambil data profil user dan riwayat surat terbaru
   const fetchData = useCallback(async () => {
     try {
-      const profileData = await userAPI.getProfile();
-      const userData = profileData?.user || profileData;
+      const profileData = await api.get("/user/me");
+      const userData = profileData.user || profileData;
       setUser(userData);
     } catch {
       // Kalau gagal biarin aja, biasanya karena token expired
@@ -41,15 +38,9 @@ const Dashboard = () => {
 
     try {
       // Ambil riwayat pengajuan khusus buat user yang lagi login
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/pengajuan/saya`,
-        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
-      );
-      if (res.ok) {
-        const data = await res.json();
-        // Cukup tampilkan 3 riwayat terbaru saja biar dashboard gak kepenuhan
-        setRiwayat((data.pengajuan || []).slice(0, 3));
-      }
+      const data = await api.get("/pengajuan/saya");
+      // Cukup tampilkan 3 riwayat terbaru saja biar dashboard gak kepenuhan
+      setRiwayat((data.pengajuan || []).slice(0, 3));
     } catch {
       // Error riwayat gak terlalu kritis buat dashboard
     } finally {
@@ -76,14 +67,8 @@ const Dashboard = () => {
               Halo, {user?.username}
             </p>
             <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-br from-[var(--heading-from)] to-[var(--heading-to)] bg-clip-text text-transparent">
-              Selamat Datang di<br className="md:hidden" /> Desa Karangpucung
+              Selamat Datang di<br className="md:hidden" /> Desa Digital
             </h1>
-          </div>
-          <div className="hidden md:flex items-center gap-3 p-2 px-4 glass-card rounded-2xl">
-            <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400 font-bold text-xs uppercase">
-              {user?.username?.substring(0, 2) || 'W'}
-            </div>
-            <span className="text-sm font-semibold">{user?.username}</span>
           </div>
         </div>
       </header>

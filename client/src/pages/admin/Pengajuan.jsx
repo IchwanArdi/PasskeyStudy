@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { isAuthenticated } from '../../utils/auth';
+import { isAuthenticated, api } from '../../utils/auth';
 import { toast } from 'react-toastify';
 import {
   ArrowLeft, ChevronDown, ChevronUp, Check, X, RefreshCw,
@@ -8,9 +8,6 @@ import {
 } from 'lucide-react';
 import LetterIcon from '../../components/LetterIcon';
 import { Link } from 'react-router-dom';
-import { pengajuanAPI } from '../../services/api';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const jenisLabel = { tidak_mampu: 'Tidak Mampu', kelahiran: 'Kelahiran', usaha: 'Usaha' };
 
@@ -36,10 +33,21 @@ const AdminPengajuan = () => {
   const handleDownloadPDF = async (id, jenis, nik) => {
     try {
       setDownloadingId(id);
-      const res = await pengajuanAPI.downloadPDF(id);
-      const url = window.URL.createObjectURL(new Blob([res]));
+      const token = localStorage.getItem("token");
+      const url = `${import.meta.env.VITE_API_URL || "http://localhost:5000/api"}/pengajuan/${id}/pdf`;
+      
+      const res = await fetch(url, {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+      
+      if (!res.ok) throw new Error("Gagal mengunduh PDF");
+      
+      const blob = await res.blob();
+      const objectUrl = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
-      link.href = url;
+      link.href = objectUrl;
       const safeJenis = jenis.replace(/[^a-z0-9]/gi, '_').toLowerCase();
       link.setAttribute('download', `Surat_${safeJenis}_${nik}.pdf`);
       document.body.appendChild(link);
@@ -59,17 +67,11 @@ const AdminPengajuan = () => {
     setLoading(true);
     try {
       const url = filterStatus
-        ? `${API_URL}/pengajuan/admin?status=${filterStatus}`
-        : `${API_URL}/pengajuan/admin`;
+        ? `/pengajuan/admin/semua?status=${filterStatus}`
+        : `/pengajuan/admin/semua`;
       
-      const res = await fetch(url, { 
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } 
-      });
-      
-      if (res.ok) { 
-        const data = await res.json(); 
-        setPengajuan(data.pengajuan || []); 
-      }
+      const data = await api.get(url);
+      setPengajuan(data.pengajuan || []);
     } catch (err) {
       console.error('Gagal ambil data pengajuan:', err);
     } finally { setLoading(false); }
@@ -94,16 +96,10 @@ const AdminPengajuan = () => {
 
     setUpdating(id);
     try {
-      const res = await fetch(`${API_URL}/pengajuan/${id}/status`, {
-        method: 'PATCH',
-        headers: { 
-          'Content-Type': 'application/json', 
-          Authorization: `Bearer ${localStorage.getItem('token')}` 
-        },
-        body: JSON.stringify({ status, catatanAdmin: catatan }),
+      await api.patch(`/pengajuan/${id}/status`, { 
+        status, 
+        catatanAdmin: catatan 
       });
-      
-      if (!res.ok) throw new Error();
       
       toast.success(`Pengajuan berhasil ${statusConfig[status].label.toLowerCase()}`);
       setCatatan('');
@@ -121,7 +117,7 @@ const AdminPengajuan = () => {
     if (!window.confirm('Yakin ingin menghapus pengajuan ini selamanya? (Tidak bisa dibatalkan)')) return;
     try {
       setDeletingId(id);
-      await pengajuanAPI.deletePengajuan(id);
+      await api.delete(`/pengajuan/${id}`);
       toast.success('Pengajuan berhasil dihapus dari sistem');
       setPengajuan(prev => prev.filter(p => p._id !== id));
       if (expanded === id) setExpanded(null);
@@ -133,19 +129,19 @@ const AdminPengajuan = () => {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
+    <div className="space-y-6 animate-in fade-in duration-500 px-5 md:px-0 pt-8 md:pt-0 pb-24 md:pb-0">
       <div className="max-w-7xl mx-auto space-y-6">
         <header className="flex items-center justify-between">
           <div>
             <Link to="/admin" className="inline-flex items-center gap-2 text-gray-500 hover:text-white transition-colors text-[10px] font-bold uppercase tracking-widest mb-2">
               <ArrowLeft className="w-4 h-4" /> Kembali ke Panel
             </Link>
-            <h1 className="text-xl md:text-3xl font-black italic tracking-tighter uppercase">Kelola Pengajuan Surat</h1>
+            <h1 className="text-xl md:text-3xl font-black tracking-tighter uppercase text-white">Kelola Pengajuan Surat</h1>
           </div>
           <button 
             onClick={fetchPengajuan} 
             title="Refresh Data"
-            className="p-2.5 md:p-3 bg-white/[0.04] border border-white/[0.06] rounded-2xl text-gray-500 hover:text-white hover:bg-white/[0.08] transition-all flex items-center justify-center"
+            className="p-2.5 md:p-3 glass-panel rounded-2xl text-gray-500 hover:text-white transition-all flex items-center justify-center shadow-sm"
           >
             <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
           </button>
@@ -159,7 +155,7 @@ const AdminPengajuan = () => {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="block w-full pl-10 pr-10 py-3 text-xs font-black uppercase tracking-widest rounded-2xl appearance-none bg-white/[0.04] border border-white/10 text-gray-300 focus:outline-none focus:border-blue-500/40 focus:bg-white/[0.06] transition-all cursor-pointer shadow-sm"
+            className="block w-full pl-10 pr-10 py-3 text-xs font-black uppercase tracking-widest rounded-2xl appearance-none glass-panel text-gray-300 focus:outline-none focus:border-blue-500/40 transition-all cursor-pointer shadow-sm"
           >
             <option value="" className="bg-[#111] text-white">Tampilkan Semua Status</option>
             <option value="diproses" className="bg-[#111] text-white">Hanya Diproses</option>
@@ -186,13 +182,13 @@ const AdminPengajuan = () => {
             const sc = statusConfig[p.status] || statusConfig.diproses;
             const isOpen = expanded === p._id;
             return (
-              <div key={p._id} className={`bg-white/[0.02] border transition-all rounded-[28px] overflow-hidden ${isOpen ? 'border-blue-500/40 bg-white/[0.04]' : 'border-white/[0.05] hover:bg-white/[0.03] hover:border-white/10'}`}>
+              <div key={p._id} className={`glass-card border transition-all rounded-[28px] overflow-hidden ${isOpen ? 'border-blue-500/40' : 'hover:border-white/10'}`}>
                 <button onClick={() => setExpanded(isOpen ? null : p._id)} className="w-full flex items-center gap-3 md:gap-4 p-4 md:p-6 text-left">
                   <div className="w-12 h-12 md:w-16 md:h-16 bg-white/[0.04] rounded-2xl flex items-center justify-center shrink-0 border border-white/5">
                     <LetterIcon jenis={p.jenisSurat} className="w-6 h-6 md:w-8 md:h-8 text-blue-400/80" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm md:text-lg font-black truncate text-gray-100 italic tracking-tight">{p.namaLengkap}</p>
+                    <p className="text-sm md:text-lg font-black truncate text-gray-100 tracking-tight">{p.namaLengkap}</p>
                     <p className="text-[10px] md:text-xs text-gray-500 font-bold uppercase tracking-widest mt-0.5">
                       {jenisLabel[p.jenisSurat] || p.jenisSurat} • {new Date(p.createdAt).toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}
                     </p>
@@ -208,7 +204,7 @@ const AdminPengajuan = () => {
                   <div className="px-6 pb-6 border-t border-white/[0.03] pt-6 animate-in slide-in-from-top-2 duration-300">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                       {/* Data Lengkap Pemohon */}
-                      <div className="space-y-4 bg-white/[0.02] p-5 rounded-3xl border border-white/[0.04]">
+                      <div className="space-y-4 glass-panel p-5 rounded-3xl">
                         <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-4 border-b border-white/5 pb-2">Informasi Detail Warga</h3>
                         {[
                           { l: 'NIK PEMOHON', v: p.nik },
@@ -218,7 +214,7 @@ const AdminPengajuan = () => {
                         ].map((item) => (
                           <div key={item.l} className="flex flex-col gap-1">
                             <span className="text-[9px] font-black text-gray-600 tracking-tighter">{item.l}</span>
-                            <span className="text-xs md:text-sm font-bold text-gray-300 italic">{item.v}</span>
+                            <span className="text-xs md:text-sm font-bold text-gray-300">{item.v}</span>
                           </div>
                         ))}
                         
@@ -230,7 +226,7 @@ const AdminPengajuan = () => {
                                return (
                                 <div key={key} className="flex flex-col gap-1">
                                   <span className="text-[9px] font-black text-emerald-500/60 tracking-tighter">{formattedLabel}</span>
-                                  <span className="text-xs md:text-sm font-bold text-emerald-400 italic font-mono">{String(value)}</span>
+                                  <span className="text-xs md:text-sm font-bold text-emerald-400 font-mono">{String(value)}</span>
                                 </div>
                                );
                              })}
@@ -247,7 +243,7 @@ const AdminPengajuan = () => {
                             onChange={(e) => setCatatan(e.target.value)}
                             placeholder="Tulis alasan disetujui atau ditolak di sini..."
                             rows={4}
-                            className="w-full px-5 py-4 bg-white/[0.02] border border-white/[0.06] rounded-[24px] text-sm focus:outline-none focus:border-blue-500/40 transition-all resize-none placeholder:text-gray-700 italic"
+                            className="w-full px-5 py-4 glass-panel rounded-[24px] text-sm focus:outline-none focus:border-blue-500/40 transition-all resize-none placeholder:text-gray-700 text-white"
                           />
                         </div>
 
@@ -273,7 +269,7 @@ const AdminPengajuan = () => {
 
                         {(p.status === 'disetujui' || p.status === 'ditolak') && (
                           <div className="space-y-4">
-                            <div className="py-3 px-4 bg-white/[0.02] border border-white/[0.05] rounded-2xl text-center">
+                            <div className="py-3 px-4 glass-panel rounded-2xl text-center">
                               <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest">Status Pengajuan: {p.status}</p>
                             </div>
                             
@@ -295,7 +291,7 @@ const AdminPengajuan = () => {
                             <button
                               onClick={() => handleDelete(p._id)}
                               disabled={deletingId === p._id || downloadingId === p._id}
-                              className="w-full flex items-center justify-center gap-2 py-3 text-red-500/40 hover:text-red-500 text-[10px] font-bold uppercase tracking-widest transition-all"
+                              className="w-full flex items-center justify-center gap-2 py-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-red-500/20 transition-all disabled:opacity-50"
                             >
                               <Trash2 className="w-4 h-4" /> Hapus Permanen
                             </button>

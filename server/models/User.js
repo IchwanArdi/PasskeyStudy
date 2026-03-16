@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
-import bcrypt from "bcryptjs";
 import crypto from "crypto";
+import { encrypt, decrypt } from "../utils/encryption.js";
+import { createHash } from "../utils/hash.js";
+
 
 // Schema untuk menyimpan kredensial WebAuthn (sidik jari, FaceID, dll)
 const webauthnCredentialSchema = new mongoose.Schema({
@@ -27,17 +29,17 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    unique: true,
-    trim: true,
-    lowercase: true,
+    // unique dan lowercase dihapus karena isi akan dienkripsi jadi acak
+  },
+  emailHash: {
+    type: String,
+    required: true,
+    unique: true, // Blind Index untuk pencarian cepat dan memastikan email unik
   },
   role: { type: String, enum: ["warga", "admin"], default: "warga" },
-  authMethod: { type: String, enum: ["webauthn"], default: "webauthn" },
   webauthnCredentials: [webauthnCredentialSchema],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
-  lastLoginIP: { type: String },
-  lastLoginUA: { type: String },
   backupCodes: [
     {
       code: String,
@@ -47,10 +49,33 @@ const userSchema = new mongoose.Schema({
   ],
 });
 
-// Hook buat update timestamp di database
+// Hook Mongoose untuk enkripsi, hashing, & timestamp sebelum data tersimpan di DB
 userSchema.pre("save", async function () {
+  // Update Timestamp
   if (this.isNew || this.isModified()) {
     this.updatedAt = Date.now();
+  }
+
+  // Jika kolom email diubah atau ini adalah dokumen baru, enkripsi & buat hash-nya
+  if (this.isModified("email")) {
+    // 1. Buat hash untuk Blind Index pencarian cepat
+    this.emailHash = createHash(this.email);
+    
+    // 2. Enkripsi email aslinya untuk disimpan di DB
+    this.email = encrypt(this.email.toLowerCase().trim());
+  }
+});
+
+// Otomatis deksripsi saat mengambil data
+userSchema.post("init", function (doc) {
+  if (doc.email) {
+    doc.email = decrypt(doc.email);
+  }
+});
+userSchema.post("save", function (doc) {
+  if (doc.email) {
+    // Kembalikan ke format terbaca setelah dokumen disave buat respon backend saat object doc masih dipake
+    doc.email = decrypt(doc.email);
   }
 });
 
@@ -64,34 +89,20 @@ userSchema.methods.addWebAuthnCredential = async function (credential) {
   return this.save();
 };
 
-// Cari kredensial berdasarkan ID
-userSchema.methods.findCredential = function (credentialID) {
-  return this.webauthnCredentials.find((cred) => cred.credentialID === credentialID);
-};
 
-// Update counter kredensial
-userSchema.methods.updateCredentialCounter = function (credentialID, counter) {
-  const credential = this.findCredential(credentialID);
-  if (credential) {
-    credential.counter = counter;
-    return this.save();
-  }
-  return null;
-};
 
 // Hapus pendaftaran perangkat
 userSchema.methods.removeWebAuthnCredential = async function (credentialID) {
   const index = this.webauthnCredentials.findIndex((cred) => cred.credentialID === credentialID);
   if (index === -1) throw new Error("Perangkat tidak ditemukan");
 
-  // Jaga-jaga: Jangan hapus perangkat terakhir kecuali user punya backup codes
-  // (Asumsi: Selalu ada mekanisme recovery yang tersedia)
+  // MENCEGAH TERKUNCI DARI AKUN (LOCKOUT PREVENTION)
+  // Aplikasi ini murni Passwordless. User HARUS punya minimal 1 perangkat. 
+  // Fitur Recovery dirancang untuk keadaan hilang, bukan untuk dipakai login harian.
   if (this.webauthnCredentials.length <= 1) {
-    const hasBackupCodes = this.backupCodes.some(c => !c.used);
-    if (!hasBackupCodes) {
-      throw new Error("Tidak dapat menghapus perangkat terakhir tanpa kode pemulihan.");
-    }
+    throw new Error("Peringatan: Anda tidak dapat menghapus satu-satunya perangkat keamanan! Harap tambahkan perangkat ke-2 terlebih dahulu sebelum menghapus perangkat ini.");
   }
+
 
   this.webauthnCredentials.splice(index, 1);
   return this.save();

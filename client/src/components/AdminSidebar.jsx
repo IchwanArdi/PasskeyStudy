@@ -1,14 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import {
-  Home,
-  FileText,
-  Users,
-  LogOut,
-  ShieldCheck,
-  User,
-  ChevronRight,
-  Sparkles
-} from "lucide-react";
+import { Home, FileText, Users, LogOut, ShieldCheck, User, ChevronRight, Sparkles } from "lucide-react";
 
 // Item navigasi untuk bilah samping admin
 const navItems = [

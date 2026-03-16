@@ -10,7 +10,7 @@ const slides = [
     icon: Home,
     title: 'Selamat Datang di',
     subtitle: 'Layanan Desa Digital',
-    desa: 'Desa Karangpucung',
+    desa: 'Desa Digital',
     desc: 'Platform digital untuk memudahkan warga dalam mengakses layanan administrasi desa kapan saja dan di mana saja.',
     color: 'from-emerald-500/20 to-teal-500/10',
     accent: 'text-emerald-400',

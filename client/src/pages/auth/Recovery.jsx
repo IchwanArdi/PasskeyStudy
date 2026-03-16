@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { startRegistration } from '@simplewebauthn/browser';
-import { recoveryAPI } from '../../services/api';
-import { setAuth } from '../../utils/auth';
+import { setAuth, api } from '../../utils/auth';
 import { toast } from 'react-toastify';
-import { Shield, KeyRound, AlertTriangle, ArrowLeft, Check, CheckCircle, Fingerprint, ArrowRight, Copy, Download } from 'lucide-react';
+import { KeyRound, AlertTriangle, ArrowLeft, Check, CheckCircle, Fingerprint, ArrowRight, Copy, Download } from 'lucide-react';
 
 /**
  * Recovery Page — Halaman untuk memulihkan akses akun jika perangkat Passkey hilang.
@@ -27,7 +26,7 @@ const Recovery = () => {
     setError('');
 
     try {
-      const response = await recoveryAPI.verifyCode({ email, code });
+      const response = await api.post("/recovery/verify-code", { email, code });
       // Simpan session sementara agar bisa lanjut ke tahap pendaftaran perangkat baru
       setAuth(response.token, response.user);
       toast.success('Kode pemulihan terverifikasi');
@@ -47,13 +46,13 @@ const Recovery = () => {
 
     try {
       setMessage('Menyiapkan opsi pendaftaran baru...');
-      const options = await recoveryAPI.getReRegisterOptions(email);
+      const options = await api.post('/recovery/re-register/options', { email });
 
       setMessage('Silakan gunakan sensor sidik jari/wajah Anda...');
       const credential = await startRegistration(options);
 
       setMessage('Sedang memverifikasi perangkat baru Anda...');
-      const response = await recoveryAPI.reRegister({ credential });
+      const response = await api.post('/recovery/re-register/verify', { credential });
 
       // Autentikasi ulang dengan token baru yang permanen
       setAuth(response.token, response.user);
@@ -80,12 +79,12 @@ const Recovery = () => {
 
   // Unduh kode pemulihan dalam bentuk file .txt
   const handleDownloadCodes = () => {
-    const text = `Layanan Desa Digital Karangpucung — Kode Pemulihan Baru\nDibuat: ${new Date().toLocaleString('id-ID')}\n${'='.repeat(45)}\n\n${newRecoveryCodes.map((c, i) => `${i + 1}. ${c}`).join('\n')}\n\n${'='.repeat(45)}\nPERINGATAN: Simpan kode ini di tempat yang sangat aman.\nKode lama Anda sudah tidak berlaku.`;
+    const text = `Layanan Desa Digital — Kode Pemulihan Baru\nDibuat: ${new Date().toLocaleString('id-ID')}\n${'='.repeat(45)}\n\n${newRecoveryCodes.map((c, i) => `${i + 1}. ${c}`).join('\n')}\n\n${'='.repeat(45)}\nPERINGATAN: Simpan kode ini di tempat yang sangat aman.\nKode lama Anda sudah tidak berlaku.`;
     const blob = new Blob([text], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'kode-pemulihan-baru-karangpucung.txt';
+    a.download = 'kode-pemulihan-baru.txt';
     a.click();
     URL.revokeObjectURL(url);
     toast.success('File kode pemulihan telah diunduh');
@@ -209,7 +208,7 @@ const Recovery = () => {
                     ))}
                   </div>
                   
-                  {/* Tombol Aksi: Salin & Unduh (Ganti WA) */}
+                  {/* Tombol Aksi: Salin & Unduh */}
                   <div className="flex gap-2 mb-6">
                     <button onClick={handleCopyCodes} className="flex-1 py-3.5 bg-white/[0.05] border border-white/10 text-white rounded-xl text-xs font-bold hover:bg-white/10 transition-all flex items-center justify-center gap-2">
                       <Copy className="w-4 h-4" /> Salin

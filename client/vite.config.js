@@ -38,9 +38,9 @@ export default defineConfig({
         ],
       },
       manifest: {
-        name: 'Layanan Desa Digital Karangpucung',
-        short_name: 'Desa Karangpucung',
-        description: 'Platform layanan administrasi digital untuk warga Desa Karangpucung',
+        name: 'Layanan Desa Digital ',
+        short_name: 'Desa Digital',
+        description: 'Platform layanan administrasi digital',
         start_url: '/',
         display: 'standalone',
         background_color: '#050508',

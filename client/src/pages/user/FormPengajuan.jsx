@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { isAuthenticated } from '../../utils/auth';
-import { pengajuanAPI } from '../../services/api';
+import { isAuthenticated, api } from '../../utils/auth';
 import { toast } from 'react-toastify';
 import { ArrowLeft, Send, MapPin, Info, Loader2 } from 'lucide-react';
 import LetterIcon from '../../components/LetterIcon';
@@ -79,7 +78,7 @@ const FormPengajuan = () => {
         payload.dataTambahan = dynamicForm;
       }
 
-      await pengajuanAPI.createPengajuan(payload);
+      await api.post("/pengajuan", payload);
 
       toast.success('Pengajuan berhasil dikirim! Silakan tunggu verifikasi admin.');
       navigate('/riwayat');
@@ -168,7 +167,7 @@ const FormPengajuan = () => {
                   value={form.tanggalLahir}
                   onChange={handleChange}
                   required
-                  className="appearance-none w-full px-4 py-4 md:py-3.5 bg-white/[0.02] border border-white/[0.06] rounded-[16px] text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all text-gray-300 focus:bg-white/[0.04] color-scheme-dark"
+                  className="appearance-none w-full px-4 py-4 md:py-3.5 bg-white/[0.02] border border-white/[0.06] rounded-[16px] text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all text-gray-300 focus:bg-white/[0.04] [color-scheme:dark]"
                 />
               </div>
             </div>
@@ -230,7 +229,7 @@ const FormPengajuan = () => {
                         onChange={handleDynamicChange}
                         required
                         placeholder={field.placeholder}
-                        className={`appearance-none w-full px-4 py-4 md:py-3.5 bg-white/[0.02] border border-white/[0.06] rounded-[16px] text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all placeholder:text-gray-600 focus:bg-white/[0.04] ${field.type === 'date' ? 'text-gray-300 color-scheme-dark' : ''}`}
+                        className={`appearance-none w-full px-4 py-4 md:py-3.5 bg-white/[0.02] border border-white/[0.06] rounded-[16px] text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all placeholder:text-gray-600 focus:bg-white/[0.04] ${field.type === 'date' ? 'text-gray-300 [color-scheme:dark]' : ''}`}
                       />
                     )}
                   </div>
@@ -249,7 +248,7 @@ const FormPengajuan = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-4 bg-emerald-500 text-black font-extrabold rounded-2xl flex items-center justify-center gap-2 hover:bg-emerald-400 transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed shadow-[0_0_30px_rgba(16,185,129,0.2)] md:mt-4"
+              className="w-full px-6 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 flex items-center justify-center gap-2"
             >
               {loading ? (
                 <><Loader2 className="w-5 h-5 animate-spin" /> Sedang Mengirim...</>

@@ -103,11 +103,11 @@ const AdminUsers = () => {
   });
 
   return (
-    <div className="animate-in fade-in duration-500 max-w-5xl mx-auto space-y-6">
+    <div className="animate-in fade-in duration-500 max-w-5xl mx-auto space-y-6 px-5 md:px-0 pt-8 md:pt-0 pb-24 md:pb-0">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <p className="text-xs font-bold text-blue-400 uppercase tracking-widest mb-1">Manajemen Pengguna</p>
-          <h1 className="text-2xl md:text-3xl font-black italic tracking-tighter uppercase">Daftar Warga Desa</h1>
+          <h1 className="text-2xl md:text-3xl font-black tracking-tighter uppercase">Daftar Warga Desa</h1>
         </div>
         
         <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
@@ -161,7 +161,7 @@ const AdminUsers = () => {
             </div>
             <div>
               <p className="text-xs font-bold text-amber-400 uppercase tracking-widest mb-1">Kode Darurat Dibuat!</p>
-              <p className="text-sm text-gray-400 italic">Berikan kode ini ke <b className="text-white">{emergencyResult.username}</b></p>
+              <p className="text-sm text-gray-400">Berikan kode ini ke <b className="text-white">{emergencyResult.username}</b></p>
             </div>
           </div>
           <div className="flex items-center gap-3">
