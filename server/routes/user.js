@@ -119,14 +119,5 @@ router.get('/admin/semua', authenticate, adminOnly, async (req, res) => {
   res.json({ users });
 });
 
-// Ubah jabatan (Warga <-> Admin)
-router.put('/admin/role', authenticate, adminOnly, async (req, res) => {
-  const { userId, role } = req.body;
-  const user = await User.findById(userId);
-  if (!user) return res.status(404).json({ message: 'User tidak ditemukan' });
-  user.role = role;
-  await user.save();
-  res.json({ message: `Jabatan diubah menjadi ${role}` });
-});
 
 export default router;

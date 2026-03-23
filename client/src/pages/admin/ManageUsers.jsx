@@ -44,28 +44,7 @@ const AdminUsers = () => {
     fetchUsers();
   }, [navigate, fetchUsers]);
 
-  // Fungsi buat ngangkat derajat warga jadi admin
-  const handleMakeAdmin = async (userId, name) => {
-    if (!window.confirm(`Yakin ingin menjadikan ${name} sebagai Admin?`)) return;
-    setUpdatingId(userId);
-    try {
-      const res = await fetch(`${API_URL}/user/admin/role`, {
-        method: 'PUT',
-        headers: { 
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}` 
-        },
-        body: JSON.stringify({ userId, role: 'admin' }),
-      });
-      if (!res.ok) throw new Error();
-      toast.success(`${name} sekarang resmi jadi Admin!`);
-      await fetchUsers(); // Refresh list biar statusnya berubah
-    } catch {
-      toast.error('Waduh, gagal ngubah role user nih');
-    } finally {
-      setUpdatingId(null);
-    }
-  };
+
 
   // Fungsi buat bikin kode darurat untuk warga
   const handleGenerateEmergencyCode = async (userId, name) => {
@@ -236,18 +215,6 @@ const AdminUsers = () => {
                           >
                             <RefreshCw className={`w-3.5 h-3.5 ${updatingId === u._id ? 'animate-spin' : ''}`} />
                             Darurat
-                          </button>
-                        )}
-
-                        {/* Tombol Jadikan Admin */}
-                        {u.role !== 'admin' && (
-                          <button
-                            onClick={() => handleMakeAdmin(u._id, u.username)}
-                            disabled={updatingId === u._id}
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/20 text-blue-400 hover:bg-blue-500/20 rounded-xl text-[10px] font-black uppercase transition-all disabled:opacity-50"
-                          >
-                            <ShieldCheck className="w-3.5 h-3.5" />
-                            {updatingId === u._id ? '...' : 'Jadi Admin'}
                           </button>
                         )}
                       </div>

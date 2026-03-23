@@ -1,11 +1,6 @@
 // Inti dari sistem Passwordless pakai standar FIDO2 / WebAuthn
 // Library server dari SimpleWebAuthn yang menangani proses kriptografi WebAuthn
-import {
-  generateRegistrationOptions,     // membuat opsi registrasi passkey
-  verifyRegistrationResponse,      // memverifikasi hasil registrasi dari perangkat
-  generateAuthenticationOptions,   // membuat opsi login (challenge login)
-  verifyAuthenticationResponse,    // memverifikasi tanda tangan digital saat login
-} from '@simplewebauthn/server';
+import { generateRegistrationOptions, verifyRegistrationResponse, generateAuthenticationOptions, verifyAuthenticationResponse, } from '@simplewebauthn/server';
 
 import { isoUint8Array } from '@simplewebauthn/server/helpers'; // helper untuk konversi data ke format biner
 
