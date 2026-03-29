@@ -58,18 +58,13 @@
    BASE STYLES
    ============================================ */
 
-body {
-  font-family: "Plus Jakarta Sans", var(--font-sans);
-  background-color: var(--bg);
+input, textarea, select, option {
   color: var(--text);
-  overflow-x: hidden;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
-input, textarea, select {
-  color: var(--text);
+option {
+  background-color: #111111;
+  color: #ffffff;
 }
 
 /* ============================================

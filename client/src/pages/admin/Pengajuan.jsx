@@ -133,15 +133,13 @@ const AdminPengajuan = () => {
       <div className="max-w-7xl mx-auto space-y-6">
         <header className="flex items-center justify-between">
           <div>
-            <Link to="/admin" className="inline-flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--text)] transition-colors text-[10px] font-bold uppercase tracking-widest mb-2">
-              <ArrowLeft className="w-4 h-4" /> Kembali ke Panel
-            </Link>
-            <h1 className="text-xl md:text-3xl font-black tracking-tighter uppercase text-[var(--text)]">Kelola Pengajuan Surat</h1>
+            <p className="text-[10px] text-red-400 font-bold uppercase tracking-[0.2em] mb-2">Pusat Kelola Layanan</p>
+            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-[var(--heading-from)] to-[var(--heading-to)] bg-clip-text text-transparent">Kelola Pengajuan Surat</h1>
           </div>
           <button 
             onClick={fetchPengajuan} 
             title="Refresh Data"
-            className="p-2.5 md:p-3 glass-panel rounded-2xl text-gray-500 hover:text-white transition-all flex items-center justify-center shadow-sm"
+            className="p-2.5 md:p-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl text-[var(--text-muted)] hover:text-[var(--text)] transition-all flex items-center justify-center shadow-sm"
           >
             <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
           </button>
@@ -150,19 +148,19 @@ const AdminPengajuan = () => {
         {/* Bagian Filter Status */}
         <div className="relative w-full max-w-xs md:max-w-sm ml-1">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Filter className="h-3.5 w-3.5 text-gray-500" />
+            <Filter className="h-3.5 w-3.5 text-[var(--text-muted)]" />
           </div>
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="block w-full pl-10 pr-10 py-3 text-xs font-black uppercase tracking-widest rounded-2xl appearance-none glass-panel text-[var(--text)] focus:outline-none focus:border-blue-500/40 transition-all cursor-pointer shadow-sm"
+            className="block w-full pl-10 pr-10 py-3 text-xs font-semibold tracking-widest rounded-2xl appearance-none glass-panel text-[var(--text)] focus:outline-none focus:border-blue-500/40 transition-all cursor-pointer shadow-sm"
           >
             <option value="">Tampilkan Semua Status</option>
             <option value="diproses">Hanya Diproses</option>
             <option value="disetujui">Sudah Disetujui</option>
             <option value="ditolak">Telah Ditolak</option>
           </select>
-          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-500">
+          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[var(--text-muted)]">
             <ChevronDown className="h-4 w-4" />
           </div>
         </div>
@@ -174,8 +172,8 @@ const AdminPengajuan = () => {
             <div className="w-8 h-8 border-2 border-white/10 border-t-blue-400 rounded-full animate-spin mx-auto" />
           </div>
         ) : pengajuan.length === 0 ? (
-          <div className="py-24 text-center bg-white/[0.01] border border-dashed border-white/5 rounded-[2.5rem]">
-            <p className="text-gray-600 text-xs font-bold uppercase tracking-widest">Kosong nih, gak ada pengajuan.</p>
+          <div className="py-24 text-center bg-[var(--card-bg)] border border-dashed border-[var(--card-border)] rounded-[2.5rem]">
+            <p className="text-[var(--text-muted)] text-xs font-bold uppercase tracking-widest">Kosong nih, gak ada pengajuan.</p>
           </div>
         ) : (
           pengajuan.map((p) => {
@@ -243,7 +241,7 @@ const AdminPengajuan = () => {
                             onChange={(e) => setCatatan(e.target.value)}
                             placeholder="Tulis alasan disetujui atau ditolak di sini..."
                             rows={4}
-                      className="w-full px-5 py-4 glass-panel rounded-[24px] text-sm focus:outline-none focus:border-blue-500/40 transition-all resize-none placeholder:text-[var(--text-muted)] text-[var(--text)]"
+                            className="w-full px-5 py-4 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[24px] text-sm focus:outline-none focus:border-blue-500/40 transition-all resize-none placeholder:text-[var(--text-muted)] text-[var(--text)]"
                           />
                         </div>
 

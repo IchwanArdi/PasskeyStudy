@@ -91,8 +91,8 @@ const Recovery = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] selection:bg-blue-500/30 font-sans transition-colors duration-300">
-      <div className="flex flex-col items-center justify-center min-h-screen px-6 pt-16">
+    <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] font-sans flex items-center justify-center p-6 transition-colors duration-300 relative overflow-hidden">
+      <div className="flex flex-col items-center justify-center min-h-screen px-6 pt-12">
         <div className="w-full max-w-md animate-fade-in-up">
           
           {/* Indikator Langkah (Stepper) */}

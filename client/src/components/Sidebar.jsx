@@ -10,7 +10,6 @@ import {
   Sun,
   Moon
 } from 'lucide-react';
-import { useTheme } from '../utils/useTheme';
 
 // Item navigasi utama untuk warga
 const navItems = [
@@ -22,7 +21,6 @@ const navItems = [
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isDark, toggleTheme } = useTheme();
 
   // Fungsi untuk membersihkan sesi dan keluar
   const handleLogout = () => {
@@ -106,23 +104,6 @@ const Sidebar = () => {
       {/* Bagian Bawah Sidebar */}
       <div className="p-6 mt-auto">
         <div className="flex flex-col gap-3">
-          {/* Tombol Toggle Tema */}
-          <button
-            onClick={toggleTheme}
-            className="flex items-center justify-between px-4 py-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl hover:border-emerald-500/30 transition-all group"
-          >
-            <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
-                {isDark ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
-              </div>
-              <span className="text-[11px] font-bold text-[var(--text-muted)] uppercase tracking-wider">
-                {isDark ? 'Mode Gelap' : 'Mode Terang'}
-              </span>
-            </div>
-            <div className={`w-9 h-5 rounded-full p-0.5 transition-all ${isDark ? 'bg-emerald-600' : 'bg-gray-300'}`}>
-              <div className={`w-4 h-4 bg-white rounded-full transition-transform duration-300 ${isDark ? 'translate-x-4' : 'translate-x-0'}`} />
-            </div>
-          </button>
 
           {/* Menu Pintasan Bantuan */}
           <div className="px-4 py-4 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-3xl mb-1 group/tip">

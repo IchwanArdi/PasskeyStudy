@@ -78,8 +78,8 @@ const AdminDashboard = () => {
       <div className="max-w-7xl mx-auto space-y-8">
         <header className="flex items-start justify-between">
           <div>
-            <p className="text-xs text-red-400 font-bold uppercase tracking-widest mb-1">Panel Kendali Admin</p>
-            <h1 className="text-2xl font-black tracking-tighter uppercase">DESA DIGITAL</h1>
+            <p className="text-[10px] text-red-400 font-bold uppercase tracking-[0.2em] mb-2">Panel Kendali Admin</p>
+            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-[var(--heading-from)] to-[var(--heading-to)] bg-clip-text text-transparent">DESA DIGITAL</h1>
           </div>
         </header>
 

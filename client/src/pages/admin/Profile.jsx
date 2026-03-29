@@ -100,7 +100,7 @@ const AdminProfile = () => {
             <Shield className="w-3 h-3" />
             Administrator Utama
           </div>
-          <h1 className="text-3xl md:text-5xl font-black tracking-tighter mb-2 bg-gradient-to-r from-[var(--heading-from)] to-[var(--heading-to)] bg-clip-text text-transparent uppercase">
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-[var(--heading-from)] to-[var(--heading-to)] bg-clip-text text-transparent">
             Pengaturan Akun
           </h1>
           <p className="text-[var(--text-muted)] text-sm md:text-base font-bold">Kelola informasi pribadi dan keamanan autentikasi kunci Anda.</p>
@@ -193,7 +193,7 @@ const AdminProfile = () => {
             <div className="glass-card rounded-[2rem] p-8">
               <h2 className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2.5 mb-8 text-[var(--text-muted)]">
                 <Settings className="w-5 h-5 text-red-400" />
-                Preferensi & Keamanan
+                Pengaturan Aplikasi
               </h2>
 
               <div className="space-y-4">
@@ -203,11 +203,11 @@ const AdminProfile = () => {
                   className="w-full h-20 flex items-center justify-between px-6 rounded-[24px] group"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-400 group-hover:scale-110 transition-transform shadow-inner">
+                    <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-red-400 group-hover:scale-110 transition-transform shadow-inner">
                       {isDark ? <Moon className="w-6 h-6" /> : <Sun className="w-6 h-6" />}
                     </div>
                     <div className="text-left">
-                      <span className="text-sm font-black block">Visual Tema Gelap</span>
+                      <span className="text-sm font-bold block">Visual Tema Gelap</span>
                       <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-muted)]">{isDark ? 'Saat ini: Aktif' : 'Saat ini: Nonaktif'}</span>
                     </div>
                   </div>
@@ -222,11 +222,11 @@ const AdminProfile = () => {
                   className="w-full h-20 flex items-center justify-between px-6 rounded-[24px] group"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-400 group-hover:scale-110 transition-transform">
+                    <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-red-400 group-hover:scale-110 transition-transform">
                       <HelpCircle className="w-6 h-6" />
                     </div>
                     <div className="text-left">
-                      <span className="text-sm font-black block">Panduan Admin</span>
+                      <span className="text-sm font-bold block">Panduan Admin</span>
                       <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-muted)]">Tata cara pengelolaan surat</span>
                     </div>
                   </div>
@@ -239,11 +239,11 @@ const AdminProfile = () => {
                   className="w-full h-20 flex items-center justify-between px-6 rounded-[24px] group"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
+                    <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-red-400 group-hover:scale-110 transition-transform">
                       <Shield className="w-6 h-6" />
                     </div>
                     <div className="text-left">
-                      <span className="text-sm font-black block">Keamanan Kunci Perangkat</span>
+                      <span className="text-sm font-bold block">Keamanan Kunci Perangkat</span>
                       <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-muted)]">Daftar kunci biometrik aktif</span>
                     </div>
                   </div>
@@ -256,11 +256,11 @@ const AdminProfile = () => {
                   className="w-full h-20 flex items-center justify-between px-6 rounded-[24px] group"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-400 group-hover:scale-110 transition-transform">
+                    <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-red-400 group-hover:scale-110 transition-transform">
                       <LogOut className="w-6 h-6" />
                     </div>
                     <div className="text-left">
-                      <span className="text-sm font-black block">Keluar Kelola</span>
+                      <span className="text-sm font-bold block">Keluar Kelola</span>
                       <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-muted)]">Tutup sesi administrasi</span>
                     </div>
                   </div>
@@ -280,7 +280,7 @@ const AdminProfile = () => {
                   <span className="text-xs font-bold text-[var(--text-muted)]">{credentials.length} Kunci Terdaftar</span>
                 </div>
                 <div className="p-4 bg-[var(--card-bg)] rounded-2xl border border-[var(--card-border)]">
-                  <p className="text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-tighter leading-relaxed">
+                  <p className="text-xs text-[var(--text-muted)] font-medium leading-relaxed">
                     Akun administrator Anda terlindungi oleh autentikasi biometrik standar industri (WebAuthn).
                   </p>
                 </div>
