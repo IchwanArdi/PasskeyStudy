@@ -5,7 +5,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { isAuthenticated } from './utils/auth';
 
-import NavLayout from './components/NavLayout';
+import UserNavLayout from './components/user/UserNavLayout';
 import ScrollToTop from './components/ScrollToTop';
 
 // Auth pages
@@ -29,7 +29,7 @@ import AdminDashboard from './pages/admin/Dashboard';
 import AdminPengajuan from './pages/admin/Pengajuan.jsx';
 import AdminProfile from './pages/admin/Profile.jsx';
 import AdminUsers from './pages/admin/ManageUsers.jsx';
-import AdminNavLayout from './components/AdminNavLayout.jsx';
+import AdminNavLayout from './components/admin/AdminNavLayout.jsx';
 
 import './App.css';
 
@@ -76,14 +76,14 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/recovery" element={<Recovery />} />
 
-          {/* Warga - Wrapped in NavLayout */}
-          <Route element={<NavLayout><Dashboard /></NavLayout>} path="/dashboard" />
-          <Route element={<NavLayout><Profile /></NavLayout>} path="/profile" />
-          <Route element={<NavLayout><ManageDevices /></NavLayout>} path="/manage-devices" />
-          <Route element={<NavLayout><Layanan /></NavLayout>} path="/layanan" />
-          <Route element={<NavLayout><FormPengajuan /></NavLayout>} path="/layanan/ajukan" />
-          <Route element={<NavLayout><RiwayatPengajuan /></NavLayout>} path="/riwayat" />
-          <Route element={<NavLayout><PanduanWarga /></NavLayout>} path="/panduan" />
+          {/* Warga - Wrapped in UserNavLayout */}
+          <Route element={<UserNavLayout><Dashboard /></UserNavLayout>} path="/dashboard" />
+          <Route element={<UserNavLayout><Profile /></UserNavLayout>} path="/profile" />
+          <Route element={<UserNavLayout><ManageDevices /></UserNavLayout>} path="/manage-devices" />
+          <Route element={<UserNavLayout><Layanan /></UserNavLayout>} path="/layanan" />
+          <Route element={<UserNavLayout><FormPengajuan /></UserNavLayout>} path="/layanan/ajukan" />
+          <Route element={<UserNavLayout><RiwayatPengajuan /></UserNavLayout>} path="/riwayat" />
+          <Route element={<UserNavLayout><PanduanWarga /></UserNavLayout>} path="/panduan" />
 
           {/* Admin */}
           <Route path="/admin" element={<AdminRoute><AdminNavLayout><AdminDashboard /></AdminNavLayout></AdminRoute>} />

@@ -1,13 +1,13 @@
 import { useLocation } from 'react-router-dom';
-import Sidebar from './Sidebar';
-import BottomNav from './BottomNav';
-import { isAuthenticated } from '../utils/auth';
+import UserSidebar from './UserSidebar';
+import UserBottomNav from './UserBottomNav';
+import { isAuthenticated } from '../../utils/auth';
 
 /**
  * Layout pembungkus utama untuk sisi pengguna (warga).
  * Mengatur tampilan Sidebar untuk desktop dan BottomNav untuk mobile.
  */
-const NavLayout = ({ children }) => {
+const UserNavLayout = ({ children }) => {
   const location = useLocation();
 
   // Daftar rute di mana navigasi (Sidebar/BottomNav) tidak ditampilkan
@@ -25,7 +25,7 @@ const NavLayout = ({ children }) => {
     <div className="min-h-screen bg-[var(--bg)]">
       {/* Struktur Layout Desktop */}
       <div className="hidden md:flex">
-        <Sidebar />
+        <UserSidebar />
         <main className="flex-1 ml-64 min-h-screen relative overflow-hidden">
           {/* Elemen Dekoratif Latar Belakang (Desktop) */}
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-[120px] -mr-64 -mt-64" />
@@ -44,10 +44,10 @@ const NavLayout = ({ children }) => {
           {children}
         </main>
         {/* Navigasi Bawah khusus Mobile */}
-        <BottomNav />
+        <UserBottomNav />
       </div>
     </div>
   );
 };
 
-export default NavLayout;
+export default UserNavLayout;

@@ -18,7 +18,7 @@ const navItems = [
   { to: '/profile', icon: User, label: 'Profil' },
 ];
 
-const Sidebar = () => {
+const UserSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -132,4 +132,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default UserSidebar;

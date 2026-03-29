@@ -8,7 +8,7 @@ const navItems = [
   { to: '/profile', icon: User, label: 'Profil' },
 ];
 
-const BottomNav = () => {
+const UserBottomNav = () => {
   const location = useLocation();
 
   return (
@@ -46,4 +46,4 @@ const BottomNav = () => {
   );
 };
 
-export default BottomNav;
+export default UserBottomNav;
