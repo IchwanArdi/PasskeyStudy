@@ -14,11 +14,11 @@ const StatCard = ({ icon, label, value, color }) => {
   const Icon = icon;
   return (
     <div className="p-4 rounded-xl glass-panel flex items-center gap-4 hover:border-blue-500/20 transition-colors">
-      <div className="w-12 h-12 rounded-xl bg-black/5 dark:bg-white/5 flex items-center justify-center shrink-0">
+      <div className="w-12 h-12 rounded-xl bg-[var(--card-bg)] flex items-center justify-center shrink-0">
         <Icon className={`w-6 h-6 ${color}`} />
       </div>
       <div>
-        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">{label}</p>
+        <p className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">{label}</p>
         <p className={`text-2xl font-black ${color}`}>{value}</p>
       </div>
     </div>
@@ -95,8 +95,8 @@ const AdminDashboard = () => {
 
           {/* Daftar Pengajuan Terkini biar admin cepet tau kalau ada yang masuk */}
           <div className="p-6 glass-card rounded-[2rem] w-full shadow-sm">
-            <div className="flex items-center justify-between mb-6 border-b border-gray-200 dark:border-white/5 pb-4">
-              <h2 className="text-sm font-bold text-gray-300">Pengajuan Terbaru</h2>
+            <div className="flex items-center justify-between mb-6 border-b border-[var(--card-border)] pb-4">
+              <h2 className="text-sm font-bold text-[var(--text)]">Pengajuan Terbaru</h2>
               <Link to="/admin/pengajuan" className="flex items-center gap-1 text-xs text-blue-400 font-bold hover:text-blue-300 transition-colors uppercase tracking-wider group">
                 Lihat Semua <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
@@ -117,16 +117,16 @@ const AdminDashboard = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {recentPengajuan.map((p) => (
                   <div key={p._id} className="group flex items-center gap-3 p-4 glass-panel rounded-2xl transition-all cursor-default">
-                    <div className="w-10 h-10 rounded-xl bg-white/[0.03] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                      <LetterIcon jenis={p.jenisSurat} className="w-5 h-5 text-gray-400" />
+                    <div className="w-10 h-10 rounded-xl bg-[var(--card-bg)] flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                      <LetterIcon jenis={p.jenisSurat} className="w-5 h-5 text-[var(--text-muted)]" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-bold truncate text-gray-200 group-hover:text-white transition-colors">{p.namaLengkap}</p>
-                      <p className="text-[10px] text-gray-500 font-bold uppercase mt-0.5 tracking-tighter">
+                      <p className="text-xs font-bold truncate text-[var(--text)] group-hover:text-[var(--text)] transition-colors">{p.namaLengkap}</p>
+                      <p className="text-[10px] text-[var(--text-muted)] font-bold uppercase mt-0.5 tracking-tighter">
                         {new Date(p.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </p>
                     </div>
-                    <div className={`text-[10px] font-black uppercase tracking-tighter px-2 flex items-center h-6 bg-white/[0.02] rounded border border-white/5 ${statusColor[p.status]}`}>
+                    <div className={`text-[10px] font-black uppercase tracking-tighter px-2 flex items-center h-6 bg-[var(--card-bg)] rounded border border-[var(--card-border)] ${statusColor[p.status]}`}>
                       {p.status}
                     </div>
                   </div>

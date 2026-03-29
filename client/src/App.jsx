@@ -43,15 +43,17 @@ const AdminRoute = ({ children }) => {
 };
 
 function App() {
-  // Initialize theme from localStorage on app startup
+  // Inisialisasi tema dari localStorage saat app pertama kali dimuat.
+  // Hook useTheme() dipakai di komponen individual untuk toggle.
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme');
+    const html = document.documentElement;
     if (savedTheme === 'light') {
-      document.documentElement.classList.add('light');
-      document.documentElement.classList.remove('dark');
+      html.classList.add('light');
+      html.classList.remove('dark');
     } else {
-      document.documentElement.classList.remove('light');
-      document.documentElement.classList.add('dark');
+      html.classList.remove('light');
+      html.classList.add('dark');
     }
   }, []);
 

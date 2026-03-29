@@ -87,7 +87,7 @@ const Register = () => {
               <div className="flex-1 text-left">
                 <p className="text-[10px] text-yellow-400 font-bold mb-1 uppercase tracking-wider">Peringatan Penting</p>
                 <p className="text-[11px] text-gray-500 leading-relaxed font-medium">
-                   Kode ini adalah <b className="text-gray-900 dark:text-white">satu-satunya cara</b> memulihkan akun jika perangkat Anda hilang. Setiap kode hanya bisa dipakai 1x.
+                   Kode ini adalah <b className="text-[var(--text)] font-bold">satu-satunya cara</b> memulihkan akun jika perangkat Anda hilang. Setiap kode hanya bisa dipakai 1x.
                 </p>
               </div>
             </div>
@@ -95,7 +95,7 @@ const Register = () => {
             {/* Grid Kode */}
             <div className="grid grid-cols-2 gap-2 mb-5">
               {recoveryCodes.map((code, i) => (
-                <div key={i} className="p-3 bg-white/[0.03] border border-white/[0.06] rounded-lg text-center font-mono text-xs tracking-widest text-white/90">
+                <div key={i} className="p-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg text-center font-mono text-xs tracking-widest text-[var(--text)]">
                   {code}
                 </div>
               ))}
@@ -103,10 +103,10 @@ const Register = () => {
 
             {/* Tombol Aksi */}
             <div className="flex gap-2 mb-4">
-              <button onClick={handleCopyCodes} className="flex-1 py-3 bg-white/[0.05] border border-white/10 text-white rounded-xl text-[11px] font-bold hover:bg-white/10 transition-all flex items-center justify-center gap-2">
+              <button onClick={handleCopyCodes} className="flex-1 py-3 bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--text)] rounded-xl text-[11px] font-bold hover:opacity-80 transition-all flex items-center justify-center gap-2">
                 <Copy className="w-3.5 h-3.5" /> Salin
               </button>
-              <button onClick={handleDownloadCodes} className="flex-1 py-3 bg-white/[0.05] border border-white/10 text-white rounded-xl text-[11px] font-bold hover:bg-white/10 transition-all flex items-center justify-center gap-2">
+              <button onClick={handleDownloadCodes} className="flex-1 py-3 bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--text)] rounded-xl text-[11px] font-bold hover:opacity-80 transition-all flex items-center justify-center gap-2">
                 <Download className="w-3.5 h-3.5" /> Unduh .TXT
               </button>
             </div>
@@ -138,7 +138,7 @@ const Register = () => {
           <div className="flex items-center gap-3 p-3.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl mb-6">
             <Shield className="w-4 h-4 text-emerald-500 shrink-0" />
             <p className="text-xs text-gray-500 leading-relaxed font-medium">
-              Akun Anda dilindungi dengan <span className="text-gray-900 dark:text-white font-bold">Passkey</span> — aman tanpa password konvensional.
+              Akun Anda dilindungi dengan <span className="text-[var(--text)] font-bold">Passkey</span> — aman tanpa password konvensional.
             </p>
           </div>
 

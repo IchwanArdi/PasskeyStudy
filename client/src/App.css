@@ -32,20 +32,26 @@
   --glass-border: rgba(30, 30, 42, 0.8);
   --heading-from: #ffffff;
   --heading-to: #9ca3af;
+  --input-bg: rgba(255, 255, 255, 0.03);
+  --input-border: rgba(255, 255, 255, 0.08);
+  --section-border: rgba(255, 255, 255, 0.05);
 }
 
 .light {
   --primary: #059669;
   --primary-glow: rgba(5, 150, 105, 0.1);
-  --bg: #f8fafc;
+  --bg: #f0f4f8;
   --card-bg: #ffffff;
-  --card-border: #e2e8f0;
+  --card-border: #dee5ed;
   --text: #0f172a;
   --text-muted: #64748b;
   --glass-bg: #ffffff;
-  --glass-border: #e2e8f0;
+  --glass-border: #dee5ed;
   --heading-from: #0f172a;
   --heading-to: #475569;
+  --input-bg: #f8fafc;
+  --input-border: #cbd5e1;
+  --section-border: #dee5ed;
 }
 
 /* ============================================
@@ -62,7 +68,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-input, textarea {
+input, textarea, select {
   color: var(--text);
 }
 
@@ -112,23 +118,27 @@ input, textarea {
 }
 
 /* ============================================
-   LIGHT MODE — TEXT + BACKGROUND OVERRIDES
+   LIGHT MODE — GLOBAL TEXT OVERRIDES
    ============================================ */
 
-/* --- White text becomes dark --- */
+/* Teks yang diasumsikan putih di dark → gelap di light */
 .light .text-white {
   color: #0f172a !important;
 }
+.light .text-white\/90 {
+  color: #1e293b !important;
+}
 
-/* --- Gray shades become readable on light bg --- */
+/* Gray shades → terbaca di atas background terang */
 .light .text-gray-100 { color: #1e293b !important; }
 .light .text-gray-200 { color: #334155 !important; }
 .light .text-gray-300 { color: #475569 !important; }
 .light .text-gray-400 { color: #64748b !important; }
-.light .text-gray-600 { color: #475569 !important; }
+.light .text-gray-500 { color: #475569 !important; }
+.light .text-gray-600 { color: #64748b !important; }
 .light .text-gray-700 { color: #334155 !important; }
 
-/* --- Accent colors: slightly darker for light bg --- */
+/* Accent colors → sedikit lebih gelap agar kontras di light bg */
 .light .text-emerald-400 { color: #059669 !important; }
 .light .text-blue-400    { color: #2563eb !important; }
 .light .text-red-400     { color: #dc2626 !important; }
@@ -136,28 +146,101 @@ input, textarea {
 .light .text-orange-400  { color: #d97706 !important; }
 .light .text-cyan-400    { color: #0891b2 !important; }
 .light .text-violet-400  { color: #7c3aed !important; }
+.light .text-purple-400  { color: #7c3aed !important; }
 
-/* --- bg-white/[opacity] → visible light gray --- */
-.light [class*="bg-white\\/"] {
+/* ============================================
+   LIGHT MODE — BACKGROUND OVERRIDES
+   ============================================ */
+
+/* bg-white/[opacity] → abu-abu terang */
+.light [class*="bg-white\/"] {
   background-color: #f1f5f9 !important;
   background-image: none !important;
 }
 
-/* --- border-white/[opacity] → visible light border --- */
-.light [class*="border-white\\/"] {
-  border-color: #e2e8f0 !important;
+/* Warna bertekstur khusus komponen dark */
+.light [class*="bg-black\/"] {
+  background-color: rgba(0, 0, 0, 0.04) !important;
 }
 
-/* --- Gradient heading fix --- */
+/* Warna tombol/badge berdasarkan kategori warna */
+.light [class*="bg-emerald-500\/"] {
+  background-color: rgba(5, 150, 105, 0.08) !important;
+}
+.light [class*="bg-blue-500\/"],
+.light [class*="bg-blue-600\/"] {
+  background-color: rgba(37, 99, 235, 0.08) !important;
+}
+.light [class*="bg-red-500\/"] {
+  background-color: rgba(220, 38, 38, 0.08) !important;
+}
+.light [class*="bg-orange-500\/"] {
+  background-color: rgba(234, 88, 12, 0.08) !important;
+}
+.light [class*="bg-amber-500\/"] {
+  background-color: rgba(217, 119, 6, 0.08) !important;
+}
+.light [class*="bg-purple-500\/"],
+.light [class*="bg-violet-500\/"] {
+  background-color: rgba(124, 58, 237, 0.08) !important;
+}
+.light [class*="bg-yellow-500\/"] {
+  background-color: rgba(234, 179, 8, 0.06) !important;
+}
+
+/* Solid button warna — jangan dioverride backgroundnya */
+.light .bg-blue-600  { color: #ffffff !important; background-color: #2563eb !important; }
+.light .bg-blue-500  { color: #ffffff !important; background-color: #3b82f6 !important; }
+.light .bg-emerald-600 { color: #ffffff !important; background-color: #059669 !important; }
+.light .bg-emerald-500 { color: #ffffff !important; }
+.light .bg-red-600   { color: #ffffff !important; background-color: #dc2626 !important; }
+.light .bg-red-500   { color: #ffffff !important; background-color: #ef4444 !important; }
+.light .bg-\[\#25D366\] { color: #ffffff !important; }
+.light .bg-white.text-black { background-color: #0f172a !important; color: #ffffff !important; }
+
+/* ============================================
+   LIGHT MODE — BORDER OVERRIDES
+   ============================================ */
+
+.light [class*="border-white\/"] {
+  border-color: #dee5ed !important;
+}
+.light .border-dashed {
+  border-color: #cbd5e1 !important;
+}
+.light aside {
+  border-right-color: #dee5ed !important;
+}
+
+/* ============================================
+   LIGHT MODE — GRADIENT HEADING FIXES
+   ============================================ */
+
+/* from-white to-gray-* heading → gelap di light */
 .light .from-white {
   --tw-gradient-from: #0f172a !important;
+}
+.light .from-white.via-emerald-100 {
+  --tw-gradient-via: #d1fae5 !important;
+}
+.light .from-white.via-red-100 {
+  --tw-gradient-via: #fee2e2 !important;
 }
 .light .to-gray-400,
 .light .to-gray-500 {
   --tw-gradient-to: #64748b !important;
 }
+.light .to-emerald-400 {
+  --tw-gradient-to: #059669 !important;
+}
+.light .to-orange-400 {
+  --tw-gradient-to: #d97706 !important;
+}
 
-/* --- Hover states --- */
+/* ============================================
+   LIGHT MODE — HOVER OVERRIDES
+   ============================================ */
+
 .light .hover\:text-white:hover {
   color: #0f172a !important;
 }
@@ -167,73 +250,126 @@ input, textarea {
 .light [class*="hover\:bg-white"]:hover {
   background-color: #e2e8f0 !important;
 }
-
-/* --- Colored bg with opacity → slightly visible --- */
-.light [class*="bg-emerald"] {
-  background-color: rgba(5, 150, 105, 0.06) !important;
-}
-.light [class*="bg-blue-500\\/"],
-.light [class*="bg-blue-600\\/"] {
-  background-color: rgba(37, 99, 235, 0.06) !important;
-}
-.light [class*="bg-red-500\\/"] {
-  background-color: rgba(220, 38, 38, 0.06) !important;
-}
-.light [class*="bg-orange-500\\/"] {
-  background-color: rgba(234, 88, 12, 0.06) !important;
-}
-
-/* --- Don't override solid colored buttons --- */
-.light .bg-blue-600 { color: #ffffff !important; background-color: #2563eb !important; }
-.light .bg-blue-500 { color: #ffffff !important; background-color: #3b82f6 !important; }
-.light .bg-emerald-500 { color: #ffffff !important; }
-.light .bg-\[\#25D366\] { color: #ffffff !important; }
-
-/* ============================================
-   LIGHT MODE — COMPONENT-SPECIFIC FIXES
-   ============================================ */
-
-/* Sidebar & nav borders */
-.light aside {
-  border-right-color: #e2e8f0 !important;
-}
-
-/* Dashed borders */
-.light .border-dashed {
-  border-color: #cbd5e1 !important;
-}
-
-/* Inputs & selects */
-.light input, .light textarea {
-  background-color: #f8fafc !important;
-  border-color: #e2e8f0 !important;
+.light [class*="hover\:text-white"]:hover {
   color: #0f172a !important;
 }
-.light input:focus, .light textarea:focus {
+
+/* ============================================
+   LIGHT MODE — INPUT / FORM OVERRIDES
+   ============================================ */
+
+.light input,
+.light textarea {
+  background-color: var(--input-bg) !important;
+  border-color: var(--input-border) !important;
+  color: var(--text) !important;
+}
+.light input:focus,
+.light textarea:focus {
   border-color: #93c5fd !important;
   background-color: #ffffff !important;
 }
-.light input::placeholder, .light textarea::placeholder {
+.light input::placeholder,
+.light textarea::placeholder {
   color: #94a3b8 !important;
 }
 .light select {
-  background-color: #f8fafc !important;
-  color: #0f172a !important;
-  border-color: #e2e8f0 !important;
+  background-color: var(--input-bg) !important;
+  color: var(--text) !important;
+  border-color: var(--input-border) !important;
 }
 .light option {
   background-color: #ffffff !important;
   color: #0f172a !important;
 }
 
-/* Spinners */
-.light .border-t-blue-400 { border-top-color: #2563eb !important; }
-.light .border-t-red-400 { border-top-color: #dc2626 !important; }
-.light .border-t-emerald-400 { border-top-color: #059669 !important; }
+/* Fix date picker color-scheme (dark) yang hardcode di JSX */
+.light input[type="date"],
+.light input[type="date"]::-webkit-calendar-picker-indicator {
+  color-scheme: light !important;
+  filter: none !important;
+}
 
-/* shadow-black → light shadow in light mode */
+/* ============================================
+   LIGHT MODE — SHADOW & EFFECT OVERRIDES
+   ============================================ */
+
 .light [class*="shadow-black"] {
   --tw-shadow-color: rgba(0, 0, 0, 0.08) !important;
+}
+.light [class*="shadow-emerald-500"] {
+  --tw-shadow-color: rgba(5, 150, 105, 0.12) !important;
+}
+.light [class*="shadow-red-500"] {
+  --tw-shadow-color: rgba(220, 38, 38, 0.12) !important;
+}
+.light [class*="shadow-blue-500"] {
+  --tw-shadow-color: rgba(37, 99, 235, 0.12) !important;
+}
+
+/* Spinner warna */
+.light .border-t-blue-400   { border-top-color: #2563eb !important; }
+.light .border-t-red-400    { border-top-color: #dc2626 !important; }
+.light .border-t-emerald-400 { border-top-color: #059669 !important; }
+
+/* ============================================
+   LIGHT MODE — COMPONENT SPECIFIC
+   ============================================ */
+
+/* Sidebar glassmorphism di light */
+.light aside {
+  background: rgba(255, 255, 255, 0.85) !important;
+  border-color: #dee5ed !important;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Nav item aktif di sidebar light */
+.light .bg-emerald-500\/10 {
+  background-color: rgba(5, 150, 105, 0.08) !important;
+}
+.light .bg-red-500\/10 {
+  background-color: rgba(220, 38, 38, 0.08) !important;
+}
+
+/* Toggle switch warna background */
+.light .bg-gray-700 {
+  background-color: #cbd5e1 !important;
+}
+
+/* Divider gradient */
+.light [class*="via-white\/10"] {
+  --tw-gradient-via: rgba(0, 0, 0, 0.08) !important;
+}
+
+/* ============================================
+   LIGHT MODE — ONBOARDING & AUTH PAGES
+   ============================================ */
+
+/* Pagination dot onboarding */
+.light [class*="bg-white\/20"] {
+  background-color: rgba(15, 23, 42, 0.15) !important;
+}
+
+/* Button "Semua" di panduan (bg-white text-black) */
+.light button.bg-white {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+
+/* Filter button yang inactive (bg-white/[0.04]) */
+.light .bg-white\/\[0\.04\] {
+  background-color: #e2e8f0 !important;
+}
+.light .hover\:bg-white\/\[0\.08\]:hover {
+  background-color: #cbd5e1 !important;
+}
+
+/* Accordion border inactive */
+.light .border-white\/\[0\.05\] {
+  border-color: #dee5ed !important;
+}
+.light .hover\:border-white\/\[0\.1\]:hover {
+  border-color: #94a3b8 !important;
 }
 
 /* ============================================

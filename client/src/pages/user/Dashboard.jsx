@@ -76,7 +76,7 @@ const Dashboard = () => {
       <div className="px-5 md:px-0 grid grid-cols-1 md:grid-cols-12 gap-8">
         <div className="md:col-span-8 space-y-6 md:space-y-8">
           {/* Grid Menu Layanan Utama */}
-          <section className="bg-white/[0.01] border border-white/[0.03] rounded-[32px] p-5 md:p-8">
+          <section className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[32px] p-5 md:p-8">
             <h2 className="text-sm md:text-base font-bold mb-5">Layanan Utama</h2>
             <div className="grid grid-cols-4 gap-2 md:gap-6">
               {/* Tombol Surat Tidak Mampu */}
@@ -120,7 +120,7 @@ const Dashboard = () => {
 
         {/* Kolom Kanan: Riwayat Aktivitas HP/Warga */}
         <div className="md:col-span-4 space-y-6 md:space-y-8">
-          <section className="bg-white/[0.01] border border-white/[0.03] rounded-[32px] p-5 md:p-8 h-full flex flex-col relative overflow-hidden group">
+          <section className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[32px] p-5 md:p-8 h-full flex flex-col relative overflow-hidden group">
             <div className="absolute -top-20 -right-20 w-40 h-40 bg-emerald-500/5 blur-[50px] rounded-full pointer-events-none transition-all group-hover:bg-emerald-500/10" />
 
             <div className="flex items-center justify-between mb-5 md:mb-6 relative z-10">
@@ -130,7 +130,7 @@ const Dashboard = () => {
                 </div>
                 <h2 className="text-sm md:text-base font-bold">Aktivitas Terkini</h2>
               </div>
-              <div className="flex items-center gap-2 px-3 py-1 bg-white/[0.03] border border-white/10 rounded-xl">
+              <div className="flex items-center gap-2 px-3 py-1 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl">
                 <Link to="/riwayat" className="flex items-center gap-1 text-[10px] text-gray-400 hover:text-emerald-400 font-bold uppercase tracking-wider transition-colors">
                   Surat <ChevronRight className="w-3.5 h-3.5" />
                 </Link>
@@ -142,7 +142,7 @@ const Dashboard = () => {
                 <div className="w-6 h-6 border-2 border-white/10 border-t-emerald-400 rounded-full animate-spin" />
               </div>
             ) : riwayat.length === 0 ? (
-              <div className="flex-1 flex flex-col items-center justify-center p-6 text-center border border-dashed border-white/5 rounded-2xl bg-white/[0.005]">
+              <div className="flex-1 flex flex-col items-center justify-center p-6 text-center border border-dashed border-[var(--card-border)] rounded-2xl bg-[var(--card-bg)]">
                 <div className="w-10 h-10 bg-white/[0.02] rounded-full flex items-center justify-center mb-3">
                   <FileText className="w-5 h-5 text-gray-600" />
                 </div>
@@ -155,7 +155,7 @@ const Dashboard = () => {
                   return (
                     <div
                       key={r._id}
-                      className="group flex flex-col p-4 bg-white/[0.02] border border-white/[0.04] rounded-2xl focus:bg-white/[0.04] hover:bg-white/[0.03] transition-colors relative overflow-hidden"
+                      className="group flex flex-col p-4 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl hover:opacity-80 transition-colors relative overflow-hidden"
                     >
                       {/* Garis warna di pinggir buat indikator status */}
                       <div className={`absolute left-0 top-0 bottom-0 w-1 ${statusColor[r.status]?.replace('text-', 'bg-') || 'bg-blue-400'} opacity-50`} />

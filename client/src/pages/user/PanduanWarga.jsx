@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  HelpCircle, ChevronDown, ArrowLeft,
+  HelpCircle, ChevronDown,
   Shield, UserPlus, AlertTriangle,
   BookOpen, MessageCircle, Info
 } from 'lucide-react';
@@ -85,7 +85,7 @@ const faqSections = [
   },
 ];
 
-// Map warna biar tampilan FAQ lebih berwarna sesuai kategori
+// Map warna per kategori
 const colorMap = {
   blue: {
     bg: 'bg-blue-500/[0.08]',
@@ -121,20 +121,19 @@ const colorMap = {
   },
 };
 
-// Komponen item accordion buat setiap pertanyaan
 const AccordionItem = ({ item, isOpen, onToggle, color }) => {
   const c = colorMap[color];
   return (
     <div
       className={`rounded-xl border transition-all duration-200 ${
-        isOpen ? `${c.activeBg} ${c.activeBorder}` : 'border-white/[0.05] hover:border-white/[0.1]'
+        isOpen ? `${c.activeBg} ${c.activeBorder}` : 'border-[var(--card-border)] hover:border-[var(--text-muted)]/30'
       }`}
     >
       <button
         onClick={onToggle}
         className="w-full flex items-center justify-between px-5 py-4 text-left"
       >
-        <span className={`text-sm font-semibold leading-snug pr-4 ${isOpen ? c.text : ''}`}>
+        <span className={`text-sm font-semibold leading-snug pr-4 ${isOpen ? c.text : 'text-[var(--text)]'}`}>
           {item.q}
         </span>
         <div className={`flex-shrink-0 w-7 h-7 rounded-lg ${c.iconBg} flex items-center justify-center transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}>
@@ -143,7 +142,7 @@ const AccordionItem = ({ item, isOpen, onToggle, color }) => {
       </button>
       {isOpen && (
         <div className="px-5 pb-5 animate-fade-in-up">
-          <div className="text-sm text-gray-400 leading-relaxed whitespace-pre-line">
+          <div className="text-sm text-[var(--text-muted)] leading-relaxed whitespace-pre-line">
             {item.a}
           </div>
         </div>
@@ -174,22 +173,22 @@ const PanduanWarga = () => {
             <HelpCircle className="w-3 h-3" />
             Bantuan
           </div>
-          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight mb-2 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight mb-2 bg-gradient-to-r from-[var(--heading-from)] to-[var(--heading-to)] bg-clip-text text-transparent">
             Panduan Penggunaan
           </h1>
-          <p className="text-gray-500 text-sm font-medium">
+          <p className="text-[var(--text-muted)] text-sm font-medium">
             Semua yang perlu Anda ketahui tentang cara menggunakan Layanan Desa Digital.
           </p>
         </div>
 
-        {/* Filter Kategori biar gampang carinya */}
+        {/* Filter Kategori */}
         <div className="flex flex-wrap gap-2 mb-8">
           <button
             onClick={() => setActiveSection(null)}
             className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
               !activeSection
-                ? 'bg-white text-black'
-                : 'bg-white/[0.04] text-gray-400 hover:bg-white/[0.08] border border-white/[0.06]'
+                ? 'bg-[var(--text)] text-[var(--bg)]'
+                : 'bg-[var(--card-bg)] text-[var(--text-muted)] hover:border-[var(--text-muted)]/30 border border-[var(--card-border)]'
             }`}
           >
             Semua
@@ -204,7 +203,7 @@ const PanduanWarga = () => {
                 className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
                   isActive
                     ? `${c.bg} ${c.text} border ${c.border}`
-                    : 'bg-white/[0.04] text-gray-400 hover:bg-white/[0.08] border border-white/[0.06]'
+                    : 'bg-[var(--card-bg)] text-[var(--text-muted)] hover:border-[var(--text-muted)]/30 border border-[var(--card-border)]'
                 }`}
               >
                 <section.icon className="w-3.5 h-3.5" />
@@ -214,25 +213,23 @@ const PanduanWarga = () => {
           })}
         </div>
 
-        {/* Tampilan Konten FAQ */}
+        {/* Konten FAQ */}
         <div className="space-y-8">
           {filteredSections.map((section) => {
             const c = colorMap[section.color];
             const Icon = section.icon;
             return (
               <div key={section.id}>
-                {/* Header Bagian (Misal: Dasar-Dasar) */}
                 <div className="flex items-center gap-3 mb-4">
                   <div className={`w-10 h-10 rounded-xl ${c.iconBg} flex items-center justify-center`}>
                     <Icon className={`w-5 h-5 ${c.text}`} />
                   </div>
                   <div>
                     <h2 className="text-base font-bold">{section.title}</h2>
-                    <p className="text-xs text-gray-600">{section.subtitle}</p>
+                    <p className="text-xs text-[var(--text-muted)]">{section.subtitle}</p>
                   </div>
                 </div>
 
-                {/* Daftar Pertanyaan di bawahnya */}
                 <div className="space-y-2">
                   {section.items.map((item, i) => (
                     <AccordionItem
@@ -255,7 +252,7 @@ const PanduanWarga = () => {
             <MessageCircle className="w-7 h-7 text-emerald-400" />
           </div>
           <h2 className="text-lg font-bold mb-2">Punya Masalah Lain?</h2>
-          <p className="text-sm text-gray-500 mb-6 max-w-sm mx-auto">
+          <p className="text-sm text-[var(--text-muted)] mb-6 max-w-sm mx-auto">
             Hubungi Admin melalui WhatsApp untuk bantuan lebih lanjut.
           </p>
           <a
@@ -269,14 +266,14 @@ const PanduanWarga = () => {
           </a>
         </div>
 
-        {/* Tips di bawah kartu kontak */}
+        {/* Tips Penting */}
         <div className="mt-6 bg-amber-500/[0.05] border border-amber-500/10 rounded-2xl p-5 flex items-start gap-4">
           <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center flex-shrink-0">
             <Info className="w-5 h-5 text-amber-400" />
           </div>
           <div>
             <p className="text-sm font-bold text-amber-400 mb-1">Tips Penting</p>
-            <p className="text-xs text-gray-400 leading-relaxed">
+            <p className="text-xs text-[var(--text-muted)] leading-relaxed">
               Selalu simpan Kunci Cadangan Anda di tempat yang aman. Kunci ini satu-satunya cara memulihkan akun kalau HP Anda rusak atau hilang.
             </p>
           </div>

@@ -133,10 +133,10 @@ const AdminPengajuan = () => {
       <div className="max-w-7xl mx-auto space-y-6">
         <header className="flex items-center justify-between">
           <div>
-            <Link to="/admin" className="inline-flex items-center gap-2 text-gray-500 hover:text-white transition-colors text-[10px] font-bold uppercase tracking-widest mb-2">
+            <Link to="/admin" className="inline-flex items-center gap-2 text-[var(--text-muted)] hover:text-[var(--text)] transition-colors text-[10px] font-bold uppercase tracking-widest mb-2">
               <ArrowLeft className="w-4 h-4" /> Kembali ke Panel
             </Link>
-            <h1 className="text-xl md:text-3xl font-black tracking-tighter uppercase text-white">Kelola Pengajuan Surat</h1>
+            <h1 className="text-xl md:text-3xl font-black tracking-tighter uppercase text-[var(--text)]">Kelola Pengajuan Surat</h1>
           </div>
           <button 
             onClick={fetchPengajuan} 
@@ -155,12 +155,12 @@ const AdminPengajuan = () => {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="block w-full pl-10 pr-10 py-3 text-xs font-black uppercase tracking-widest rounded-2xl appearance-none glass-panel text-gray-300 focus:outline-none focus:border-blue-500/40 transition-all cursor-pointer shadow-sm"
+            className="block w-full pl-10 pr-10 py-3 text-xs font-black uppercase tracking-widest rounded-2xl appearance-none glass-panel text-[var(--text)] focus:outline-none focus:border-blue-500/40 transition-all cursor-pointer shadow-sm"
           >
-            <option value="" className="bg-[#111] text-white">Tampilkan Semua Status</option>
-            <option value="diproses" className="bg-[#111] text-white">Hanya Diproses</option>
-            <option value="disetujui" className="bg-[#111] text-white">Sudah Disetujui</option>
-            <option value="ditolak" className="bg-[#111] text-white">Telah Ditolak</option>
+            <option value="">Tampilkan Semua Status</option>
+            <option value="diproses">Hanya Diproses</option>
+            <option value="disetujui">Sudah Disetujui</option>
+            <option value="ditolak">Telah Ditolak</option>
           </select>
           <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-gray-500">
             <ChevronDown className="h-4 w-4" />
@@ -184,18 +184,18 @@ const AdminPengajuan = () => {
             return (
               <div key={p._id} className={`glass-card border transition-all rounded-[28px] overflow-hidden ${isOpen ? 'border-blue-500/40' : 'hover:border-white/10'}`}>
                 <button onClick={() => setExpanded(isOpen ? null : p._id)} className="w-full flex items-center gap-3 md:gap-4 p-4 md:p-6 text-left">
-                  <div className="w-12 h-12 md:w-16 md:h-16 bg-white/[0.04] rounded-2xl flex items-center justify-center shrink-0 border border-white/5">
+                  <div className="w-12 h-12 md:w-16 md:h-16 bg-[var(--card-bg)] rounded-2xl flex items-center justify-center shrink-0 border border-[var(--card-border)]">
                     <LetterIcon jenis={p.jenisSurat} className="w-6 h-6 md:w-8 md:h-8 text-blue-400/80" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm md:text-lg font-black truncate text-gray-100 tracking-tight">{p.namaLengkap}</p>
-                    <p className="text-[10px] md:text-xs text-gray-500 font-bold uppercase tracking-widest mt-0.5">
+                    <p className="text-sm md:text-lg font-black truncate text-[var(--text)] tracking-tight">{p.namaLengkap}</p>
+                    <p className="text-[10px] md:text-xs text-[var(--text-muted)] font-bold uppercase tracking-widest mt-0.5">
                       {jenisLabel[p.jenisSurat] || p.jenisSurat} • {new Date(p.createdAt).toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'})}
                     </p>
                   </div>
                   <span className={`text-[9px] md:text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl border ${sc.color} shrink-0`}>{sc.label}</span>
-                  <div className="w-8 h-8 rounded-full bg-white/[0.02] flex items-center justify-center ml-2 shrink-0 border border-white/5">
-                    {isOpen ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
+                  <div className="w-8 h-8 rounded-full bg-[var(--card-bg)] flex items-center justify-center ml-2 shrink-0 border border-[var(--card-border)]">
+                     {isOpen ? <ChevronUp className="w-4 h-4 text-[var(--text-muted)]" /> : <ChevronDown className="w-4 h-4 text-[var(--text-muted)]" />}
                   </div>
                 </button>
 
@@ -205,7 +205,7 @@ const AdminPengajuan = () => {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                       {/* Data Lengkap Pemohon */}
                       <div className="space-y-4 glass-panel p-5 rounded-3xl">
-                        <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-4 border-b border-white/5 pb-2">Informasi Detail Warga</h3>
+                        <h3 className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-4 border-b border-[var(--card-border)] pb-2">Informasi Detail Warga</h3>
                         {[
                           { l: 'NIK PEMOHON', v: p.nik },
                           { l: 'TTL', v: `${p.tempatLahir}, ${new Date(p.tanggalLahir).toLocaleDateString('id-ID')}` },
@@ -213,8 +213,8 @@ const AdminPengajuan = () => {
                           { l: 'KEPERLUAN SURAT', v: p.keperluan },
                         ].map((item) => (
                           <div key={item.l} className="flex flex-col gap-1">
-                            <span className="text-[9px] font-black text-gray-600 tracking-tighter">{item.l}</span>
-                            <span className="text-xs md:text-sm font-bold text-gray-300">{item.v}</span>
+                            <span className="text-[9px] font-black text-[var(--text-muted)] tracking-tighter">{item.l}</span>
+                            <span className="text-xs md:text-sm font-bold text-[var(--text)]">{item.v}</span>
                           </div>
                         ))}
                         
@@ -243,7 +243,7 @@ const AdminPengajuan = () => {
                             onChange={(e) => setCatatan(e.target.value)}
                             placeholder="Tulis alasan disetujui atau ditolak di sini..."
                             rows={4}
-                            className="w-full px-5 py-4 glass-panel rounded-[24px] text-sm focus:outline-none focus:border-blue-500/40 transition-all resize-none placeholder:text-gray-700 text-white"
+                      className="w-full px-5 py-4 glass-panel rounded-[24px] text-sm focus:outline-none focus:border-blue-500/40 transition-all resize-none placeholder:text-[var(--text-muted)] text-[var(--text)]"
                           />
                         </div>
 

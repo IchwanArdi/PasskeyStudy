@@ -46,7 +46,7 @@ const Login = () => {
           <div className="flex items-center gap-3 p-3.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl mb-6">
             <Shield className="w-4 h-4 text-emerald-500 shrink-0" />
             <p className="text-xs text-gray-500 leading-relaxed font-medium">
-              Masuk cukup pakai <span className="text-gray-900 dark:text-white font-bold">Sidik Jari atau Wajah</span> — aman tanpa perlu hafal password.
+              Masuk cukup pakai <span className="text-[var(--text)] font-bold">Sidik Jari atau Wajah</span> — aman tanpa perlu hafal password.
             </p>
           </div>
 
@@ -54,7 +54,7 @@ const Login = () => {
           <WebAuthnAuth mode="login" onSuccess={handleSuccess} />
 
           {/* Tautan Tambahan (Bantuan & Pemulihan) */}
-          <div className="mt-6 pt-5 border-t border-white/[0.06] flex flex-col items-center gap-3">
+          <div className="mt-6 pt-5 border-t border-[var(--card-border)] flex flex-col items-center gap-3">
             <Link to="/panduan" className="text-xs text-gray-400 hover:text-blue-400 transition-colors flex items-center gap-1.5 font-medium">
               <HelpCircle className="w-3.5 h-3.5" /> Butuh bantuan masuk?
             </Link>

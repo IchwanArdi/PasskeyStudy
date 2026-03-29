@@ -106,8 +106,8 @@ const Onboarding = () => {
           <h1 className="text-3xl font-black tracking-tight mb-2 leading-tight">
             {slide.title}
           </h1>
-          <p className="text-xl font-bold text-gray-300 mb-6">{slide.subtitle}</p>
-          <p className="text-gray-400 text-sm leading-relaxed mb-8">{slide.desc}</p>
+          <p className="text-xl font-bold text-[var(--text-muted)] mb-6">{slide.subtitle}</p>
+          <p className="text-[var(--text-muted)] text-sm leading-relaxed mb-8">{slide.desc}</p>
 
           {/* Daftar Fitur (hanya muncul di slide tertentu) */}
           {slide.features && (
@@ -133,7 +133,7 @@ const Onboarding = () => {
               className={`h-1.5 rounded-full transition-all duration-300 ${
                 i === current
                   ? `w-8 ${slide.accent.replace('text-', 'bg-')}`
-                  : 'w-1.5 bg-white/20'
+                  : 'w-1.5 bg-[var(--card-border)]'
               }`}
             />
           ))}
@@ -144,8 +144,8 @@ const Onboarding = () => {
           onClick={next}
           className={`w-full max-w-sm py-4 rounded-2xl font-bold text-base flex items-center justify-center gap-3 transition-all active:scale-95 shadow-xl ${
             isLast
-              ? 'bg-white text-black hover:bg-gray-100'
-              : 'bg-white/[0.06] border border-white/10 text-white hover:bg-white/10'
+              ? 'bg-[var(--text)] text-[var(--bg)] hover:opacity-90'
+              : 'bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--text)] hover:opacity-80'
           }`}
         >
           {isLast ? (

@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { isAuthenticated, clearAuth, api } from '../../utils/auth';
 import { toast } from 'react-toastify';
+import { useTheme } from '../../utils/useTheme';
 import { 
   Check, Shield, User, Mail, Calendar, 
   Key, Settings, Sun, Moon, LogOut, ChevronRight, HelpCircle
@@ -18,26 +19,8 @@ const Profile = () => {
     email: '',
   });
 
-  // Ambil status tema dari localStorage, defaultnya gelap (dark)
-  const [isDark, setIsDark] = useState(() => {
-    return localStorage.getItem('theme') !== 'light';
-  });
-
-  // Terapkan class tema ke tag <html> biar CSS global bisa berubah
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.remove('light');
-    } else {
-      document.documentElement.classList.add('light');
-    }
-  }, [isDark]);
-
-  // Fungsi buat ganti-ganti tema (Gelap/Terang)
-  const toggleTheme = () => {
-    const newDark = !isDark;
-    setIsDark(newDark);
-    localStorage.setItem('theme', newDark ? 'dark' : 'light');
-  };
+  // Gunakan hook terpusat — tidak ada duplikasi logika tema
+  const { isDark, toggleTheme } = useTheme();
 
   // Fungsi keluar aplikasi, hapus token dan balikin ke login
   const handleLogout = () => {
@@ -85,7 +68,6 @@ const Profile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Update data di server
       await api.put("/user/me", formData);
       setUser({ ...user, ...formData });
       setEditMode(false);
@@ -101,7 +83,7 @@ const Profile = () => {
       <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto mb-4" />
-          <p className="text-sm font-medium text-gray-500">Memuat profil...</p>
+          <p className="text-sm font-medium text-[var(--text-muted)]">Memuat profil...</p>
         </div>
       </div>
     );
@@ -117,7 +99,7 @@ const Profile = () => {
             Profil Pengguna
           </div>
           <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-2 bg-gradient-to-r from-[var(--heading-from)] to-[var(--heading-to)] bg-clip-text text-transparent">Pengaturan Akun</h1>
-          <p className="text-gray-500 text-sm md:text-base font-medium">Kelola informasi pribadi dan keamanan autentikasi Anda.</p>
+          <p className="text-[var(--text-muted)] text-sm md:text-base font-medium">Kelola informasi pribadi dan keamanan autentikasi Anda.</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -139,7 +121,7 @@ const Profile = () => {
               {editMode ? (
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-2">Username</label>
+                    <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">Username</label>
                     <input
                       type="text"
                       name="username"
@@ -150,7 +132,7 @@ const Profile = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-400 mb-2">Email</label>
+                    <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">Email</label>
                     <input
                       type="email"
                       name="email"
@@ -171,7 +153,7 @@ const Profile = () => {
                         setEditMode(false);
                         setFormData({ username: user.username, email: user.email });
                       }}
-                      className="px-5 py-2.5 bg-[var(--card-bg)] text-gray-400 rounded-xl text-sm font-medium hover:opacity-80 transition-all"
+                      className="px-5 py-2.5 bg-[var(--card-bg)] text-[var(--text-muted)] rounded-xl text-sm font-medium hover:opacity-80 transition-all border border-[var(--card-border)]"
                     >
                       Batal
                     </button>
@@ -180,21 +162,21 @@ const Profile = () => {
               ) : (
                 <div className="space-y-1">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4 border-b border-[var(--card-border)]">
-                    <div className="flex items-center gap-2.5 text-gray-500 mb-1.5 sm:mb-0">
+                    <div className="flex items-center gap-2.5 text-[var(--text-muted)] mb-1.5 sm:mb-0">
                       <Shield className="w-4 h-4" />
                       <span className="text-sm font-medium">Username</span>
                     </div>
                     <span className="text-sm font-semibold">{user?.username}</span>
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4 border-b border-[var(--card-border)]">
-                    <div className="flex items-center gap-2.5 text-gray-500 mb-1.5 sm:mb-0">
+                    <div className="flex items-center gap-2.5 text-[var(--text-muted)] mb-1.5 sm:mb-0">
                       <Mail className="w-4 h-4" />
                       <span className="text-sm font-medium">Email</span>
                     </div>
                     <span className="text-sm font-semibold">{user?.email}</span>
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4">
-                    <div className="flex items-center gap-2.5 text-gray-500 mb-1.5 sm:mb-0">
+                    <div className="flex items-center gap-2.5 text-[var(--text-muted)] mb-1.5 sm:mb-0">
                       <Calendar className="w-4 h-4" />
                       <span className="text-sm font-medium">Tanggal Dibuat</span>
                     </div>
@@ -215,7 +197,7 @@ const Profile = () => {
                 {/* Switcher Mode Gelap */}
                 <button
                   onClick={toggleTheme}
-                  className="w-full h-16 flex items-center justify-between px-4 glass-card rounded-2xl hover:bg-white/[0.06] transition-all group"
+                  className="w-full h-16 flex items-center justify-between px-4 glass-card rounded-2xl hover:bg-[var(--card-bg)] transition-all group"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
@@ -223,10 +205,10 @@ const Profile = () => {
                     </div>
                     <div className="text-left">
                       <span className="text-sm font-bold block">Mode Gelap</span>
-                      <span className="text-[10px] text-gray-500 font-medium uppercase tracking-wider">{isDark ? 'Aktif' : 'Nonaktif'}</span>
+                      <span className="text-[10px] text-[var(--text-muted)] font-medium uppercase tracking-wider">{isDark ? 'Aktif' : 'Nonaktif'}</span>
                     </div>
                   </div>
-                  <div className={`w-11 h-6 rounded-full p-1 transition-all ${isDark ? 'bg-blue-600' : 'bg-gray-700'}`}>
+                  <div className={`w-11 h-6 rounded-full p-1 transition-all ${isDark ? 'bg-blue-600' : 'bg-gray-300'}`}>
                     <div className={`w-4 h-4 bg-white rounded-full transition-transform duration-300 ${isDark ? 'translate-x-5' : 'translate-x-0'}`} />
                   </div>
                 </button>
@@ -234,15 +216,15 @@ const Profile = () => {
                 {/* Link ke Panduan */}
                 <Link
                   to="/panduan"
-                  className="w-full h-16 flex items-center justify-between px-4 border border-blue-500/10 rounded-2xl hover:bg-blue-500/[0.08] transition-all group"
+                  className="w-full h-16 flex items-center justify-between px-4 rounded-2xl group"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
                       <HelpCircle className="w-5 h-5" />
                     </div>
                     <div className="text-left">
-                      <span className="text-sm font-bold block ">Panduan & FAQ</span>
-                      <span className="text-[10px] text-gray-500 font-medium uppercase tracking-wider">Cara Penggunaan Aplikasi</span>
+                      <span className="text-sm font-bold block">Panduan & FAQ</span>
+                      <span className="text-[10px] text-[var(--text-muted)] font-medium uppercase tracking-wider">Cara Penggunaan Aplikasi</span>
                     </div>
                   </div>
                   <ChevronRight className="w-5 h-5 text-blue-400/30 group-hover:translate-x-1 transition-transform" />
@@ -251,15 +233,15 @@ const Profile = () => {
                 {/* Kelola Perangkat (WebAuthn) */}
                 <Link
                   to="/manage-devices"
-                  className="w-full h-16 flex items-center justify-between px-4 border border-emerald-500/10 rounded-2xl hover:bg-emerald-500/[0.08] transition-all group"
+                  className="w-full h-16 flex items-center justify-between px-4 rounded-2xl group"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
                       <Shield className="w-5 h-5" />
                     </div>
                     <div className="text-left">
-                      <span className="text-sm font-bold block ">Keamanan Perangkat</span>
-                      <span className="text-[10px] text-gray-500 font-medium uppercase tracking-wider">Kelola Kunci Keamanan</span>
+                      <span className="text-sm font-bold block">Keamanan Perangkat</span>
+                      <span className="text-[10px] text-[var(--text-muted)] font-medium uppercase tracking-wider">Kelola Kunci Keamanan</span>
                     </div>
                   </div>
                   <ChevronRight className="w-5 h-5 text-emerald-400/30 group-hover:translate-x-1 transition-transform" />
@@ -268,15 +250,15 @@ const Profile = () => {
                 {/* Tombol Keluar */}
                 <button
                   onClick={handleLogout}
-                  className="w-full h-16 flex items-center justify-between px-4 border border-red-500/10 rounded-2xl hover:bg-red-500/[0.08] transition-all group"
+                  className="w-full h-16 flex items-center justify-between px-4 border border-red-500/10 rounded-2xl transition-all group"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center text-red-400 group-hover:scale-110 transition-transform">
                       <LogOut className="w-5 h-5" />
                     </div>
                     <div className="text-left">
-                      <span className="text-sm font-bold block ">Keluar</span>
-                      <span className="text-[10px]  text-gray-500 font-medium uppercase tracking-wider">Akhiri Akses</span>
+                      <span className="text-sm font-bold block">Keluar</span>
+                      <span className="text-[10px] text-[var(--text-muted)] font-medium uppercase tracking-wider">Akhiri Akses</span>
                     </div>
                   </div>
                   <ChevronRight className="w-5 h-5 text-red-400/30 group-hover:translate-x-1 transition-transform" />
@@ -292,7 +274,7 @@ const Profile = () => {
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-emerald-400" />
-                  <span className="text-xs font-medium text-gray-400">{credentials.length} perangkat aktif</span>
+                  <span className="text-xs font-medium text-[var(--text-muted)]">{credentials.length} perangkat aktif</span>
                 </div>
                 <div className="flex items-center gap-2.5">
                   <div className="w-2 h-2 rounded-full bg-blue-400" />
@@ -302,8 +284,8 @@ const Profile = () => {
             </div>
 
             <div className="glass-card rounded-2xl p-6">
-              <p className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-widest">Status</p>
-              <p className="text-sm text-gray-500 leading-relaxed italic">
+              <p className="text-xs font-semibold text-[var(--text-muted)] mb-2 uppercase tracking-widest">Status</p>
+              <p className="text-sm text-[var(--text-muted)] leading-relaxed italic">
                 Akun dilindungi kunci biometrik (Login Tanpa Password).
               </p>
             </div>
