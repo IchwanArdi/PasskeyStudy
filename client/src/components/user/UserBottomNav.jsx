@@ -1,10 +1,11 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, FileText, User } from 'lucide-react';
+import { Home, FileText, User, ClipboardList } from 'lucide-react';
 
 // Item navigasi untuk bilah bawah warga (tampilan mobile)
 const navItems = [
   { to: '/dashboard', icon: Home, label: 'Beranda' },
   { to: '/layanan', icon: FileText, label: 'Layanan' },
+  { to: '/riwayat', icon: ClipboardList, label: 'Detail Pengaduan' },
   { to: '/profile', icon: User, label: 'Profil' },
 ];
 

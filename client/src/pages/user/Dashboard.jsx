@@ -78,7 +78,7 @@ const Dashboard = () => {
           {/* Grid Menu Layanan Utama */}
           <section className="bg-[var(--bg-raised)] border border-[var(--border)] rounded-3xl p-5 md:p-8">
             <h2 className="text-sm md:text-base font-bold mb-5">Layanan Utama</h2>
-            <div className="grid grid-cols-4 gap-2 md:gap-6">
+            <div className="grid grid-cols-3 gap-2 md:gap-6">
               {/* Tombol Surat Tidak Mampu */}
               <Link to="/layanan/ajukan?jenis=tidak_mampu" className="flex flex-col items-center group">
                 <div className="w-[50px] h-[50px] md:w-20 md:h-20 bg-[var(--bg-overlay)] border border-[var(--border)] rounded-2xl flex items-center justify-center mb-3 group-hover:-translate-y-1 group-hover:border-[var(--border-hover)] transition-all shadow-sm">
@@ -99,13 +99,6 @@ const Dashboard = () => {
                   <LetterIcon jenis="kelahiran" className="w-6 h-6 md:w-9 md:h-9 text-orange-400 group-hover:scale-110 transition-transform" />
                 </div>
                 <span className="text-xs font-bold text-[var(--text-muted)] group-hover:text-[var(--text)] text-center leading-tight">S. Kelahiran</span>
-              </Link>
-              {/* Tombol Detail Pengajuan (Riwayat) */}
-              <Link to="/riwayat" className="flex flex-col items-center group">
-                <div className="w-[50px] h-[50px] md:w-20 md:h-20 bg-[var(--bg-overlay)] border border-[var(--border)] rounded-2xl flex items-center justify-center mb-3 group-hover:-translate-y-1 group-hover:border-[var(--border-hover)] transition-all shadow-sm">
-                  <LetterIcon jenis="riwayat" className="w-6 h-6 md:w-9 md:h-9 text-purple-400 group-hover:scale-110 transition-transform" />
-                </div>
-                <span className="text-xs font-bold text-[var(--text-muted)] group-hover:text-[var(--text)] text-center leading-tight">Detail Pengajuan</span>
               </Link>
             </div>
           </section>

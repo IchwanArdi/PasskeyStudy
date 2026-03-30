@@ -8,13 +8,15 @@ import {
   Sparkles,
   ChevronRight,
   Sun,
-  Moon
+  Moon,
+  ClipboardList
 } from 'lucide-react';
 
 // Item navigasi utama untuk warga
 const navItems = [
   { to: '/dashboard', icon: Home, label: 'Beranda' },
   { to: '/layanan', icon: FileText, label: 'Layanan' },
+  { to: '/riwayat', icon: ClipboardList, label: 'Detail Pengaduan' },
   { to: '/profile', icon: User, label: 'Profil' },
 ];
 
@@ -111,7 +113,7 @@ const UserSidebar = () => {
               <span className="text-[10px] font-black uppercase text-[var(--text-muted)] tracking-wider">Pusat Bantuan</span>
             </div>
             <div className="flex flex-col gap-2">
-              <Link to="/panduan" className="text-[11px] font-bold text-[var(--text-muted)] hover:text-emerald-400 transition-colors flex items-center justify-between group/link">
+              <Link to="/panduan" className="text-[11px] font-bold text-emerald-500 hover:text-emerald-400 transition-colors flex items-center justify-between group/link">
                 FAQ & Panduan <ChevronRight className="w-3 h-3 opacity-0 -translate-x-1 group-hover/link:opacity-100 group-hover/link:translate-x-0 transition-all" />
               </Link>
             </div>

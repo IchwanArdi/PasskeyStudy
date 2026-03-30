@@ -94,10 +94,7 @@ const Profile = () => {
       <div className="max-w-5xl mx-auto">
         {/* Header Halaman */}
         <div className="mb-10 border-b border-[var(--border)] pb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[var(--primary-subtle)] border border-[var(--primary-border)] rounded-full text-[var(--primary)] text-[10px] font-bold uppercase tracking-wider mb-4">
-            <User className="w-3 h-3" />
-            Profil Pengguna
-          </div>
+          <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-[0.2em] mb-2">Profil Pengguna</p>
           <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-2 bg-gradient-to-r from-[var(--heading-from)] to-[var(--heading-to)] bg-clip-text text-transparent">Pengaturan Akun</h1>
           <p className="text-[var(--text-muted)] text-sm md:text-base font-medium">Kelola informasi pribadi dan keamanan autentikasi Anda.</p>
         </div>
