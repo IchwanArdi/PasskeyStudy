@@ -92,62 +92,58 @@ const Recovery = () => {
 
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] font-sans flex items-center justify-center p-6 transition-colors duration-300 relative overflow-hidden">
-      <div className="flex flex-col items-center justify-center min-h-screen px-6 pt-12">
-        <div className="w-full max-w-md animate-fade-in-up">
-          
-          {/* Indikator Langkah (Stepper) */}
-          <div className="flex items-center justify-center gap-3 mb-10">
-            {[1, 2, 3].map((s) => (
-              <div key={s} className="flex items-center gap-3">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${step >= s ? 'bg-blue-600 text-white' : 'bg-white/[0.04] text-gray-600 border border-white/[0.08]'}`}>
-                  {step > s ? <Check className="w-3 h-3" /> : s}
-                </div>
-                {s < 3 && <div className={`w-12 h-0.5 rounded-full ${step > s ? 'bg-blue-600' : 'bg-white/[0.06]'}`} />}
+      <div className="relative z-10 w-full max-w-sm animate-fade-in-up">
+        
+        {/* Indikator Langkah (Stepper) */}
+        <div className="flex items-center justify-center gap-3 mb-10">
+          {[1, 2, 3].map((s) => (
+            <div key={s} className="flex items-center gap-3">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${step >= s ? 'bg-emerald-500 text-black' : 'bg-white/[0.04] text-gray-600 border border-white/[0.08]'}`}>
+                {step > s ? <Check className="w-3 h-3" /> : s}
               </div>
-            ))}
-          </div>
+              {s < 3 && <div className={`w-12 h-0.5 rounded-full ${step > s ? 'bg-emerald-500' : 'bg-white/[0.06]'}`} />}
+            </div>
+          ))}
+        </div>
 
           {/* LANGKAH 1: INPUT KODE PEMULIHAN */}
           {step === 1 && (
             <div>
               <div className="text-center mb-8">
-                <div className="w-16 h-16 bg-amber-500/10 border border-amber-500/15 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <KeyRound className="w-8 h-8 text-amber-400" />
-                </div>
-                <h1 className="text-2xl font-bold tracking-tight mb-3">Pemulihan Akun</h1>
-                <p className="text-gray-500 text-base">Gunakan kode cadangan yang Anda simpan saat mendaftar.</p>
+                <h1 className="text-2xl font-black tracking-tight mb-2">Pemulihan Akun</h1>
+                <p className="text-sm text-gray-500">Gunakan kode cadangan yang Anda simpan saat mendaftar.</p>
               </div>
 
-              <div className="glass-card rounded-2xl p-8">
+              <div className="glass-card rounded-[24px] p-6 sm:p-8">
                 <form onSubmit={handleVerifyCode} className="space-y-5">
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Email Akun</label>
+                    <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Email Akun</label>
                     <input
                       type="email"
                       value={email}
                       onChange={(e) => { setEmail(e.target.value); setError(''); }}
                       required
-                      className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all text-sm"
+                      className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all text-sm"
                       placeholder="contoh@email.com"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">Kode Pemulihan (4 Karakter)</label>
+                    <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Kode Pemulihan (4 Karakter)</label>
                     <input
                       type="text"
                       value={code}
                       onChange={(e) => { setCode(e.target.value.toUpperCase()); setError(''); }}
                       required
                       maxLength={4}
-                      className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all text-sm font-mono tracking-widest text-center text-lg"
+                      className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all text-sm font-mono tracking-[0.5em] text-center text-lg"
                       placeholder="XXXX"
                     />
                   </div>
                   {error && (
-                    <div className="px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm italic">{error}</div>
+                    <div className="px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-xs font-medium italic">{error}</div>
                   )}
-                  <button type="submit" disabled={loading} className="w-full px-6 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-sm transition-all disabled:opacity-50 shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 active:scale-95">
-                    {loading ? 'Sedang Memverifikasi...' : 'Verifikasi Kode'}
+                  <button type="submit" disabled={loading} className="w-full py-4 bg-emerald-500 text-black font-bold rounded-xl hover:bg-emerald-400 transition-all text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 active:scale-95 disabled:opacity-50">
+                    {loading ? 'Memverifikasi...' : 'Verifikasi Kode'}
                     {!loading && <ArrowRight className="w-4 h-4" />}
                   </button>
                 </form>
@@ -159,22 +155,22 @@ const Recovery = () => {
           {step === 2 && (
             <div>
               <div className="text-center mb-8">
-                <div className="w-16 h-16 bg-blue-500/10 border border-blue-500/15 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <Fingerprint className="w-8 h-8 text-blue-400" />
+                <div className="w-14 h-14 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Fingerprint className="w-7 h-7 text-emerald-400" />
                 </div>
-                <h1 className="text-2xl font-bold tracking-tight mb-3">Daftar Perangkat Baru</h1>
-                <p className="text-gray-500 text-base">Kode valid! Sekarang daftarkan Sidik Jari/Wajah di perangkat ini.</p>
+                <h1 className="text-2xl font-black tracking-tight mb-2">Perangkat Baru</h1>
+                <p className="text-sm text-gray-500">Kode valid! Sekarang daftarkan Sidik Jari/Wajah di perangkat ini.</p>
               </div>
 
-              <div className="glass-card rounded-2xl p-8 space-y-6">
+              <div className="glass-card rounded-[24px] p-6 sm:p-8 space-y-6">
                 {message && (
-                  <div className="px-4 py-3 bg-blue-500/[0.06] border border-blue-500/15 rounded-xl text-blue-400 text-sm text-center font-medium animate-pulse">{message}</div>
+                  <div className="px-4 py-3 bg-emerald-500/[0.06] border border-emerald-500/15 rounded-xl text-emerald-400 text-xs text-center font-medium animate-pulse">{message}</div>
                 )}
                 {error && (
-                  <div className="px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm italic">{error}</div>
+                  <div className="px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-xs font-medium italic">{error}</div>
                 )}
-                <button onClick={handleReRegister} disabled={loading} className="w-full px-6 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-sm transition-all disabled:opacity-50 shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 active:scale-95">
-                  {loading ? 'Memproses pendaftaran...' : 'Daftarkan Perangkat Ini'}
+                <button onClick={handleReRegister} disabled={loading} className="w-full py-4 bg-emerald-500 text-black font-bold rounded-xl hover:bg-emerald-400 transition-all text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 active:scale-95 disabled:opacity-50">
+                  {loading ? 'Memproses...' : 'Daftarkan Perangkat Ini'}
                   {!loading && <Fingerprint className="w-4 h-4" />}
                 </button>
               </div>
@@ -185,57 +181,60 @@ const Recovery = () => {
           {step === 3 && (
             <div>
               <div className="text-center mb-8">
-                <div className="w-16 h-16 bg-emerald-500/10 border border-emerald-500/15 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <CheckCircle className="w-8 h-8 text-emerald-400" />
+                <div className="w-14 h-14 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle className="w-7 h-7 text-emerald-400" />
                 </div>
-                <h1 className="text-2xl font-bold tracking-tight mb-3">Pemulihan Selesai!</h1>
-                <p className="text-gray-500 text-base">Akses Anda telah pulih. Hapus kode lama dan simpan kode baru di bawah.</p>
+                <h1 className="text-2xl font-black tracking-tight mb-2">Berhasil Pulih!</h1>
+                <p className="text-sm text-gray-500">Akses pulih. Simpan kode baru ini sebagai cadangan.</p>
               </div>
 
               {newRecoveryCodes.length > 0 && (
-                <div className="glass-card rounded-2xl p-8 mb-6">
-                  <div className="p-4 bg-amber-500/[0.06] border border-amber-500/15 rounded-xl mb-6">
-                    <p className="text-sm text-amber-400 font-bold flex items-center gap-2">
-                      <AlertTriangle className="w-4 h-4" /> KODE PEMULIHAN BARU
-                    </p>
-                    <p className="text-xs text-gray-400 mt-1">Kode lama otomatis hangus. Wajib simpan kode-kode di bawah ini!</p>
+                <div className="glass-card rounded-[24px] p-6 sm:p-8 mb-6">
+                  <div className="p-3.5 bg-yellow-500/[0.06] border border-yellow-500/10 rounded-xl mb-5 flex gap-3">
+                    <AlertTriangle className="w-5 h-5 text-yellow-400 shrink-0" />
+                    <div className="flex-1 text-left">
+                      <p className="text-[10px] text-yellow-400 font-bold mb-1 uppercase tracking-wider">KODE PEMULIHAN BARU</p>
+                      <p className="text-[11px] text-gray-500 leading-relaxed font-medium">
+                        Kode lama Anda sudah hangus. Simpan kode-kode di bawah ini di tempat aman.
+                      </p>
+                    </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-3 mb-6">
+                  
+                  <div className="grid grid-cols-2 gap-2 mb-5">
                     {newRecoveryCodes.map((c, i) => (
-                      <div key={i} className="p-3 bg-white/[0.03] border border-white/[0.06] rounded-xl text-center">
-                        <span className="font-mono text-sm font-bold tracking-widest text-white">{c}</span>
+                      <div key={i} className="p-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg text-center font-mono text-xs tracking-widest text-[var(--text)]">
+                        {c}
                       </div>
                     ))}
                   </div>
                   
                   {/* Tombol Aksi: Salin & Unduh */}
-                  <div className="flex gap-2 mb-6">
-                    <button onClick={handleCopyCodes} className="flex-1 py-3.5 bg-white/[0.05] border border-white/10 text-white rounded-xl text-xs font-bold hover:bg-white/10 transition-all flex items-center justify-center gap-2">
-                      <Copy className="w-4 h-4" /> Salin
+                  <div className="flex gap-2 mb-4">
+                    <button onClick={handleCopyCodes} className="flex-1 py-3 bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--text)] rounded-xl text-[11px] font-bold hover:opacity-80 transition-all flex items-center justify-center gap-2">
+                      <Copy className="w-3.5 h-3.5" /> Salin
                     </button>
-                    <button onClick={handleDownloadCodes} className="flex-1 py-3.5 bg-white/[0.05] border border-white/10 text-white rounded-xl text-xs font-bold hover:bg-white/10 transition-all flex items-center justify-center gap-2">
-                      <Download className="w-4 h-4" /> Unduh .TXT
+                    <button onClick={handleDownloadCodes} className="flex-1 py-3 bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--text)] rounded-xl text-[11px] font-bold hover:opacity-80 transition-all flex items-center justify-center gap-2">
+                      <Download className="w-3.5 h-3.5" /> Unduh .TXT
                     </button>
                   </div>
+
+                  <button onClick={() => navigate('/dashboard')} className="w-full py-4 bg-emerald-500 text-black font-bold rounded-xl hover:bg-emerald-400 transition-all text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 active:scale-95">
+                    Masuk ke Dashboard <ArrowRight className="w-4 h-4" />
+                  </button>
                 </div>
               )}
-
-              <button onClick={() => navigate('/dashboard')} className="w-full px-6 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-blue-500/20 active:scale-95">
-                Masuk ke Dashboard
-              </button>
             </div>
           )}
 
           {/* Navigasi Balik ke Login */}
-          <div className="mt-6 text-center">
-            <Link to="/login" className="text-gray-600 hover:text-gray-400 text-sm font-semibold transition-colors flex items-center justify-center gap-2">
+          <p className="text-center text-xs text-gray-700 mt-6 font-medium">
+            <Link to="/login" className="text-gray-500 hover:text-gray-300 transition-colors flex items-center justify-center gap-2">
               <ArrowLeft className="w-4 h-4" /> Kembali ke Login
             </Link>
-          </div>
+          </p>
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
 
 export default Recovery;

@@ -437,3 +437,63 @@ option {
   to { opacity: 1; transform: translateY(0); }
 }
 .animate-slide-down { animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.light .grid-bg {
+  background-image:
+    linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+}
+.mask-radial {
+  mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+}
+
+/* ============================================
+   SCROLLBAR
+   ============================================ */
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #1e1e2a; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #2a2a3a; }
+.light ::-webkit-scrollbar-thumb { background: #cbd5e1; }
+.light ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+.scrollbar-none::-webkit-scrollbar { display: none; }
+
+/* ============================================
+   EFFECTS
+   ============================================ */
+
+.focus-ring {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+.glow-blue {
+  box-shadow: 0 0 30px rgba(59, 130, 246, 0.08), 0 0 60px rgba(59, 130, 246, 0.04);
+}
+.glow-blue-hover:hover {
+  box-shadow: 0 0 40px rgba(59, 130, 246, 0.12), 0 0 80px rgba(59, 130, 246, 0.06);
+}
+.light .glow-blue {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up { animation: fadeInUp 0.5s ease-out forwards; }
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(16, 185, 129, 0.4); }
+  50% { box-shadow: 0 0 16px rgba(16, 185, 129, 0.6); }
+}
+.pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-100%); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-down { animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }

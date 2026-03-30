@@ -122,10 +122,8 @@ const Register = () => {
 
   // Tampilan Form Pendaftaran Utama
   return (
-    <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] font-sans flex flex-col items-center justify-center px-6 relative overflow-hidden transition-colors duration-300">
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-emerald-500/[0.05] rounded-full blur-3xl" />
-      </div>
+    <div className="min-h-screen text-[var(--text)] font-sans flex flex-col items-center justify-center px-6 relative overflow-hidden transition-colors duration-300">
+
 
       <div className="relative z-10 w-full max-w-sm">
         <div className="text-center mb-8">

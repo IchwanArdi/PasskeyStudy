@@ -28,11 +28,6 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] font-sans flex items-center justify-center p-6 transition-colors duration-300 relative overflow-hidden">
-      {/* Dekorasi Background (Efek cahaya/glow) */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-emerald-500/[0.06] rounded-full blur-3xl" />
-      </div>
-
       <div className="relative z-10 w-full max-w-sm">
         {/* Bagian Judul */}
         <div className="text-center mb-8">
