@@ -28,7 +28,7 @@ const UserBottomNav = () => {
               }`}
             >
               {/* Icon menu dengan latar belakang subtil saat aktif */}
-              <div className={`relative p-1.5 rounded-xl transition-all ${isActive ? 'bg-emerald-400/10' : ''}`}>
+              <div className={`relative p-1.5 rounded-xl transition-all ${isActive ? '' : ''}`}>
                 <Icon className={`w-5 h-5 md:w-6 md:h-6 ${isActive ? 'stroke-emerald-400' : ''}`} />
               </div>
               

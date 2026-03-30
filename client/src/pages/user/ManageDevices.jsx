@@ -187,10 +187,10 @@ const ManageDevices = () => {
 
         {/* Tombol Tambah Perangkat */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-base font-bold">Perangkat Terdaftar</h2>
+          <h2 className="text-sm font-semibold">Perangkat Terdaftar</h2>
           <button
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-xl text-sm font-semibold transition-all shadow-md hover:shadow-lg"
+            className="flex items-center gap-2 px-2 md:px-5 py-2.5 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-xl text-sm font-semibold transition-all shadow-md hover:shadow-lg"
           >
             <Plus className="w-4 h-4" />
             Tambah Perangkat
@@ -308,7 +308,7 @@ const ManageDevices = () => {
                             setDeleteConfirmId(cred.credentialID);
                           }
                         }}
-                        className="p-2 text-[var(--text-muted)] hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                        className="p-2 text-[var(--text-muted)] hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all "
                         title="Hapus perangkat"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -378,7 +378,7 @@ const ManageDevices = () => {
               <button
                 onClick={handleAddDevice}
                 disabled={addingDevice}
-                className="flex-1 px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-xl font-semibold text-sm transition-all disabled:opacity-50 shadow-md flex items-center justify-center gap-2"
+                className="flex-1 px-2 md:px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-xl font-semibold text-sm transition-all disabled:opacity-50 shadow-md flex items-center justify-center gap-2"
               >
                 {addingDevice ? (
                   <>
@@ -408,7 +408,7 @@ const ManageDevices = () => {
       {showDeleteAccountModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
           <div
-            className="absolute inset-0 bg-red-950/60 backdrop-blur-sm"
+            className="absolute inset-0  backdrop-blur-sm"
             onClick={() => !deletingAccount && setShowDeleteAccountModal(false)}
           />
           <div className="relative w-full max-w-md bg-[var(--bg)] border border-red-500/20 rounded-2xl p-8 shadow-2xl shadow-red-500/10">

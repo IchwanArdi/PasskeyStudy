@@ -247,7 +247,7 @@ const FormPengajuan = () => {
             <div className="flex items-center gap-3 p-4 bg-[var(--primary-subtle)] border border-[var(--primary-border)] rounded-2xl">
               <Info className="w-5 h-5 text-[var(--primary)] shrink-0" />
               <p className="text-[10px] md:text-xs text-dark leading-relaxed font-medium">
-                Data terenkripsi dan hanya dapat diakses oleh admin yang berwenang.
+                Data Anda terjaga aman melalui sistem enkripsi dan hanya dapat diakses oleh petugas pelayanan kami.
               </p>
             </div>
 

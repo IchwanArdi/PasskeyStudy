@@ -248,9 +248,6 @@ const PanduanWarga = () => {
 
         {/* Kartu Kontak Admin */}
         <div className="mt-10 bg-[var(--bg-raised)] rounded-2xl p-6 border border-[var(--border)] text-center shadow-sm">
-          <div className="w-14 h-14 rounded-2xl bg-[var(--primary-subtle)] border border-[var(--primary-border)] flex items-center justify-center mx-auto mb-4">
-            <MessageCircle className="w-7 h-7 text-[var(--primary)]" />
-          </div>
           <h2 className="text-lg font-bold mb-2">Punya Masalah Lain?</h2>
           <p className="text-sm text-[var(--text-muted)] mb-6 max-w-sm mx-auto">
             Hubungi Admin melalui WhatsApp untuk bantuan lebih lanjut.
@@ -267,13 +264,13 @@ const PanduanWarga = () => {
         </div>
 
         {/* Tips Penting */}
-        <div className="mt-6 bg-[var(--warning-subtle)] border border-[var(--warning-border)] rounded-2xl p-5 flex items-start gap-4">
-          <div className="w-10 h-10 rounded-xl bg-[var(--bg-raised)] flex items-center justify-center flex-shrink-0 border border-[var(--warning-border)]">
+        <div className="mt-6 p-5 flex items-start gap-4">
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 border border-[var(--warning-border)]">
             <Info className="w-5 h-5 text-[var(--warning)]" />
           </div>
           <div>
             <p className="text-sm font-bold text-amber-400 mb-1">Tips Penting</p>
-            <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+            <p className="text-xs text-dark leading-relaxed">
               Selalu simpan Kunci Cadangan Anda di tempat yang aman. Kunci ini satu-satunya cara memulihkan akun kalau HP Anda rusak atau hilang.
             </p>
           </div>
