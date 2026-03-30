@@ -88,36 +88,36 @@ const faqSections = [
 // Map warna per kategori
 const colorMap = {
   blue: {
-    bg: 'bg-blue-500/[0.08]',
-    border: 'border-blue-500/20',
+    bg: 'bg-[var(--bg-raised)]',
+    border: 'border-[var(--border)]',
     text: 'text-blue-400',
-    iconBg: 'bg-blue-500/10',
-    activeBg: 'bg-blue-500/[0.06]',
-    activeBorder: 'border-blue-500/15',
+    iconBg: 'bg-[var(--bg-overlay)]',
+    activeBg: 'bg-[var(--bg-overlay)]',
+    activeBorder: 'border-blue-400/30',
   },
   emerald: {
-    bg: 'bg-emerald-500/[0.08]',
-    border: 'border-emerald-500/20',
-    text: 'text-emerald-400',
-    iconBg: 'bg-emerald-500/10',
-    activeBg: 'bg-emerald-500/[0.06]',
-    activeBorder: 'border-emerald-500/15',
+    bg: 'bg-[var(--bg-raised)]',
+    border: 'border-[var(--border)]',
+    text: 'text-[var(--primary)]',
+    iconBg: 'bg-[var(--primary-subtle)]',
+    activeBg: 'bg-[var(--bg-overlay)]',
+    activeBorder: 'border-[var(--primary-border)]',
   },
   amber: {
-    bg: 'bg-amber-500/[0.08]',
-    border: 'border-amber-500/20',
-    text: 'text-amber-400',
-    iconBg: 'bg-amber-500/10',
-    activeBg: 'bg-amber-500/[0.06]',
-    activeBorder: 'border-amber-500/15',
+    bg: 'bg-[var(--bg-raised)]',
+    border: 'border-[var(--border)]',
+    text: 'text-[var(--warning)]',
+    iconBg: 'bg-[var(--warning-subtle)]',
+    activeBg: 'bg-[var(--bg-overlay)]',
+    activeBorder: 'border-[var(--warning-border)]',
   },
   red: {
-    bg: 'bg-red-500/[0.08]',
-    border: 'border-red-500/20',
-    text: 'text-red-400',
-    iconBg: 'bg-red-500/10',
-    activeBg: 'bg-red-500/[0.06]',
-    activeBorder: 'border-red-500/15',
+    bg: 'bg-[var(--bg-raised)]',
+    border: 'border-[var(--border)]',
+    text: 'text-[var(--danger)]',
+    iconBg: 'bg-[var(--danger-subtle)]',
+    activeBg: 'bg-[var(--bg-overlay)]',
+    activeBorder: 'border-[var(--danger-border)]',
   },
 };
 
@@ -126,7 +126,7 @@ const AccordionItem = ({ item, isOpen, onToggle, color }) => {
   return (
     <div
       className={`rounded-xl border transition-all duration-200 ${
-        isOpen ? `${c.activeBg} ${c.activeBorder}` : 'border-[var(--card-border)] hover:border-[var(--text-muted)]/30'
+        isOpen ? `${c.activeBg} ${c.activeBorder}` : 'bg-[var(--bg-raised)] border-[var(--border)] hover:border-[var(--border-hover)]'
       }`}
     >
       <button
@@ -169,7 +169,7 @@ const PanduanWarga = () => {
       <div className="max-w-3xl mx-auto">
         {/* Header Panduan */}
         <div className="mb-8 pt-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-500/[0.08] border border-blue-500/20 rounded-full text-blue-400 text-[10px] font-bold uppercase tracking-wider mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[var(--primary-subtle)] border border-[var(--primary-border)] rounded-full text-[var(--primary)] text-[10px] font-bold uppercase tracking-wider mb-4">
             <HelpCircle className="w-3 h-3" />
             Bantuan
           </div>
@@ -188,7 +188,7 @@ const PanduanWarga = () => {
             className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
               !activeSection
                 ? 'bg-[var(--text)] text-[var(--bg)]'
-                : 'bg-[var(--card-bg)] text-[var(--text-muted)] hover:border-[var(--text-muted)]/30 border border-[var(--card-border)]'
+                : 'bg-[var(--bg-raised)] text-[var(--text-muted)] hover:border-[var(--border-hover)] border border-[var(--border)]'
             }`}
           >
             Semua
@@ -202,8 +202,8 @@ const PanduanWarga = () => {
                 onClick={() => setActiveSection(isActive ? null : section.id)}
                 className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
                   isActive
-                    ? `${c.bg} ${c.text} border ${c.border}`
-                    : 'bg-[var(--card-bg)] text-[var(--text-muted)] hover:border-[var(--text-muted)]/30 border border-[var(--card-border)]'
+                    ? `bg-[var(--bg-overlay)] ${c.text} border ${c.activeBorder}`
+                    : 'bg-[var(--bg-raised)] text-[var(--text-muted)] hover:border-[var(--border-hover)] border border-[var(--border)]'
                 }`}
               >
                 <section.icon className="w-3.5 h-3.5" />
@@ -247,9 +247,9 @@ const PanduanWarga = () => {
         </div>
 
         {/* Kartu Kontak Admin */}
-        <div className="mt-10 glass-card rounded-2xl p-6 bg-gradient-to-br from-blue-600/[0.04] to-emerald-600/[0.04] border border-blue-500/10 text-center">
-          <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center mx-auto mb-4">
-            <MessageCircle className="w-7 h-7 text-emerald-400" />
+        <div className="mt-10 bg-[var(--bg-raised)] rounded-2xl p-6 border border-[var(--border)] text-center shadow-sm">
+          <div className="w-14 h-14 rounded-2xl bg-[var(--primary-subtle)] border border-[var(--primary-border)] flex items-center justify-center mx-auto mb-4">
+            <MessageCircle className="w-7 h-7 text-[var(--primary)]" />
           </div>
           <h2 className="text-lg font-bold mb-2">Punya Masalah Lain?</h2>
           <p className="text-sm text-[var(--text-muted)] mb-6 max-w-sm mx-auto">
@@ -267,9 +267,9 @@ const PanduanWarga = () => {
         </div>
 
         {/* Tips Penting */}
-        <div className="mt-6 bg-amber-500/[0.05] border border-amber-500/10 rounded-2xl p-5 flex items-start gap-4">
-          <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center flex-shrink-0">
-            <Info className="w-5 h-5 text-amber-400" />
+        <div className="mt-6 bg-[var(--warning-subtle)] border border-[var(--warning-border)] rounded-2xl p-5 flex items-start gap-4">
+          <div className="w-10 h-10 rounded-xl bg-[var(--bg-raised)] flex items-center justify-center flex-shrink-0 border border-[var(--warning-border)]">
+            <Info className="w-5 h-5 text-[var(--warning)]" />
           </div>
           <div>
             <p className="text-sm font-bold text-amber-400 mb-1">Tips Penting</p>

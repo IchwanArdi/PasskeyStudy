@@ -163,7 +163,7 @@ const ManageDevices = () => {
     return (
       <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto mb-4" />
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-emerald-500 mx-auto mb-4" />
           <p className="text-sm font-medium text-[var(--text-muted)]">Memuat perangkat...</p>
         </div>
       </div>
@@ -175,7 +175,7 @@ const ManageDevices = () => {
       <div className="max-w-4xl mx-auto">
         {/* Judul Halaman */}
         <div className="mb-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-500/[0.08] border border-blue-500/20 rounded-full text-blue-400 text-xs font-semibold mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[var(--primary-subtle)] border border-[var(--primary-border)] rounded-full text-[var(--primary)] text-xs font-semibold mb-4">
             <Shield className="w-3 h-3" />
             Bantuan Keamanan
           </div>
@@ -190,7 +190,7 @@ const ManageDevices = () => {
           <h2 className="text-base font-bold">Perangkat Terdaftar</h2>
           <button
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30"
+            className="flex items-center gap-2 px-5 py-2.5 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-xl text-sm font-semibold transition-all shadow-md hover:shadow-lg"
           >
             <Plus className="w-4 h-4" />
             Tambah Perangkat
@@ -202,7 +202,7 @@ const ManageDevices = () => {
             {credentials.map((cred, index) => (
               <div
                 key={cred.credentialID || index}
-                className="glass-card rounded-2xl p-6 group hover:border-blue-500/30 transition-all"
+                className="bg-[var(--bg-raised)] border border-[var(--border)] rounded-2xl p-6 group hover:bg-[var(--bg-overlay)] hover:border-[var(--primary-border)] transition-all shadow-sm"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   {/* Info Perangkat */}
@@ -210,7 +210,7 @@ const ManageDevices = () => {
                     <div
                       className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
                         cred.deviceType === 'platform'
-                          ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
+                          ? 'bg-[var(--primary-subtle)] border border-[var(--primary-border)] text-[var(--primary)]'
                           : 'bg-purple-500/10 border border-purple-500/20 text-purple-400'
                       }`}
                     >
@@ -230,11 +230,11 @@ const ManageDevices = () => {
                               if (e.key === 'Enter') handleUpdateNickname(cred.credentialID);
                               if (e.key === 'Escape') setEditingId(null);
                             }}
-                            className="px-3 py-1.5 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg text-sm text-[var(--text)] focus:outline-none focus:border-blue-500/50 flex-1 max-w-[250px]"
+                            className="px-3 py-1.5 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-lg text-sm text-[var(--text)] focus:outline-none focus:border-[var(--primary-hover)] flex-1 max-w-[250px]"
                           />
                           <button
                             onClick={() => handleUpdateNickname(cred.credentialID)}
-                            className="p-1.5 text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-colors"
+                            className="p-1.5 text-[var(--primary)] hover:bg-[var(--primary-subtle)] rounded-lg transition-colors"
                           >
                             <Check className="w-4 h-4" />
                           </button>
@@ -265,7 +265,7 @@ const ManageDevices = () => {
 
                       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5">
                         <span className={`inline-flex items-center gap-1 text-xs font-medium ${
-                          cred.deviceType === 'platform' ? 'text-emerald-400' : 'text-purple-400'
+                          cred.deviceType === 'platform' ? 'text-[var(--primary)]' : 'text-purple-400'
                         }`}>
                           {getDeviceLabel(cred)}
                         </span>
@@ -294,7 +294,7 @@ const ManageDevices = () => {
                         </button>
                         <button
                           onClick={() => setDeleteConfirmId(null)}
-                          className="px-3 py-1.5 bg-[var(--card-bg)] text-[var(--text-muted)] rounded-lg text-xs font-medium hover:bg-[var(--card-bg-hover)] transition-colors"
+                          className="px-3 py-1.5 bg-[var(--bg-overlay)] text-[var(--text-muted)] border border-[var(--border)] rounded-lg text-xs font-medium hover:border-[var(--border-hover)] transition-colors"
                         >
                           Batal
                         </button>
@@ -329,12 +329,12 @@ const ManageDevices = () => {
           </div>
 
         {/* Tips Keamanan (Footer) */}
-        <div className="mt-8 bg-amber-500/[0.06] border border-amber-500/15 rounded-2xl p-6">
+        <div className="mt-8 bg-[var(--warning-subtle)] border border-[var(--warning-border)] rounded-2xl p-6">
           <div className="flex items-start gap-3">
             <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
             <div>
               <h3 className="text-sm font-semibold text-amber-400 mb-1">Tips Keamanan</h3>
-              <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+              <p className="text-xs text-[var(--text-muted)] dark:text-gray-400 leading-relaxed">
                 Disarankan untuk mendaftarkan minimal 2 perangkat sebagai cadangan. Jika salah satu perangkat hilang atau rusak,
                 Anda masih bisa login menggunakan perangkat lainnya. Setiap perangkat memiliki Private Key yang unik dan
                 independen satu sama lain.
@@ -349,11 +349,11 @@ const ManageDevices = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
           {/* Backdrop (Latar Belakang Gelap) */}
           <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
             onClick={() => !addingDevice && setShowAddModal(false)}
           />
           {/* Box Modal */}
-          <div className="relative w-full max-w-md glass-card rounded-2xl p-8">
+          <div className="relative w-full max-w-md bg-[var(--bg-raised)] border border-[var(--border)] shadow-xl rounded-2xl p-8">
             <h2 className="text-xl font-bold mb-2">Tambah Perangkat Baru</h2>
             <p className="text-sm text-[var(--text-muted)] mb-6">
               Gunakan Sidik Jari/Wajah di HP, Laptop, atau Tablet lainnya.
@@ -370,7 +370,7 @@ const ManageDevices = () => {
                 placeholder="cth: Iphone 15, Samsung A54, Laptop, dll"
                 maxLength={50}
                 disabled={addingDevice}
-                className="w-full px-4 py-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20 transition-all disabled:opacity-50"
+                className="w-full px-4 py-3 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--primary-hover)] focus:ring-1 focus:ring-[var(--primary-glow)] transition-all disabled:opacity-50"
               />
             </div>
 
@@ -378,7 +378,7 @@ const ManageDevices = () => {
               <button
                 onClick={handleAddDevice}
                 disabled={addingDevice}
-                className="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-semibold text-sm transition-all disabled:opacity-50 shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2"
+                className="flex-1 px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-xl font-semibold text-sm transition-all disabled:opacity-50 shadow-md flex items-center justify-center gap-2"
               >
                 {addingDevice ? (
                   <>
@@ -395,7 +395,7 @@ const ManageDevices = () => {
               <button
                 onClick={() => setShowAddModal(false)}
                 disabled={addingDevice}
-                className="px-5 py-3 bg-[var(--card-bg)] text-[var(--text-muted)] rounded-xl text-sm font-medium hover:bg-[var(--card-bg-hover)] transition-all disabled:opacity-50"
+                className="px-5 py-3 bg-[var(--bg-overlay)] border border-[var(--border)] text-[var(--text-muted)] rounded-xl text-sm font-medium hover:border-[var(--border-hover)] transition-all disabled:opacity-50"
               >
                 Batal
               </button>
@@ -430,7 +430,7 @@ const ManageDevices = () => {
               <button
                 onClick={() => setShowDeleteAccountModal(false)}
                 disabled={deletingAccount}
-                className="px-5 py-3 bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--text)] rounded-xl text-sm font-semibold hover:bg-[var(--card-bg-hover)] transition-all disabled:opacity-50"
+                className="px-5 py-3 bg-[var(--bg-overlay)] border border-[var(--border)] text-[var(--text)] rounded-xl text-sm font-semibold hover:border-[var(--border-hover)] transition-all disabled:opacity-50"
               >
                 Batal
               </button>

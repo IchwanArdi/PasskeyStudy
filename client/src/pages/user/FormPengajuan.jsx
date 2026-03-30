@@ -95,7 +95,7 @@ const FormPengajuan = () => {
   const jenis = jenisSurat;
 
   // Class input yang responsif terhadap tema
-  const inputClass = "appearance-none w-full px-4 py-4 md:py-3.5 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[16px] text-sm focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all placeholder:text-[var(--text-muted)]";
+  const inputClass = "appearance-none w-full px-4 py-4 md:py-3.5 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl text-sm focus:outline-none focus:border-[var(--primary-hover)] focus:ring-1 focus:ring-[var(--primary-glow)] transition-all placeholder:text-[var(--text-muted)]";
 
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] font-sans pt-12 md:pt-0 pb-24 md:pb-8 transition-colors duration-300">
@@ -106,8 +106,8 @@ const FormPengajuan = () => {
             <ArrowLeft className="w-4 h-4" /> Kembali ke Layanan
           </Link>
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center">
-              <LetterIcon jenis={jenis} className="w-8 h-8 text-emerald-400" />
+            <div className="w-16 h-16 bg-[var(--primary-subtle)] border border-[var(--primary-border)] rounded-2xl flex items-center justify-center">
+              <LetterIcon jenis={jenis} className="w-8 h-8 text-[var(--primary)]" />
             </div>
             <div>
               <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-[var(--heading-from)] to-[var(--heading-to)] bg-clip-text text-transparent">{info.label}</h1>
@@ -244,8 +244,8 @@ const FormPengajuan = () => {
               </div>
             )}
 
-            <div className="flex items-center gap-3 p-4 bg-emerald-500/[0.04] border border-emerald-500/10 rounded-2xl">
-              <Info className="w-5 h-5 text-emerald-400 shrink-0" />
+            <div className="flex items-center gap-3 p-4 bg-[var(--primary-subtle)] border border-[var(--primary-border)] rounded-2xl">
+              <Info className="w-5 h-5 text-[var(--primary)] shrink-0" />
               <p className="text-[10px] md:text-xs text-[var(--text-muted)] leading-relaxed font-medium">
                 Data ini akan diproses secara digital. Pastikan sudah benar ya sebelum dikirim.
               </p>
@@ -255,7 +255,7 @@ const FormPengajuan = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-6 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 flex items-center justify-center gap-2"
+              className="w-full px-6 py-3.5 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-xl font-bold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg flex items-center justify-center gap-2"
             >
               {loading ? (
                 <><Loader2 className="w-5 h-5 animate-spin" /> Sedang Mengirim...</>

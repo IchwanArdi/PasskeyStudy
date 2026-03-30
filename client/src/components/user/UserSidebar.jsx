@@ -30,11 +30,10 @@ const UserSidebar = () => {
   };
 
   return (
-    <aside className="hidden md:flex flex-col w-72 h-[calc(100vh-2.5rem)] fixed left-5 top-5 bg-[var(--bg)]/60 backdrop-blur-3xl border border-[var(--card-border)] rounded-[3rem] z-50 shadow-2xl shadow-emerald-500/5 overflow-hidden">
+    <aside className="hidden md:flex flex-col w-72 h-[calc(100vh-2.5rem)] fixed left-5 top-5 bg-[var(--bg-raised)] border border-[var(--border)] rounded-3xl z-50 shadow-xl overflow-hidden">
       {/* Bagian Logo dan Identitas Aplikasi */}
       <div className="p-8 pb-6 flex items-center gap-4 relative overflow-hidden group">
-        <div className="absolute -top-10 -left-10 w-24 h-24 bg-emerald-500/10 blur-3xl rounded-full group-hover:bg-emerald-500/20 transition-all duration-700" />
-        <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/20 border border-white/10 relative z-10">
+        <div className="w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/20 border border-[var(--border)] relative z-10">
           <ShieldCheck className="w-7 h-7 text-white" />
         </div>
         <div className="relative z-10">
@@ -68,8 +67,8 @@ const UserSidebar = () => {
               to={to}
               className={`flex items-center gap-4 px-5 py-4 rounded-[1.5rem] transition-all duration-300 relative group overflow-hidden ${
                 isActive 
-                  ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-lg shadow-emerald-500/5' 
-                  : 'text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--card-bg)]'
+                  ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-sm' 
+                  : 'text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--bg-overlay)]'
               }`}
             >
               {/* Efek cahata latar saat menu dipilih */}
@@ -106,7 +105,7 @@ const UserSidebar = () => {
         <div className="flex flex-col gap-3">
 
           {/* Menu Pintasan Bantuan */}
-          <div className="px-4 py-4 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-3xl mb-1 group/tip">
+          <div className="px-4 py-4 bg-[var(--bg-overlay)] border border-[var(--border)] rounded-3xl mb-1 group/tip">
             <div className="flex items-center gap-2 mb-2">
               <Sparkles className="w-3.5 h-3.5 text-emerald-400 group-hover/tip:rotate-12 transition-all duration-500" />
               <span className="text-[10px] font-black uppercase text-[var(--text-muted)] tracking-wider">Pusat Bantuan</span>
@@ -121,7 +120,7 @@ const UserSidebar = () => {
           {/* Tombol Logout Akun */}
           <button
             onClick={handleLogout}
-            className="flex items-center justify-center gap-3 w-full px-5 py-4 rounded-[1.5rem] text-red-400/80 hover:text-red-400 hover:bg-red-500/10 transition-all duration-300 border border-transparent hover:border-red-500/20 group font-bold text-sm"
+            className="flex items-center justify-center gap-3 w-full px-5 py-4 rounded-[1.5rem] text-red-500 hover:bg-red-500/10 transition-all duration-300 border border-transparent hover:border-red-500/20 group font-bold text-sm"
           >
             <LogOut className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
             <span>Keluar Akun</span>

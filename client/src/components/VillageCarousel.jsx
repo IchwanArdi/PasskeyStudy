@@ -70,7 +70,7 @@ const VillageCarousel = () => {
   };
 
   return (
-    <div className="relative w-full h-full overflow-hidden rounded-[32px] bg-black/20 group">
+    <div className="relative w-full h-full overflow-hidden rounded-3xl bg-black/20 group">
       {/* Pembungkus Slide dengan transisi */}
       <div 
         className={`flex w-full h-full transition-transform duration-500 ease-out ${isDragging ? 'transition-none' : ''}`}

@@ -12,7 +12,7 @@ const UserBottomNav = () => {
   const location = useLocation();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[var(--bg)]/80 backdrop-blur-2xl border-t border-[var(--card-border)] pb-safe pt-1">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[var(--bg-raised)] border-t border-[var(--border)] pb-safe pt-1 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
       <div className="flex items-stretch max-w-lg mx-auto px-2">
         {navItems.map(({ to, icon: Icon, label }) => {
           // Logika penentuan apakah menu sedang aktif

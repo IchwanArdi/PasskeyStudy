@@ -86,11 +86,11 @@ const RiwayatPengajuan = () => {
   const getStatusInfo = (status) => {
     switch (status) {
       case 'disetujui':
-        return { label: 'Disetujui', color: 'text-emerald-400', bg: 'bg-emerald-500/10', icon: CheckCircle2 };
+        return { label: 'Disetujui', color: 'text-[var(--success)]', bg: 'bg-[var(--success-subtle)]', icon: CheckCircle2 };
       case 'ditolak':
-        return { label: 'Ditolak', color: 'text-red-400', bg: 'bg-red-500/10', icon: XCircle };
+        return { label: 'Ditolak', color: 'text-[var(--danger)]', bg: 'bg-[var(--danger-subtle)]', icon: XCircle };
       default:
-        return { label: 'Diproses', color: 'text-amber-400', bg: 'bg-amber-500/10', icon: Clock };
+        return { label: 'Diproses', color: 'text-[var(--warning)]', bg: 'bg-[var(--warning-subtle)]', icon: Clock };
     }
   };
 
@@ -111,7 +111,7 @@ const RiwayatPengajuan = () => {
     return (
       <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto mb-4" />
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-emerald-500 mx-auto mb-4" />
           <p className="text-sm font-medium text-[var(--text-muted)]">Memuat riwayat...</p>
         </div>
       </div>
@@ -123,7 +123,7 @@ const RiwayatPengajuan = () => {
       <div className="max-w-4xl mx-auto px-5 md:px-0">
         {/* Header */}
         <header className="pt-0 pb-6 mb-8 border-b border-[var(--section-border)]">
-          <p className="text-[10px] text-blue-400 font-bold uppercase tracking-[0.2em] mb-2">Pantauan Layanan</p>
+          <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-[0.2em] mb-2">Pantauan Layanan</p>
           <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-[var(--heading-from)] to-[var(--heading-to)] bg-clip-text text-transparent">Riwayat Pengajuan</h1>
           <p className="text-sm text-[var(--text-muted)] font-medium mt-1">Lacak status surat-surat yang sedang atau pernah Anda ajukan.</p>
         </header>
@@ -131,13 +131,13 @@ const RiwayatPengajuan = () => {
         {/* Pencarian & Filter */}
         <div className="flex flex-col md:flex-row gap-4 mb-8">
           <div className="relative flex-1 group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] group-focus-within:text-blue-400 transition-colors" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] group-focus-within:text-emerald-400 transition-colors" />
             <input
               type="text"
               placeholder="Cari pengajuan..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl text-sm focus:outline-none focus:border-blue-500/50 transition-all placeholder:text-[var(--text-muted)]"
+              className="w-full pl-11 pr-4 py-3 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl text-sm focus:outline-none focus:border-[var(--primary-hover)] transition-all placeholder:text-[var(--text-muted)]"
             />
           </div>
           <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
@@ -145,10 +145,10 @@ const RiwayatPengajuan = () => {
               <button
                 key={t}
                 onClick={() => setFilter(t)}
-                className={`px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all border ${
+                className={`px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border ${
                   filter === t 
-                    ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-500/20' 
-                    : 'bg-[var(--card-bg)] border-[var(--card-border)] text-[var(--text-muted)] hover:border-blue-500/30'
+                    ? 'bg-[var(--primary)] border-[var(--primary)] text-white shadow-md' 
+                    : 'bg-[var(--bg-raised)] border-[var(--border)] hover:border-[var(--primary-border)] hover:bg-[var(--bg-overlay)]'
                 }`}
               >
                 {t === 'semua' ? 'Semua' : t.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
@@ -167,7 +167,7 @@ const RiwayatPengajuan = () => {
               return (
                 <div
                   key={item._id}
-                  className={`glass-card rounded-[24px] overflow-hidden transition-all border ${isExpanded ? 'border-blue-500/40' : 'border-[var(--card-border)] hover:border-blue-500/20'}`}
+                  className={`bg-[var(--bg-raised)] rounded-2xl overflow-hidden transition-all border ${isExpanded ? 'border-[var(--primary-hover)] shadow-md' : 'border-[var(--border)] hover:border-[var(--primary-border)] hover:bg-[var(--bg-overlay)]'}`}
                 >
                   {/* Header Card */}
                   <div 
@@ -175,8 +175,8 @@ const RiwayatPengajuan = () => {
                     className="p-5 md:p-6 cursor-pointer flex flex-col sm:flex-row sm:items-center gap-4"
                   >
                     <div className="flex items-center gap-4 flex-1">
-                      <div className="w-12 h-12 bg-blue-500/5 rounded-xl flex items-center justify-center shrink-0 border border-blue-500/10">
-                        <LetterIcon jenis={item.jenisSurat} className="w-6 h-6 text-blue-400" />
+                      <div className="w-12 h-12 bg-[var(--primary-subtle)] rounded-xl flex items-center justify-center shrink-0 border border-[var(--primary-border)]">
+                        <LetterIcon jenis={item.jenisSurat} className="w-6 h-6 text-[var(--primary)]" />
                       </div>
                       <div className="min-w-0">
                         <h3 className="text-sm md:text-base font-bold text-[var(--text)] truncate">
@@ -206,10 +206,10 @@ const RiwayatPengajuan = () => {
                   {/* Detail Content */}
                   {isExpanded && (
                     <div className="px-5 pb-6 pt-2 border-t border-[var(--section-border)] animate-in slide-in-from-top-2 duration-300">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-[var(--card-bg)] rounded-2xl p-5 border border-[var(--card-border)]">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-[var(--bg-overlay)] rounded-2xl p-5 border border-[var(--border)]">
                         {/* Kolom 1: Data Utama */}
                         <div className="space-y-4">
-                          <h4 className="text-[10px] font-black text-blue-400 uppercase tracking-widest border-b border-blue-500/10 pb-2">Data Pemohon</h4>
+                          <h4 className="text-[10px] font-black text-[var(--primary)] uppercase tracking-widest border-b border-[var(--primary-border)] pb-2">Data Pemohon</h4>
                           <div className="space-y-2.5">
                             {[
                               { label: 'Nama Lengkap', value: item.namaLengkap },
@@ -228,7 +228,7 @@ const RiwayatPengajuan = () => {
 
                         {/* Kolom 2: Info Surat & Tindakan */}
                         <div className="space-y-4">
-                          <h4 className="text-[10px] font-black text-emerald-400 uppercase tracking-widest border-b border-emerald-500/10 pb-2">Detail Pengajuan</h4>
+                          <h4 className="text-[10px] font-black text-[var(--primary)] uppercase tracking-widest border-b border-[var(--primary-border)] pb-2">Detail Pengajuan</h4>
                           <div className="space-y-2.5">
                             <div className="flex justify-between items-start gap-4">
                               <span className="text-xs text-[var(--text-muted)] whitespace-nowrap">Keperluan</span>
@@ -240,14 +240,14 @@ const RiwayatPengajuan = () => {
                               return (
                                 <div key={key} className="flex justify-between items-start gap-4">
                                   <span className="text-xs text-[var(--text-muted)] whitespace-nowrap">{label}</span>
-                                  <span className="text-xs font-bold text-emerald-400 text-right">{String(value)}</span>
+                                  <span className="text-xs font-bold text-[var(--primary)] text-right">{String(value)}</span>
                                 </div>
                               );
                             })}
 
                             {item.catatanAdmin && (
-                              <div className="mt-4 p-3 bg-blue-500/5 border border-blue-500/10 rounded-xl">
-                                <p className="text-[10px] font-bold text-blue-400 uppercase mb-1">Catatan Admin:</p>
+                              <div className="mt-4 p-3 bg-[var(--bg-raised)] border border-[var(--primary-border)] rounded-xl">
+                                <p className="text-[10px] font-bold text-[var(--primary)] uppercase mb-1">Catatan Admin:</p>
                                 <p className="text-xs text-[var(--text)] italic">{item.catatanAdmin}</p>
                               </div>
                             )}
@@ -285,8 +285,8 @@ const RiwayatPengajuan = () => {
             })}
           </div>
         ) : (
-          <div className="py-20 text-center glass-card rounded-[32px] border-dashed border-[var(--card-border)]">
-            <div className="w-16 h-16 bg-[var(--card-bg)] rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <div className="py-20 text-center bg-[var(--bg-raised)] rounded-3xl border-dashed border-[var(--border)]">
+            <div className="w-16 h-16 bg-[var(--bg-overlay)] rounded-2xl flex items-center justify-center mx-auto mb-4">
               <FileText className="w-8 h-8 text-[var(--text-muted)]" />
             </div>
             <h3 className="text-base font-bold text-[var(--text-muted)] mb-1">Belum ada riwayat</h3>
