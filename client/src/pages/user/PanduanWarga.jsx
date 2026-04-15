@@ -16,7 +16,7 @@ const faqSections = [
     items: [
       {
         q: 'Apa itu Layanan Desa Digital?',
-        a: 'Layanan Desa Digital adalah platform online yang memudahkan warga Desa untuk mengurus surat-surat administrasi (seperti Keterangan Tidak Mampu, Kelahiran, dll.) langsung dari HP, tanpa harus antre di kantor desa.',
+        a: 'Layanan Desa Digital adalah platform online yang memudahkan warga Desa untuk mengurus surat administrasi (seperti Surat Keterangan Tidak Mampu / SKTM) langsung dari HP, tanpa harus antre di kantor desa.',
       },
       {
         q: 'Apa bedanya dengan login pakai password biasa?',

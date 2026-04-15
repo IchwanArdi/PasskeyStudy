@@ -9,16 +9,6 @@ const layananList = [
     title: 'Ket. Tidak Mampu',
     desc: 'Surat untuk keperluan bantuan sosial, keringanan biaya sekolah, atau layanan kesehatan.',
   },
-  {
-    id: 'kelahiran',
-    title: 'Ket. Kelahiran',
-    desc: 'Surat keterangan untuk pengurusan akta kelahiran anak yang baru lahir.',
-  },
-  {
-    id: 'usaha',
-    title: 'Ket. Usaha',
-    desc: 'Surat keterangan kepemilikan usaha untuk pengajuan kredit atau izin lingkungan.',
-  },
 ];
 
 const Layanan = () => {

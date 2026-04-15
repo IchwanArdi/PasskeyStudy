@@ -12,7 +12,6 @@ const RiwayatPengajuan = () => {
   const navigate = useNavigate();
   const [pengajuan, setPengajuan] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('semua');
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedId, setExpandedId] = useState(null);
   const [downloadingId, setDownloadingId] = useState(null);
@@ -95,7 +94,6 @@ const RiwayatPengajuan = () => {
   };
 
   const filteredPengajuan = (Array.isArray(pengajuan) ? pengajuan : [])
-    .filter(p => filter === 'semua' || p.jenisSurat === filter)
     .filter(p => p.keperluan?.toLowerCase().includes(searchTerm.toLowerCase()) || 
                  p.jenisSurat?.toLowerCase().includes(searchTerm.toLowerCase()));
 
@@ -128,32 +126,17 @@ const RiwayatPengajuan = () => {
           <p className="text-sm text-[var(--text-muted)] font-medium mt-1">Lacak status surat-surat yang sedang atau pernah Anda ajukan.</p>
         </header>
 
-        {/* Pencarian & Filter */}
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
+        {/* Pencarian */}
+        <div className="mb-8">
           <div className="relative flex-1 group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)] group-focus-within:text-emerald-400 transition-colors" />
             <input
               type="text"
-              placeholder="Cari pengajuan..."
+              placeholder="Cari pengajuan berdasarkan keperluan..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-11 pr-4 py-3 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl text-sm focus:outline-none focus:border-[var(--primary-hover)] transition-all placeholder:text-[var(--text-muted)]"
             />
-          </div>
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
-            {['semua', 'tidak_mampu', 'kelahiran', 'usaha'].map((t) => (
-              <button
-                key={t}
-                onClick={() => setFilter(t)}
-                className={`px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border ${
-                  filter === t 
-                    ? 'bg-[var(--primary)] border-[var(--primary)] text-white shadow-md' 
-                    : 'bg-[var(--bg-raised)] border-[var(--border)] hover:border-[var(--primary-border)] hover:bg-[var(--bg-overlay)]'
-                }`}
-              >
-                {t === 'semua' ? 'Semua' : t.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
-              </button>
-            ))}
           </div>
         </div>
 
@@ -235,16 +218,6 @@ const RiwayatPengajuan = () => {
                               <span className="text-xs font-bold text-[var(--text)] text-right italic">"{item.keperluan}"</span>
                             </div>
                             
-                            {item.dataTambahan && Object.entries(item.dataTambahan).map(([key, value]) => {
-                              const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-                              return (
-                                <div key={key} className="flex justify-between items-start gap-4">
-                                  <span className="text-xs text-[var(--text-muted)] whitespace-nowrap">{label}</span>
-                                  <span className="text-xs font-bold text-[var(--primary)] text-right">{String(value)}</span>
-                                </div>
-                              );
-                            })}
-
                             {item.catatanAdmin && (
                               <div className="mt-4 p-3 bg-[var(--bg-raised)] border border-[var(--primary-border)] rounded-xl">
                                 <p className="text-[10px] font-bold text-[var(--primary)] uppercase mb-1">Catatan Admin:</p>

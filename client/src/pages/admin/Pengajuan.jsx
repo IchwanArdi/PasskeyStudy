@@ -9,7 +9,7 @@ import {
 import LetterIcon from '../../components/LetterIcon';
 import { Link } from 'react-router-dom';
 
-const jenisLabel = { tidak_mampu: 'Tidak Mampu', kelahiran: 'Kelahiran', usaha: 'Usaha' };
+const jenisLabel = { tidak_mampu: 'Tidak Mampu' };
 
 // Pengaturan warna dan label untuk setiap status pengajuan
 const statusConfig = {
@@ -216,20 +216,7 @@ const AdminPengajuan = () => {
                           </div>
                         ))}
                         
-                        {/* Jika ada data tambahan (form dinamis lahir/usaha) */}
-                        {p.dataTambahan && Object.keys(p.dataTambahan).length > 0 && (
-                           <div className="pt-4 mt-4 border-t border-white/5 space-y-4">
-                             {Object.entries(p.dataTambahan).map(([key, value]) => {
-                               const formattedLabel = key.replace(/([A-Z])/g, ' $1').toUpperCase();
-                               return (
-                                <div key={key} className="flex flex-col gap-1">
-                                  <span className="text-[9px] font-black text-emerald-500/60 tracking-tighter">{formattedLabel}</span>
-                                  <span className="text-xs md:text-sm font-bold text-emerald-400 font-mono">{String(value)}</span>
-                                </div>
-                               );
-                             })}
-                           </div>
-                        )}
+
                       </div>
 
                       {/* Kontrol Admin (ACC/Tolak/Download) */}

@@ -8,22 +8,6 @@ import { useTheme } from '../../utils/useTheme';
 
 const jenisList = {
   tidak_mampu: { label: 'Ket. Tidak Mampu' },
-  kelahiran: { label: 'Ket. Kelahiran' },
-  usaha: { label: 'Ket. Usaha' },
-};
-
-// Pengaturan kolom tambahan yang muncul otomatis tergantung jenis suratnya
-const dynamicFieldsConfig = {
-  kelahiran: [
-    { name: 'namaAnak', label: 'Nama Anak', type: 'text', placeholder: 'Sesuai Akta Kelahiran' },
-    { name: 'namaAyah', label: 'Nama Ayah', type: 'text', placeholder: 'Sesuai KTP Ayah' },
-    { name: 'namaIbu', label: 'Nama Ibu', type: 'text', placeholder: 'Sesuai KTP Ibu' },
-  ],
-  usaha: [
-    { name: 'namaUsaha', label: 'Nama Usaha', type: 'text', placeholder: 'Contoh: Warung Berkah' },
-    { name: 'jenisUsaha', label: 'Jenis Usaha', type: 'text', placeholder: 'Contoh: Makanan / Kelontong' },
-    { name: 'alamatUsaha', label: 'Alamat Usaha', type: 'textarea', placeholder: 'Detail lokasi usaha' },
-  ],
 };
 
 const FormPengajuan = () => {
@@ -42,7 +26,7 @@ const FormPengajuan = () => {
     keperluan: '',
   });
 
-  const [dynamicForm, setDynamicForm] = useState({});
+
 
   useEffect(() => {
     // Pastikan user sudah login
@@ -50,35 +34,18 @@ const FormPengajuan = () => {
     // Kalau jenis surat gak ada di daftar, balikin ke halaman layanan
     if (!jenisList[jenisSurat]) { navigate('/layanan', { replace: true }); }
     
-    // Siapkan form tambahan kalau suratnya butuh data ekstra (kayak lahir/usaha)
-    if (dynamicFieldsConfig[jenisSurat]) {
-      const initialDynamicForm = {};
-      dynamicFieldsConfig[jenisSurat].forEach(field => {
-        initialDynamicForm[field.name] = '';
-      });
-      setDynamicForm(initialDynamicForm);
-    } else {
-      setDynamicForm({});
-    }
   }, [navigate, jenisSurat]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleDynamicChange = (e) => {
-    setDynamicForm({ ...dynamicForm, [e.target.name]: e.target.value });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
       const payload = { ...form, jenisSurat };
-      // Gabungkan data profil umum sama data khusus layanannya
-      if (Object.keys(dynamicForm).length > 0) {
-        payload.dataTambahan = dynamicForm;
-      }
 
       await api.post("/pengajuan", payload);
 
@@ -209,40 +176,6 @@ const FormPengajuan = () => {
                 className={`${inputClass} resize-none`}
               />
             </div>
-
-            {/* Form Tambahan (Khusus untuk jenis surat tertentu) */}
-            {dynamicFieldsConfig[jenisSurat] && (
-              <div className="pt-6 border-t border-[var(--section-border)] space-y-6">
-                <h2 className="text-sm font-bold text-[var(--text)] border-l-2 border-emerald-500 pl-3">Data Tambahan Surat</h2>
-                {dynamicFieldsConfig[jenisSurat].map((field) => (
-                  <div key={field.name}>
-                    <label className="block text-[10px] font-bold text-[var(--text-muted)] mb-2 uppercase tracking-[0.15em]">{field.label}</label>
-                    {field.type === 'textarea' ? (
-                      <textarea
-                        name={field.name}
-                        value={dynamicForm[field.name] || ''}
-                        onChange={handleDynamicChange}
-                        required
-                        rows={3}
-                        placeholder={field.placeholder}
-                        className={`${inputClass} resize-none`}
-                      />
-                    ) : (
-                      <input
-                        type={field.type}
-                        name={field.name}
-                        value={dynamicForm[field.name] || ''}
-                        onChange={handleDynamicChange}
-                        required
-                        placeholder={field.placeholder}
-                        style={field.type === 'date' ? { colorScheme: isDark ? 'dark' : 'light' } : {}}
-                        className={inputClass}
-                      />
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
 
             <div className="flex items-center gap-3 p-4 bg-[var(--primary-subtle)] border border-[var(--primary-border)] rounded-2xl">
               <Info className="w-5 h-5 text-[var(--primary)] shrink-0" />

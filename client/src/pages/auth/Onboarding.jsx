@@ -21,11 +21,11 @@ const slides = [
     title: 'Layanan Surat Online',
     subtitle: 'Tanpa Antre, Tanpa Ribet',
     desa: null,
-    desc: 'Ajukan surat keterangan tidak mampu, kelahiran, dan usaha langsung dari HP kamu.',
+    desc: 'Ajukan Surat Keterangan Tidak Mampu (SKTM) langsung dari HP kamu.',
     color: 'from-blue-500/20 to-indigo-500/10',
     accent: 'text-blue-400',
     border: 'border-blue-500/20',
-    features: ['Ket. Tidak Mampu', 'Ket. Kelahiran', 'Ket. Usaha'],
+    features: ['Ket. Tidak Mampu (SKTM)'],
   },
   {
     icon: ShieldCheck,

@@ -8,8 +8,6 @@ import VillageCarousel from '../../components/VillageCarousel';
 // Daftar jenis surat yang tersedia di aplikasi
 const layananList = [
   { jenis: 'tidak_mampu', label: 'Ket. Tidak Mampu', desc: 'Keterangan ekonomi' },
-  { jenis: 'kelahiran', label: 'Ket. Kelahiran', desc: 'Keterangan anak lahir' },
-  { jenis: 'usaha', label: 'Ket. Usaha', desc: 'Keterangan usaha dagang' },
 ];
 
 // Label dan warna status biar simpel diliatnya
@@ -75,33 +73,20 @@ const Dashboard = () => {
 
       <div className="px-5 md:px-0 grid grid-cols-1 md:grid-cols-12 gap-8">
         <div className="md:col-span-8 space-y-6 md:space-y-8">
-          {/* Grid Menu Layanan Utama */}
-          <section className="bg-[var(--bg-raised)] border border-[var(--border)] rounded-3xl p-5 md:p-8">
-            <h2 className="text-sm md:text-base font-bold mb-5">Layanan Utama</h2>
-            <div className="grid grid-cols-3 gap-2 md:gap-6">
-              {/* Tombol Surat Tidak Mampu */}
-              <Link to="/layanan/ajukan?jenis=tidak_mampu" className="flex flex-col items-center group">
-                <div className="w-[50px] h-[50px] md:w-20 md:h-20 bg-[var(--bg-overlay)] border border-[var(--border)] rounded-2xl flex items-center justify-center mb-3 group-hover:-translate-y-1 group-hover:border-[var(--border-hover)] transition-all shadow-sm">
-                  <LetterIcon jenis="tidak_mampu" className="w-6 h-6 md:w-9 md:h-9 text-emerald-400 group-hover:scale-110 transition-transform" />
-                </div>
-                <span className="text-xs font-bold text-[var(--text-muted)] group-hover:text-[var(--text)] text-center leading-tight">S. Tidak Mampu</span>
-              </Link>
-              {/* Tombol Surat Keterangan Usaha */}
-              <Link to="/layanan/ajukan?jenis=usaha" className="flex flex-col items-center group">
-                <div className="w-[50px] h-[50px] md:w-20 md:h-20 bg-[var(--bg-overlay)] border border-[var(--border)] rounded-2xl flex items-center justify-center mb-3 group-hover:-translate-y-1 group-hover:border-[var(--border-hover)] transition-all shadow-sm">
-                  <LetterIcon jenis="usaha" className="w-6 h-6 md:w-9 md:h-9 text-blue-400 group-hover:scale-110 transition-transform" />
-                </div>
-                <span className="text-xs font-bold text-[var(--text-muted)] group-hover:text-[var(--text)] text-center leading-tight">S. Usaha</span>
-              </Link>
-              {/* Tombol Surat Keterangan Kelahiran */}
-              <Link to="/layanan/ajukan?jenis=kelahiran" className="flex flex-col items-center group">
-                <div className="w-[50px] h-[50px] md:w-20 md:h-20 bg-[var(--bg-overlay)] border border-[var(--border)] rounded-2xl flex items-center justify-center mb-3 group-hover:-translate-y-1 group-hover:border-[var(--border-hover)] transition-all shadow-sm">
-                  <LetterIcon jenis="kelahiran" className="w-6 h-6 md:w-9 md:h-9 text-orange-400 group-hover:scale-110 transition-transform" />
-                </div>
-                <span className="text-xs font-bold text-[var(--text-muted)] group-hover:text-[var(--text)] text-center leading-tight">S. Kelahiran</span>
-              </Link>
+          {/* Banner Layanan Utama (SKTM) */}
+          <Link to="/layanan/ajukan?jenis=tidak_mampu" className="block relative bg-gradient-to-br from-emerald-500 to-teal-600 border border-emerald-400 rounded-3xl p-6 md:p-8 overflow-hidden group shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-all hover:-translate-y-1">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+            <div className="relative z-10 flex items-center justify-between">
+              <div>
+                <span className="inline-block px-3 py-1 bg-white/20 text-white text-[10px] font-bold uppercase tracking-wider rounded-full mb-3 backdrop-blur-md border border-white/20">Layanan Utama</span>
+                <h2 className="text-xl md:text-2xl font-black text-white mb-2 tracking-tight">Surat Keterangan<br />Tidak Mampu (SKTM)</h2>
+                <p className="text-sm text-emerald-50 md:max-w-xs leading-relaxed">Ajukan permohonan SKTM dengan mudah dan cepat tanpa perlu antre di balai desa.</p>
+              </div>
+              <div className="hidden sm:flex w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl items-center justify-center border border-white/20 group-hover:scale-110 transition-transform">
+                <LetterIcon jenis="tidak_mampu" className="w-8 h-8 text-white" />
+              </div>
             </div>
-          </section>
+          </Link>
 
           {/* Slider Foto Desa biar lebih estetik */}
           <div className="grid grid-cols-1 gap-6 md:gap-8 min-h-[300px] md:min-h-[340px]">
