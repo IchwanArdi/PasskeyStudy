@@ -41,7 +41,7 @@ const faqSections = [
     items: [
       {
         q: 'Bagaimana cara mendaftar akun baru?',
-        a: '1. Buka aplikasi dan tekan "Daftar Akun Baru"\n2. Isi Nama dan Email\n3. Tekan "Daftar dengan Sidik Jari"\n4. HP akan meminta verifikasi sidik jari/wajah — ikuti instruksinya\n5. Selesai! Akun Anda sudah aktif.',
+        a: '1. Buka aplikasi dan tekan "Daftar Akun Baru"\n2. Isi Nama Lengkap dan NIK (16 digit)\n3. Tekan "Daftar dengan Sidik Jari"\n4. HP akan meminta verifikasi sidik jari/wajah — ikuti instruksinya\n5. Selesai! Akun Anda sudah aktif.',
       },
       {
         q: 'Kenapa HP saya minta PIN Google saat mendaftar?',
@@ -75,7 +75,7 @@ const faqSections = [
     items: [
       {
         q: 'HP saya hilang! Apa yang harus dilakukan?',
-        a: '🚨 Segera pinjam HP keluarga, lakukan "Pemulihan Akun" pakai Email dan Kunci Cadangan. Setelah masuk, langsung HAPUS perangkat yang hilang dari daftar keamanan.',
+        a: '🚨 Segera pinjam HP keluarga, lakukan "Pemulihan Akun" pakai NIK dan Kunci Cadangan. Setelah masuk, langsung HAPUS perangkat yang hilang dari daftar keamanan.',
       },
       {
         q: 'Saya lupa/kehilangan Kunci Cadangan, bagaimana?',

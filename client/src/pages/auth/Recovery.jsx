@@ -12,27 +12,27 @@ import { KeyRound, AlertTriangle, ArrowLeft, Check, CheckCircle, Fingerprint, Ar
 const Recovery = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1); // Langkah: 1: Masuk kode, 2: Daftar ulang perangkat, 3: Selesai
-  const [email, setEmail] = useState('');
+  const [nik, setNik] = useState('');
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [newRecoveryCodes, setNewRecoveryCodes] = useState([]);
 
-  // Tahap 1: Verifikasi apakah Email & Kode Pemulihan cocok
+  // Tahap 1: Verifikasi apakah NIK & Kode Pemulihan cocok
   const handleVerifyCode = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
     try {
-      const response = await api.post("/recovery/verify-code", { email, code });
+      const response = await api.post("/recovery/verify-code", { nik, code });
       // Simpan session sementara agar bisa lanjut ke tahap pendaftaran perangkat baru
       setAuth(response.token, response.user);
       toast.success('Kode pemulihan terverifikasi');
       setStep(2);
     } catch (err) {
-      setError(err.response?.data?.message || 'Email atau kode pemulihan salah');
+      setError(err.response?.data?.message || 'NIK atau kode pemulihan salah');
     } finally {
       setLoading(false);
     }
@@ -46,7 +46,7 @@ const Recovery = () => {
 
     try {
       setMessage('Menyiapkan opsi pendaftaran baru...');
-      const options = await api.post('/recovery/re-register/options', { email });
+      const options = await api.post('/recovery/re-register/options', { nik });
 
       setMessage('Silakan gunakan sensor sidik jari/wajah Anda...');
       const credential = await startRegistration(options);
@@ -117,14 +117,15 @@ const Recovery = () => {
               <div className="glass-card rounded-[24px] p-6 sm:p-8">
                 <form onSubmit={handleVerifyCode} className="space-y-5">
                   <div>
-                    <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">Email Akun</label>
+                    <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-wider">NIK Akun</label>
                     <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => { setEmail(e.target.value); setError(''); }}
+                      type="text"
+                      inputMode="numeric"
+                      value={nik}
+                      onChange={(e) => { setNik(e.target.value.replace(/\D/g, '').slice(0, 16)); setError(''); }}
                       required
                       className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all text-sm"
-                      placeholder="contoh@email.com"
+                      placeholder="Masukkan 16 digit NIK"
                     />
                   </div>
                   <div>

@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { isAuthenticated } from '../../utils/auth';
 import { toast } from 'react-toastify';
-import { Users, ShieldCheck, Mail, Search, RefreshCw, ChevronRight } from 'lucide-react';
+import { Users, ShieldCheck, CreditCard, Search, RefreshCw, ChevronRight } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -75,7 +75,7 @@ const AdminUsers = () => {
   const filteredUsers = users.filter((u) => {
     const term = search.toLowerCase();
     const searchMatch = (u.username && u.username.toLowerCase().includes(term)) || 
-                        (u.email && u.email.toLowerCase().includes(term));
+                        (u.nik && u.nik.toLowerCase().includes(term));
     const roleMatch = roleFilter === 'semua' || u.role === roleFilter;
     
     return searchMatch && roleMatch;
@@ -114,7 +114,7 @@ const AdminUsers = () => {
             </div>
             <input
               type="text"
-              placeholder="Cari nama atau email..."
+              placeholder="Cari nama atau NIK..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl text-sm text-[var(--text)] focus:outline-none focus:border-blue-500/50 transition-all placeholder:text-[var(--text-muted)]"
@@ -189,7 +189,7 @@ const AdminUsers = () => {
                         </div>
                         <div>
                           <p className="text-sm font-bold text-[var(--text)]">{u.username}</p>
-                          <p className="text-[10px] text-[var(--text-muted)] flex items-center gap-1 mt-0.5"><Mail className="w-3 h-3" /> {u.email}</p>
+                          <p className="text-[10px] text-[var(--text-muted)] flex items-center gap-1 mt-0.5"><CreditCard className="w-3 h-3" /> {u.nik}</p>
                         </div>
                       </div>
                     </td>

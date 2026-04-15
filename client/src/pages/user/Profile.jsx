@@ -4,7 +4,7 @@ import { isAuthenticated, clearAuth, api } from '../../utils/auth';
 import { toast } from 'react-toastify';
 import { useTheme } from '../../utils/useTheme';
 import { 
-  Check, Shield, User, Mail, Calendar, 
+  Check, Shield, User, CreditCard, Calendar, 
   Key, Settings, Sun, Moon, LogOut, ChevronRight, HelpCircle
 } from 'lucide-react';
 
@@ -16,7 +16,7 @@ const Profile = () => {
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({
     username: '',
-    email: '',
+    nik: '',
   });
 
   // Gunakan hook terpusat — tidak ada duplikasi logika tema
@@ -38,7 +38,7 @@ const Profile = () => {
       setUser(userData);
       setFormData({
         username: userData?.username || '',
-        email: userData?.email || '',
+        nik: userData?.nik || '',
       });
       // Ambil daftar perangkat buat kasih info status keamanan
       const credsData = await api.get("/user/credentials");
@@ -129,12 +129,13 @@ const Profile = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">Email</label>
+                    <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">NIK</label>
                     <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
+                      type="text"
+                      inputMode="numeric"
+                      name="nik"
+                      value={formData.nik}
+                      onChange={(e) => setFormData({ ...formData, nik: e.target.value.replace(/\D/g, '').slice(0, 16) })}
                       required
                       className="w-full px-4 py-3 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl text-sm focus:outline-none focus:border-[var(--primary-hover)] focus:ring-1 focus:ring-[var(--primary-glow)] transition-all"
                     />
@@ -148,7 +149,7 @@ const Profile = () => {
                       type="button"
                       onClick={() => {
                         setEditMode(false);
-                        setFormData({ username: user.username, email: user.email });
+                        setFormData({ username: user.username, nik: user.nik });
                       }}
                       className="px-5 py-2.5 bg-[var(--bg-overlay)] text-[var(--text-muted)] rounded-xl text-sm font-medium hover:border-[var(--border-hover)] transition-all border border-[var(--border)]"
                     >
@@ -167,10 +168,10 @@ const Profile = () => {
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4 border-b border-[var(--border)]">
                     <div className="flex items-center gap-2.5 text-[var(--text-muted)] mb-1.5 sm:mb-0">
-                      <Mail className="w-4 h-4" />
-                      <span className="text-sm font-medium">Email</span>
+                      <CreditCard className="w-4 h-4" />
+                      <span className="text-sm font-medium">NIK</span>
                     </div>
-                    <span className="text-sm font-semibold">{user?.email}</span>
+                    <span className="text-sm font-semibold">{user?.nik}</span>
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4">
                     <div className="flex items-center gap-2.5 text-[var(--text-muted)] mb-1.5 sm:mb-0">
