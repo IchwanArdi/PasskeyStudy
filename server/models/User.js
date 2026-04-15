@@ -26,15 +26,15 @@ const userSchema = new mongoose.Schema({
     minlength: 3,
     maxlength: 30,
   },
-  email: {
+  nik: {
     type: String,
     required: true,
     // unique dan lowercase dihapus karena isi akan dienkripsi jadi acak
   },
-  emailHash: {
+  nikHash: {
     type: String,
     required: true,
-    unique: true, // Blind Index untuk pencarian cepat dan memastikan email unik
+    unique: true, // Blind Index untuk pencarian cepat dan memastikan NIK unik
   },
   role: { type: String, enum: ["warga", "admin"], default: "warga" },
   webauthnCredentials: [webauthnCredentialSchema],
@@ -56,26 +56,26 @@ userSchema.pre("save", async function () {
     this.updatedAt = Date.now();
   }
 
-  // Jika kolom email diubah atau ini adalah dokumen baru, enkripsi & buat hash-nya
-  if (this.isModified("email")) {
+  // Jika kolom NIK diubah atau ini adalah dokumen baru, enkripsi & buat hash-nya
+  if (this.isModified("nik")) {
     // 1. Buat hash untuk Blind Index pencarian cepat
-    this.emailHash = createHash(this.email);
+    this.nikHash = createHash(this.nik);
     
-    // 2. Enkripsi email aslinya untuk disimpan di DB
-    this.email = encrypt(this.email.toLowerCase().trim());
+    // 2. Enkripsi NIK aslinya untuk disimpan di DB
+    this.nik = encrypt(this.nik.trim());
   }
 });
 
 // Otomatis deksripsi saat mengambil data
 userSchema.post("init", function (doc) {
-  if (doc.email) {
-    doc.email = decrypt(doc.email);
+  if (doc.nik) {
+    doc.nik = decrypt(doc.nik);
   }
 });
 userSchema.post("save", function (doc) {
-  if (doc.email) {
+  if (doc.nik) {
     // Kembalikan ke format terbaca setelah dokumen disave buat respon backend saat object doc masih dipake
-    doc.email = decrypt(doc.email);
+    doc.nik = decrypt(doc.nik);
   }
 });
 

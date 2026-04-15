@@ -58,7 +58,7 @@ router.get('/saya', authenticate, async (req, res) => {
 // Detail satu pengajuan
 router.get('/:id', authenticate, async (req, res) => {
   try {
-    let p = await Pengajuan.findById(req.params.id).populate('userId', 'username email').lean();
+    let p = await Pengajuan.findById(req.params.id).populate('userId', 'username nik').lean();
     if (!p) return res.status(404).json({ message: 'Tidak ditemukan' });
 
     // Proteksi: Cuma pemilik atau admin
@@ -119,7 +119,7 @@ router.get('/admin/semua', authenticate, adminOnly, async (req, res) => {
     const { status } = req.query;
     const filter = status ? { status } : {};
     
-    const list = await Pengajuan.find(filter).sort({ createdAt: -1 }).populate('userId', 'username email').lean();
+    const list = await Pengajuan.find(filter).sort({ createdAt: -1 }).populate('userId', 'username nik').lean();
     const decrypted = list.map(p => ({ 
       ...p, 
       nik: decrypt(p.nik), 

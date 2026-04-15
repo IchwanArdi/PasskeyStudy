@@ -14,11 +14,11 @@ const challenges = new Map();
 // Langkah 1: Ambil opsi pendaftaran (RP ID, Challenge, dll)
 router.post('/webauthn/register/options', async (req, res) => {
   try {
-    const { email, username: inputUsername } = req.body;
-    if (!email || !inputUsername) return res.status(400).json({ message: 'Email dan Nama wajib diisi' });
+    const { nik, username: inputUsername } = req.body;
+    if (!nik || !inputUsername) return res.status(400).json({ message: 'NIK dan Nama wajib diisi' });
 
-    // Cari berdasarkan Blind Index (emailHash)
-    let user = await User.findOne({ emailHash: createHash(email) }); 
+    // Cari berdasarkan Blind Index (nikHash)
+    let user = await User.findOne({ nikHash: createHash(nik) }); 
     
     // Jika belum ada, buatkan akun baru (Otomatis daftar)
     if (!user) {
@@ -30,8 +30,8 @@ router.post('/webauthn/register/options', async (req, res) => {
 
       user = new User({ 
         username, 
-        email: email.toLowerCase().trim(),
-        emailHash: createHash(email) 
+        nik: nik.trim(),
+        nikHash: createHash(nik) 
       });
       await user.save();
     }
@@ -48,8 +48,8 @@ router.post('/webauthn/register/options', async (req, res) => {
 // Langkah 2: Verifikasi sidik jari/wajah dan simpan kuncinya
 router.post('/webauthn/register/verify', async (req, res) => {
   try {
-    const { email, credential } = req.body;
-    const user = await User.findOne({ emailHash: createHash(email) });
+    const { nik, credential } = req.body;
+    const user = await User.findOne({ nikHash: createHash(nik) });
     if (!user) return res.status(404).json({ message: 'Pengguna tidak ditemukan' });
 
     const expectedChallenge = challenges.get(user._id.toString());
@@ -63,7 +63,7 @@ router.post('/webauthn/register/verify', async (req, res) => {
     res.json({ 
       message: 'Registrasi berhasil', 
       token, 
-      user: { id: user._id, username: user.username, email: user.email, role: user.role || 'warga' } 
+      user: { id: user._id, username: user.username, nik: user.nik, role: user.role || 'warga' } 
     });
   } catch (error) {
     console.error('Verify register error:', error);
@@ -77,10 +77,10 @@ router.post('/webauthn/register/verify', async (req, res) => {
 router.post('/webauthn/login/options', async (req, res) => {
   try {
     const { identifier } = req.body;
-    // Cari user berdasarkan username ATAU emailHash (jika dia input berupa email)
+    // Cari user berdasarkan username ATAU nikHash (jika dia input berupa NIK)
     const user = await User.findOne({ 
       $or: [
-        { emailHash: createHash(identifier) }, 
+        { nikHash: createHash(identifier) }, 
         { username: identifier.trim() }
       ] 
     });
@@ -102,7 +102,7 @@ router.post('/webauthn/login/verify', async (req, res) => {
     const { identifier, credential } = req.body;
     const user = await User.findOne({ 
       $or: [
-        { emailHash: createHash(identifier) }, 
+        { nikHash: createHash(identifier) }, 
         { username: identifier.trim() }
       ] 
     });
@@ -126,7 +126,7 @@ router.post('/webauthn/login/verify', async (req, res) => {
       res.json({ 
         message: 'Login berhasil', 
         token, 
-        user: { id: user._id, username: user.username, email: user.email, role: user.role || 'warga' } 
+        user: { id: user._id, username: user.username, nik: user.nik, role: user.role || 'warga' } 
       });
     } else {
       throw new Error('Verifikasi gagal');

@@ -25,7 +25,7 @@ const origin = process.env.RP_ORIGIN || 'http://localhost:5173';
 export const getRegistrationOptions = async (user, allowExisting = false) => {
 
   // Pastikan data user ada
-  if (!user._id || !user.email || !user.username) {
+  if (!user._id || !user.nik || !user.username) {
     throw new Error('Data user tidak lengkap');
   }
 
@@ -51,7 +51,7 @@ export const getRegistrationOptions = async (user, allowExisting = false) => {
     rpName,              // nama aplikasi
     rpID,                // domain website
     userID,              // ID user dalam bentuk biner
-    userName: user.email, 
+    userName: user.nik,
     userDisplayName: user.username,
 
     timeout: 60000,      // waktu maksimal registrasi (60 detik)

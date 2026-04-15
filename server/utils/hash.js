@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Kunci untuk hashing yang konsisten (Blind Index)
-const HASH_SECRET = process.env.HASH_SECRET || 'secret_untuk_blind_index_pencarian_email';
+const HASH_SECRET = process.env.HASH_SECRET || 'secret_untuk_blind_index_pencarian_nik';
 
 /**
  * Membuat hash satu-arah yang konsisten dari sebuah string

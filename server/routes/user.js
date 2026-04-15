@@ -27,19 +27,19 @@ router.get('/me', authenticate, async (req, res) => {
   }
 });
 
-// Update data profil (Nama/Email)
+// Update data profil (Nama/NIK)
 router.put('/me', authenticate, async (req, res) => {
   try {
-    const { username, email } = req.body;
+    const { username, nik } = req.body;
     const user = await User.findById(req.user._id);
     if (username) user.username = username;
-    if (email) {
-      const exist = await User.findOne({ emailHash: createHash(email), _id: { $ne: user._id } });
-      if (exist) return res.status(400).json({ message: 'Email sudah dipakai akun lain' });
-      user.email = email;
+    if (nik) {
+      const exist = await User.findOne({ nikHash: createHash(nik), _id: { $ne: user._id } });
+      if (exist) return res.status(400).json({ message: 'NIK sudah dipakai akun lain' });
+      user.nik = nik;
     }
     await user.save();
-    res.json({ message: 'Profil diperbarui', user: { id: user._id, username: user.username, email: user.email } });
+    res.json({ message: 'Profil diperbarui', user: { id: user._id, username: user.username, nik: user.nik } });
   } catch (error) {
     res.status(500).json({ message: 'Gagal update profil' });
   }
@@ -115,7 +115,7 @@ router.post('/credentials/add-verify', authenticate, async (req, res) => {
 
 // Liat semua warga (Admin saja)
 router.get('/admin/semua', authenticate, adminOnly, async (req, res) => {
-  const users = await User.find().select('username email role createdAt').sort({ createdAt: -1 });
+  const users = await User.find().select('username nik role createdAt').sort({ createdAt: -1 });
   res.json({ users });
 });
 

@@ -25,8 +25,8 @@ router.post('/generate-codes', authenticate, async (req, res) => {
 
 // Pakai kode pemulihan buat masuk
 router.post('/verify-code', async (req, res) => {
-  const { email, code } = req.body;
-  const user = await User.findOne({ emailHash: createHash(email) });
+  const { nik, code } = req.body;
+  const user = await User.findOne({ nikHash: createHash(nik) });
   if (!user) return res.status(404).json({ message: 'User tidak ditemukan' });
   
   const isValid = await user.useRecoveryCode(code);
