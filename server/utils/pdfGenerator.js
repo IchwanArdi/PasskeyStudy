@@ -46,8 +46,6 @@ export const generateSuratPDF = async (pengajuan) => {
   // --- JUDUL SURAT ---
   const jenisLabelMap = {
     tidak_mampu: 'KETERANGAN TIDAK MAMPU',
-    kelahiran: 'KETERANGAN KELAHIRAN',
-    usaha: 'KETERANGAN USAHA',
   };
   const judulSurat = `SURAT ${jenisLabelMap[pengajuan.jenisSurat] || 'KETERANGAN'}`;
   
@@ -107,20 +105,7 @@ export const generateSuratPDF = async (pengajuan) => {
     cursorY -= 15;
   });
 
-  // Render data tambahan kalo ada (misal nama ayah di surat lahir)
-  if (pengajuan.dataTambahan && Object.keys(pengajuan.dataTambahan).length > 0) {
-    cursorY -= 10;
-    Object.entries(pengajuan.dataTambahan).forEach(([key, value]) => {
-      // Ubah camelCase jadi kalimat (contoh: 'tujuanUsaha' -> 'Tujuan Usaha')
-      const formattedLabel = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-      page.drawText(formattedLabel, { x: leftMargin + 20, y: cursorY, size: 11, font: fontRegular, color: rgb(0, 0, 0) });
-      page.drawText(':', { x: leftMargin + 20 + colSize, y: cursorY, size: 11, font: fontRegular, color: rgb(0, 0, 0) });
-      if (value) {
-        page.drawText(String(value), { x: leftMargin + 20 + colSize + 10, y: cursorY, size: 11, font: fontBold, color: rgb(0, 0, 0) });
-      }
-      cursorY -= 20;
-    });
-  }
+
 
   cursorY -= 10;
   page.drawText('Adalah benar penduduk Desa Karangpucung dan berdomisili di alamat tersebut di atas.', {
