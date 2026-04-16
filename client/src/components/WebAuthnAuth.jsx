@@ -89,7 +89,7 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!nik) {
-      setError('Nama atau NIK harus diisi');
+      setError('NIK harus diisi');
       return;
     }
 
@@ -162,7 +162,7 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
         {/* Input NIK (Untuk Login/Register) */}
         <div>
           <label htmlFor="webauthn-nik" className="block text-sm font-bold text-gray-500 mb-2 uppercase tracking-widest text-[10px]">
-            {mode === 'register' ? 'Nomor Induk Kependudukan (NIK)' : 'Nama atau NIK'}
+            Nomor Induk Kependudukan (NIK)
           </label>
           <input
             type="text"
@@ -173,7 +173,7 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
             required
             disabled={loading}
             className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-[var(--text)] placeholder-gray-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all text-sm"
-            placeholder={mode === 'register' ? "Masukkan 16 digit NIK" : "Masukkan Nama atau NIK"}
+            placeholder= "Masukkan 16 digit NIK"
           />
           {mode === 'register' && nik.length > 0 && nik.length < 16 && (
             <p className="text-[10px] text-yellow-400 mt-1.5 font-medium">{nik.length}/16 digit</p>
@@ -183,7 +183,7 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
         {/* Notifikasi Error */}
         {error && (
           <div className="px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 text-sm">
-            <b>Terjadi Kesalahan:</b> {error}
+            {error}
           </div>
         )}
 
