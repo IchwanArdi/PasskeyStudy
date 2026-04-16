@@ -77,13 +77,9 @@ router.post('/webauthn/register/verify', async (req, res) => {
 router.post('/webauthn/login/options', async (req, res) => {
   try {
     const { identifier } = req.body;
-    // Cari user berdasarkan username ATAU nikHash (jika dia input berupa NIK)
-    const user = await User.findOne({ 
-      $or: [
-        { nikHash: createHash(identifier) }, 
-        { username: identifier.trim() }
-      ] 
-    });
+    // Cari user berdasarkan nikHash
+    const user = await User.findOne({ nikHash: createHash(identifier) });
+
     if (!user) return res.status(404).json({ message: 'Pengguna tidak ditemukan' });
     if (!user.webauthnCredentials?.length) return res.status(400).json({ message: 'Tidak ada perangkat terdaftar' });
 
