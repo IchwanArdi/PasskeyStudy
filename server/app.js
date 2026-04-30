@@ -1,11 +1,10 @@
-// APP CONFIGURATION: File ini berisi semua pengaturan framework Express, middleware, dan routing
+// APP CONFIGURATION: Pengaturan framework Express, middleware, dan routing
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import helmet from 'helmet';
 import compression from 'compression';
 import morgan from 'morgan';
-import session from 'express-session';
 import connectDB from './config/database.js';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
@@ -19,43 +18,25 @@ const app = express();
 // Load environment variables
 dotenv.config();
 
-// Connect to MongoDB (async, but we don't await to allow server to start)
+// Connect to MongoDB
 connectDB().catch((err) => {
   console.error('Failed to connect to MongoDB:', err);
   process.exit(1);
 });
 
-// CORS must be configured first to handle preflight requests
-const rawCorsOrigin = process.env.RP_ORIGIN;
-const defaultOrigins = ['http://localhost:5173', 'https://auth-methods.vercel.app'];
-const allowedOrigins = Array.isArray(rawCorsOrigin)
-  ? rawCorsOrigin
-  : typeof rawCorsOrigin === 'string'
-  ? rawCorsOrigin
-      .split(',')
-      .map((o) => o.trim())
-      .filter(Boolean)
-  : defaultOrigins;
-
 // KEAMANAN: Konfigurasi CORS (Cross-Origin Resource Sharing)
 // Membatasi domain apa saja (contoh: domain frontend localhost/vercel) yang diizinkan mengakses API ini.
-const corsOptions = {
-  origin: (origin, callback) => {
-    // Allow non-browser requests or same-origin (no origin header)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, true);
-    // Log for debugging
-    console.warn(`CORS blocked origin: ${origin}. Allowed origins:`, allowedOrigins);
-    return callback(new Error(`CORS not allowed for origin: ${origin}`));
-  },
+const allowedOrigins = (process.env.RP_ORIGIN || 'http://localhost:5173')
+  .split(',')
+  .map((o) => o.trim())
+  .filter(Boolean);
+
+app.use(cors({
+  origin: allowedOrigins,
   credentials: true,
-  optionsSuccessStatus: 200,
-  maxAge: 86400,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-};
-
-app.use(cors(corsOptions));
+}));
 
 // Middleware untuk memparsing body pada HTTP request yang berformat JSON
 app.use(express.json({ limit: '10mb' }));
@@ -77,26 +58,7 @@ if (process.env.NODE_ENV !== 'test') {
 
 app.set('trust proxy', 1); // penting di Railway / Vercel
 
-// Session setup (single-admin auth)
-const sessionSecret = process.env.SESSION_SECRET || 'change_this_secret';
 const isProduction = (process.env.NODE_ENV || 'development') === 'production';
-
-// MANAJEMEN SESI: Konfigurasi express-session
-// Digunakan untuk menyimpan sesi sementara, terutama penting untuk menyimpan 'challenge' pada proses WebAuthn
-app.use(
-  session({
-    name: 'sid',
-    secret: sessionSecret,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      secure: isProduction, // true jika HTTPS
-      sameSite: isProduction ? 'none' : 'lax',
-      maxAge: 1000 * 60 * 60 * 8, // 8 jam
-    },
-  })
-);
 
 // Health check route
 app.get('/', (req, res) => {
@@ -110,10 +72,9 @@ app.get('/', (req, res) => {
 // Handle favicon requests to avoid 404 errors in logs
 app.get(['/favicon.ico', '/favicon.png'], (req, res) => res.status(204).end());
 
-
 // Rate limiting (hanya aktif di production)
-if (isProduction) {
 // KEAMANAN: Rate limiter untuk mencegah serangan DoS (Denial of Service) atau brute-force
+if (isProduction) {
   const globalLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 menit
     max: 300, // Maks 300 request per IP per window
@@ -132,21 +93,13 @@ if (isProduction) {
 
   app.use(globalLimiter);
   app.use('/api/auth', authLimiter);
-  app.use('/auth', authLimiter);
 }
 
 // ROUTING: Mendaftarkan semua kumpulan endpoint/API yang tersedia di backend
 app.use('/api/auth', authRoutes);
-app.use('/auth', authRoutes); // Alias untuk kompatibilitas
-
 app.use('/api/user', userRoutes);
-app.use('/user', userRoutes); // Alias untuk kompatibilitas
-
 app.use('/api/recovery', recoveryRoutes);
-app.use('/recovery', recoveryRoutes); // Alias untuk kompatibilitas
-
 app.use('/api/pengajuan', pengajuanRoutes);
-app.use('/pengajuan', pengajuanRoutes); // Alias untuk kompatibilitas
 
 // Export app for use in server.js
 export default app;
