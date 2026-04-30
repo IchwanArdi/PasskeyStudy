@@ -203,20 +203,38 @@ const AdminPengajuan = () => {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                       {/* Data Lengkap Pemohon */}
                       <div className="space-y-4 glass-panel p-5 rounded-3xl">
-                        <h3 className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-4 border-b border-[var(--card-border)] pb-2">Informasi Detail Warga</h3>
                         {[
                           { l: 'NIK PEMOHON', v: p.nik },
                           { l: 'TTL', v: `${p.tempatLahir}, ${new Date(p.tanggalLahir).toLocaleDateString('id-ID')}` },
                           { l: 'ALAMAT DOMISILI', v: p.alamat },
                           { l: 'KEPERLUAN SURAT', v: p.keperluan },
+                          { l: 'PENGHASILAN PER BULAN', v: `Rp ${Number(p.penghasilan || 0).toLocaleString('id-ID')}` },
+                          { l: 'JUMLAH TANGGUNGAN', v: `${p.jumlahTanggungan || 0} Orang` },
                         ].map((item) => (
                           <div key={item.l} className="flex flex-col gap-1">
                             <span className="text-[9px] font-black text-[var(--text-muted)] tracking-tighter">{item.l}</span>
                             <span className="text-xs md:text-sm font-bold text-[var(--text)]">{item.v}</span>
                           </div>
                         ))}
-                        
 
+                        {p.dokumenPengantar && (
+                          <div className="mt-4 pt-4 border-t border-[var(--card-border)]">
+                            <button
+                              onClick={() => {
+                                const newWindow = window.open();
+                                if (newWindow) {
+                                  newWindow.document.write(`<iframe src="${p.dokumenPengantar}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
+                                  newWindow.document.title = `Dokumen_${p.namaLengkap}`;
+                                } else {
+                                  toast.error('Pop-up terblokir, silakan izinkan pop-up untuk melihat dokumen.');
+                                }
+                              }}
+                              className="w-full flex items-center justify-center gap-2 py-3 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-500/20 transition-all"
+                            >
+                              <DownloadCloud className="w-4 h-4" /> Lihat Dokumen Pengantar
+                            </button>
+                          </div>
+                        )}
                       </div>
 
                       {/* Kontrol Admin (ACC/Tolak/Download) */}

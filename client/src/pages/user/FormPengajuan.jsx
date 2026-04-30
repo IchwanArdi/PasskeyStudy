@@ -24,7 +24,26 @@ const FormPengajuan = () => {
     tanggalLahir: '',
     alamat: '',
     keperluan: '',
+    penghasilan: '',
+    jumlahTanggungan: '',
+    dokumenPengantar: '',
   });
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('Ukuran file maksimal 5MB');
+        e.target.value = '';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setForm({ ...form, dokumenPengantar: reader.result });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
 
 
@@ -174,6 +193,50 @@ const FormPengajuan = () => {
                 rows={3}
                 placeholder="Alasan mengajukan surat ini..."
                 className={`${inputClass} resize-none`}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              {/* Input Penghasilan */}
+              <div>
+                <label className="block text-[10px] font-bold text-[var(--text-muted)] mb-2 uppercase tracking-[0.15em]">Rata-rata Penghasilan per Bulan (Rp)</label>
+                <input
+                  type="number"
+                  name="penghasilan"
+                  value={form.penghasilan}
+                  onChange={handleChange}
+                  required
+                  min="0"
+                  placeholder="Contoh: 1500000"
+                  className={inputClass}
+                />
+              </div>
+
+              {/* Input Tanggungan */}
+              <div>
+                <label className="block text-[10px] font-bold text-[var(--text-muted)] mb-2 uppercase tracking-[0.15em]">Jumlah Tanggungan Keluarga</label>
+                <input
+                  type="number"
+                  name="jumlahTanggungan"
+                  value={form.jumlahTanggungan}
+                  onChange={handleChange}
+                  required
+                  min="0"
+                  placeholder="Contoh: 3"
+                  className={inputClass}
+                />
+              </div>
+            </div>
+
+            {/* Upload Dokumen */}
+            <div>
+              <label className="block text-[10px] font-bold text-[var(--text-muted)] mb-2 uppercase tracking-[0.15em]">Upload Dokumen Pengantar RT/RW (PDF/JPG)</label>
+              <input
+                type="file"
+                accept=".pdf,image/*"
+                onChange={handleFileChange}
+                required
+                className={`${inputClass} file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-bold file:bg-[var(--primary-subtle)] file:text-[var(--primary)] hover:file:bg-[var(--primary-hover)] hover:file:text-white transition-colors cursor-pointer text-xs`}
               />
             </div>
 

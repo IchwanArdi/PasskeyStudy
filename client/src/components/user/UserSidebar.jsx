@@ -16,7 +16,7 @@ import {
 const navItems = [
   { to: '/dashboard', icon: Home, label: 'Beranda' },
   { to: '/layanan', icon: FileText, label: 'Layanan' },
-  { to: '/riwayat', icon: ClipboardList, label: 'Detail Pengaduan' },
+  { to: '/riwayat', icon: ClipboardList, label: 'Detail Pengajuan' },
   { to: '/profile', icon: User, label: 'Profil' },
 ];
 
