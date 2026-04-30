@@ -147,10 +147,6 @@ app.use('/recovery', recoveryRoutes); // Alias untuk kompatibilitas
 
 app.use('/api/pengajuan', pengajuanRoutes);
 app.use('/pengajuan', pengajuanRoutes); // Alias untuk kompatibilitas
-// Alias untuk kompatibilitas
-
-app.use('/api/pengajuan', pengajuanRoutes);
-app.use('/pengajuan', pengajuanRoutes); // Alias untuk kompatibilitas
 
 // Export app for use in server.js
 export default app;
