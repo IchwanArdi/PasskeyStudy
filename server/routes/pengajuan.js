@@ -17,7 +17,7 @@ const adminOnly = (req, res, next) => {
 // Buat pengajuan baru
 router.post('/', authenticate, async (req, res) => {
   try {
-    const { jenisSurat, namaLengkap, nik, tempatLahir, tanggalLahir, alamat, keperluan } = req.body;
+    const { jenisSurat, namaLengkap, nik, tempatLahir, tanggalLahir, alamat, keperluan, penghasilan, jumlahTanggungan, dokumenPengantar } = req.body;
     if (!jenisSurat || !namaLengkap || !nik) return res.status(400).json({ message: 'Data wajib diisi' });
 
     const pengajuan = await Pengajuan.create({
@@ -29,6 +29,9 @@ router.post('/', authenticate, async (req, res) => {
       tanggalLahir: new Date(tanggalLahir),
       alamat: alamat.trim(),
       keperluan: keperluan.trim(),
+      penghasilan: Number(penghasilan) || 0,
+      jumlahTanggungan: Number(jumlahTanggungan) || 0,
+      dokumenPengantar: dokumenPengantar || null
     });
     res.status(201).json({ message: 'Pengajuan terkirim', pengajuan });
   } catch (error) {

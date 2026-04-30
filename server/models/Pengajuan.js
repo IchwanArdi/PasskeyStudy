@@ -59,6 +59,20 @@ const pengajuanSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    penghasilan: {
+      type: Number,
+      required: true,
+      default: 0
+    },
+    jumlahTanggungan: {
+      type: Number,
+      required: true,
+      default: 0
+    },
+    dokumenPengantar: {
+      type: String, // Simpan sebagai Base64
+      required: false
+    },
 
     // Status pengajuan
     status: {
