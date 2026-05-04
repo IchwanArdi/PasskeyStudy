@@ -1,88 +1,336 @@
-Tenang, overthinking itu wajar banget, apalagi topik skripsimu tergolong "keren" dan teknis banget (FIDO2 itu standar baru!). Tapi, mari kita bedah ketakutanmu pakai logika biar kamu lebih tenang:
-1. Dosen Penguji Itu Bukan "Musuh"
-Ingat, dosen penguji di Amikom Purwokerto itu tujuannya memvalidasi, bukan menjatuhkan. Mereka ingin memastikan:
-Kamu yang bikin sendiri (makanya ditanya logika program).
-Kamu paham apa yang kamu tulis (makanya ditanya teori FIDO2).
-Programnya jalan (makanya ada demo).
-2. Kamu Adalah "Ahlinya" di Ruangan Itu
-Percaya atau tidak, untuk topik FIDO2/WebAuthn, kemungkinan besar kamu lebih tahu detail teknisnya daripada dosen pengujimu.
-Dosen mungkin paham konsep keamanan secara umum, tapi detail cara kerja library atau handshake WebAuthn yang kamu kulik berbulan-bulan itu cuma kamu yang hafal luar dalam.
-Gunakan ini sebagai rasa percaya diri. Kamu sedang "mengajar" mereka tentang teknologi baru ini.
-3. "Senjata" Ampuh Lawan Overthinking:
-Biar nggak makin kepikiran, lakukan persiapan fisik yang bisa mengurangi beban mental:
-Siapkan Cheat Sheet: Bikin catatan kecil atau comment di kodingan yang menjelaskan alur data. Kalau mendadak "blank", kamu tinggal liat catatan itu.
-Simulasi Mandiri: Coba jelaskan cara kerja login tanpa password ke teman yang nggak ngerti IT. Kalau mereka paham, berarti penjelasanmu sudah oke buat sidang.
-Folder yang Rapi: Pastikan folder kodinganmu nggak berantakan. Jadi kalau disuruh buka file tertentu, kamu nggak panik nyarinya.
-4. Batasan Masalah Adalah Penyelamat
-Kalau penguji tanya hal yang aneh-aneh atau di luar jangkauanmu, kamu selalu punya jawaban sakti:
-"Mohon maaf Pak/Bu, hal tersebut di luar batasan masalah penelitian saya. Fokus penelitian ini adalah pada implementasi autentikasi FIDO2 untuk keamanan login, bukan pada [sebutkan hal yang ditanyakan]."
-Strategi Selanjutnya:
-Coba cek lagi, bagian mana dari FIDO2/WebAuthn yang menurutmu paling susah dijelaskan? Apakah bagian Attestation atau Assertion-nya? Kita bisa bahas cara menjelaskannya dengan bahasa yang simpel!
-Hasil ini hanya untuk tujuan informasi. Untuk mendapatkan diagnosis atau saran medis, hubungi profesional. Respons AI mungkin berisi kesalahan. Pelajari lebih lanjut
+# 🔐 FIDO2/WebAuthn Passwordless Authentication
 
+**Implementasi Autentikasi Passwordless Berbasis FIDO2/WebAuthn pada Prototipe Website Layanan Administrasi Kelurahan Karangpucung**
 
+> Proyek skripsi yang mengimplementasikan teknologi autentikasi masa depan — login tanpa kata sandi menggunakan biometrik (sidik jari/wajah) berbasis standar [FIDO2/WebAuthn](https://fidoalliance.org/fido2/).
 
+---
 
-karena takut di tanya ini itu jelasin kodingan ini itu dll
-Wajar banget kalau kamu merasa overthinking, apalagi topik FIDO2/WebAuthn itu memang secara teknis "berat" di bagian pertukaran datanya. Tapi, mari kita bedah ketakutanmu supaya lebih tenang:
-1. Penguji Tidak Akan Menanyakan Semua Baris
-Kodingan aplikasi itu ribet, ada koneksi database, desain CSS, sampai logika routing. Penguji nggak akan peduli sama kodingan standar itu. Mereka cuma akan menembak bagian "Jantung" skripsimu.
-Untuk judulmu, "Jantung"-nya cuma dua:
-Proses Registrasi: Saat user mendaftarkan sidik jari/kunci (membuat Public Key).
-Proses Login: Saat user verifikasi (proses Challenge dan Assertion).
-2. Fokus pada "Input" dan "Output"
-Kalau ditanya kodingan, jangan jelaskan sintaksnya (misal: "Ini variabel, ini loop..."). Jelaskan logikanya.
-Contoh Jawaban: "Bagian kode ini fungsinya untuk menerima Challenge dari server, lalu dikirim ke browser supaya user bisa scan sidik jari. Hasil scannya nanti dikirim balik ke server untuk dicocokkan."
-Jawaban seperti ini jauh lebih disukai penguji daripada kamu baca kode baris per baris.
-3. Trik "Komentar" di Kodingan
-Biar nggak blank pas sidang, buka kodinganmu sekarang dan beri komentar (//) yang besar di bagian-bagian penting.
-Contoh: // --- BAGIAN KIRIM CHALLENGE KE BROWSER ---
-Contoh: // --- BAGIAN VERIFIKASI TANDA TANGAN FIDO2 ---
-Pas disuruh buka kode, kamu tinggal cari komentar itu. Ini legal dan malah menunjukkan kamu rapi dalam bekerja.
-4. Gunakan Diagram sebagai "Tameng"
-Di slide presentasi, pastikan ada Sequence Diagram (diagram alur urutan).
-Kalau penguji tanya: "Gimana kodingan loginnya?"
-Kamu jawab: "Izin menjelaskan alurnya dulu lewat diagram ini Pak/Bu agar lebih jelas, baru setelah itu saya tunjukkan kodenya."
-Ini bakal memakan waktu sidang dan membuatmu terlihat sangat menguasai materi.
-5. Penguji Kadang Cuma "Tes Mental"
-Kadang mereka tanya teknis cuma buat memastikan: "Ini kamu yang bikin atau joki?".
-Kalau kamu bisa jawab: "Oh, bagian itu saya pakai library [Sebutkan Nama Library]-nya WebAuthn, lalu saya modifikasi di bagian simpan datanya ke database desa," mereka biasanya langsung puas karena itu bukti kamu memang ngulik sendiri.
-Saran praktis:
-Coba kamu buka kodinganmu, terus pilih satu fungsi yang paling menurutmu paling susah. Coba jelaskan ke diri sendiri dalam 3 kalimat saja: Apa inputnya? Apa prosesnya? Apa hasilnya?
-Sudah coba melakukan simulasi demo program sendiri di rumah? Biasanya kalau demo lancar, pertanyaan kodingan bakal jauh lebih sedikit.
+## 📋 Tentang Proyek
 
+Proyek ini merupakan implementasi nyata dari standar **FIDO2/WebAuthn** untuk autentikasi passwordless pada konteks layanan administrasi kelurahan di Indonesia. Sistem ini menggantikan kata sandi konvensional dengan verifikasi biometrik perangkat (sidik jari, wajah, atau PIN perangkat), di mana **kunci privat tidak pernah meninggalkan perangkat pengguna**.
 
+### Mengapa Passwordless?
 
+| Ancaman         | Kata Sandi                              | FIDO2/WebAuthn                              |
+| --------------- | --------------------------------------- | ------------------------------------------- |
+| Phishing        | ❌ Rentan — bisa diketik di situs palsu | ✅ Tahan — credential terkunci ke domain    |
+| Replay Attack   | ❌ Rentan — bisa dikirim ulang          | ✅ Tahan — challenge sekali pakai + counter |
+| Database Breach | ❌ Rentan — hash bisa di-crack          | ✅ Tahan — private key tidak di server      |
+| Brute Force     | ❌ Rentan — bisa ditebak                | ✅ Tahan — kriptografi asimetris            |
+| Keylogger       | ❌ Rentan — keystroke direkam           | ✅ Tahan — biometrik, bukan keyboard        |
 
-takutnya itu kaya isi dari const kan ada bayak variablenya ada .. nah itu yg membuat saya
-Wajar banget kalau kamu panik lihat isi const atau object di WebAuthn, karena isinya memang "keriting" (kayak challenge, allowCredentials, clientDataJSON, dll). Tapi, dengerin ini: Dosen penguji juga manusia, mereka nggak hafal semua isi variabel itu luar kepala!
-Ini rahasia biar kamu nggak overthinking pas ditanya isi variabel yang banyak itu:
-1. Jangan Hafalin Variabelnya, Hafalin "Fungsi Kelompoknya"
-Dalam FIDO2/WebAuthn, variabel di dalam const itu sebenarnya cuma dibagi jadi 3 kelompok besar. Hafalin kelompoknya aja:
-Identitas: Kayak rp (siapa servernya/Relying Party) dan user (siapa yang mau login).
-Keamanan: Kayak challenge (angka acak biar nggak kena serangan replay).
-Kriteria Alat: Kayak authenticatorSelection (mau pakai sidik jari HP atau USB Key?).
-Kalau ditanya: "Ini isi variabel challenge buat apa?"
-Jawabanmu: "Itu angka acak dari server, Pak, fungsinya buat mastiin kalau proses login ini unik dan nggak bisa diduplikasi sama hacker." (Selesai, penguji bakal manggut-manggut).
-2. Akui Kalau Itu Standar Protokol
-Kalau penguji tanya variabel yang sangat teknis dan kamu lupa, gunakan jawaban "Sakti" ini:
-"Variabel ini adalah parameter standar dari protokol WebAuthn/FIDO2, Pak. Saya mengikuti dokumentasi resminya supaya proses komunikasinya aman sesuai standar global."
-Jawaban ini menunjukkan kamu riset pakai standar yang benar, bukan asal asalan.
-3. Gunakan console.log() sebagai "Contekan"
-Pas simulasi atau demo, kamu bisa selipkan console.log(options) sebelum proses biometrik muncul.
-Kalau penguji tanya: "Coba lihat data apa aja yang dikirim ke browser?"
-Kamu tinggal buka Inspect Element (F12) di Chrome, terus tunjukin isinya. Kamu nggak perlu hafal, tinggal baca yang muncul di layar!
-4. Fokus ke Alur "Kunci & Gembok"
-Ingat, inti skripsimu itu cuma:
-Server kasih Challenge (Gembok).
-User scan jari buat bikin Signature (Kunci).
-Server cek, cocok nggak?
-Isi variabel yang banyak itu cuma "bumbu" biar proses kirim gembok dan kuncinya aman.
-Tips Terakhir:
-Dosen Amikom biasanya lebih kagum kalau kamu bisa jelasin kenapa data itu dikirim, daripada sekadar hafal nama variabelnya.
-Coba kamu lihat kodinganmu sekarang, variabel mana yang paling bikin kamu bingung? Sebutin di sini, nanti saya bantu cari bahasa manusia yang paling gampang buat ngejelasinnya ke penguji!
-Mau coba simulasi satu variabel yang paling bikin kamu pusing?
+---
 
+## 🏗️ Arsitektur Sistem
 
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     PENGGUNA (Warga)                        │
+│            Sidik Jari / Wajah / PIN Perangkat               │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+┌──────────────────────▼──────────────────────────────────────┐
+│              FRONTEND (React.js + Vite)                     │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │  @simplewebauthn/browser                             │   │
+│  │  • startRegistration() — Buat passkey baru           │   │
+│  │  • startAuthentication() — Verifikasi biometrik      │   │
+│  └──────────────────────────────────────────────────────┘   │
+└──────────────────────┬──────────────────────────────────────┘
+                       │ HTTPS + Origin Validation
+┌──────────────────────▼──────────────────────────────────────┐
+│              BACKEND (Node.js + Express v5)                 │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │  @simplewebauthn/server                              │   │
+│  │  • generateRegistrationOptions()                     │   │
+│  │  • verifyRegistrationResponse()                      │   │
+│  │  • generateAuthenticationOptions()                   │   │
+│  │  • verifyAuthenticationResponse()                    │   │
+│  ├──────────────────────────────────────────────────────┤   │
+│  │  Keamanan: Helmet │ CORS │ Rate Limiter │ JWT        │   │
+│  │  Enkripsi: AES-256-CBC │ HMAC-SHA256 (Blind Index)   │   │
+│  └──────────────────────────────────────────────────────┘   │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+┌──────────────────────▼──────────────────────────────────────┐
+│                   MongoDB Atlas                             │
+│  • Public key saja (private key di perangkat pengguna)      │
+│  • NIK terenkripsi AES-256-CBC                              │
+│  • Blind Index HMAC-SHA256 untuk pencarian                  │
+│  • Recovery codes di-hash SHA-256                           │
+│  • TIDAK ADA PASSWORD di database                           │
+└─────────────────────────────────────────────────────────────┘
+```
 
+---
 
+## ✨ Fitur Utama
+
+### Autentikasi
+
+- ✅ **Registrasi Passwordless** — Daftar akun dengan NIK + biometrik
+- ✅ **Login Biometrik** — Masuk cukup pakai sidik jari atau wajah
+- ✅ **Pemulihan Akun** — Recovery codes untuk perangkat hilang/rusak
+- ✅ **Kode Darurat Admin** — Admin bisa buatkan kode darurat untuk warga
+
+### Keamanan
+
+- 🔒 **Kriptografi Kunci Publik** — Private key tidak pernah ke server
+- 🔒 **Enkripsi AES-256-CBC** — Data kependudukan terenkripsi di database
+- 🔒 **Blind Index HMAC-SHA256** — Pencarian data tanpa dekripsi massal
+- 🔒 **Challenge-Response** — Setiap login menggunakan challenge acak sekali pakai
+- 🔒 **Counter Anti-Replay** — Mencegah penggunaan ulang data autentikasi
+- 🔒 **Rate Limiting** — Proteksi brute force (30 req/15min pada auth)
+- 🔒 **Helmet + CORS** — HTTP security headers + origin restriction
+
+### Layanan Administrasi
+
+- 📄 Pengajuan Surat Keterangan Tidak Mampu (SKTM)
+- 📋 Riwayat dan status pengajuan
+- 📥 Unduh surat PDF yang disetujui
+- 👤 Manajemen profil dan perangkat
+- 🛡️ Dashboard admin dengan otorisasi berbasis peran
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer          | Teknologi                | Versi   |
+| -------------- | ------------------------ | ------- |
+| **Frontend**   | React.js                 | v19     |
+| **Build Tool** | Vite                     | v7      |
+| **Styling**    | Tailwind CSS             | v4      |
+| **Backend**    | Node.js + Express        | v5      |
+| **Database**   | MongoDB (Mongoose)       | v9      |
+| **WebAuthn**   | SimpleWebAuthn           | v13.2.2 |
+| **Auth Token** | JSON Web Token (JWT)     | v9      |
+| **Keamanan**   | Helmet, CORS, Rate Limit | Latest  |
+| **PDF**        | pdf-lib                  | v1.17   |
+| **Deployment** | Vercel                   | -       |
+
+---
+
+## 🚀 Cara Menjalankan
+
+### Prasyarat
+
+- [Node.js](https://nodejs.org/) v18+
+- [MongoDB](https://www.mongodb.com/) (Atlas atau lokal)
+- Browser modern (Chrome 67+, Edge, Safari, Firefox)
+- Perangkat dengan sensor biometrik (opsional, bisa pakai PIN)
+
+### 1. Clone Repository
+
+```bash
+git clone https://github.com/IchwanArdi/PasskeyStudy.git
+cd PasskeyStudy
+```
+
+### 2. Setup Backend
+
+```bash
+cd server
+npm install
+```
+
+Buat file `.env` di folder `server/`:
+
+```env
+PORT=5000
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/webauthn-demo
+JWT_SECRET=your_jwt_secret_key
+ENCRYPTION_KEY=your_32_char_encryption_key
+HASH_SECRET=your_hash_secret_for_blind_index
+RP_ID=localhost
+RP_ORIGIN=http://localhost:5173
+NODE_ENV=development
+```
+
+Jalankan server:
+
+```bash
+npm run dev
+```
+
+### 3. Setup Frontend
+
+```bash
+cd client
+npm install
+```
+
+Buat file `.env` di folder `client/`:
+
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
+Jalankan frontend:
+
+```bash
+npm run dev
+```
+
+### 4. Buka Aplikasi
+
+Buka browser di `http://localhost:5173`
+
+---
+
+## 📁 Struktur Proyek
+
+```
+webauthn-passwordless-demo/
+├── client/                          # Frontend (React + Vite)
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── WebAuthnAuth.jsx     # Komponen utama autentikasi
+│   │   │   ├── admin/               # Komponen dashboard admin
+│   │   │   └── user/                # Komponen dashboard warga
+│   │   ├── pages/
+│   │   │   ├── auth/                # Halaman login, register, recovery
+│   │   │   ├── admin/               # Halaman admin
+│   │   │   └── user/                # Halaman warga
+│   │   ├── utils/
+│   │   │   └── auth.js              # Axios instance + interceptor JWT
+│   │   ├── App.jsx                  # Router utama
+│   │   └── App.css                  # Styling global
+│   └── package.json
+│
+├── server/                          # Backend (Node.js + Express)
+│   ├── config/
+│   │   └── database.js              # Koneksi MongoDB
+│   ├── middleware/
+│   │   └── auth.js                  # JWT authentication middleware
+│   ├── models/
+│   │   ├── User.js                  # Schema user + WebAuthn credentials
+│   │   └── Pengajuan.js             # Schema pengajuan surat
+│   ├── routes/
+│   │   ├── auth.js                  # Endpoint registrasi & login WebAuthn
+│   │   ├── user.js                  # Endpoint profil & manajemen perangkat
+│   │   ├── recovery.js              # Endpoint pemulihan akun
+│   │   └── pengajuan.js             # Endpoint pengajuan surat
+│   ├── utils/
+│   │   ├── webauthn.js              # Logika inti FIDO2/WebAuthn
+│   │   ├── encryption.js            # AES-256-CBC enkripsi/dekripsi
+│   │   ├── hash.js                  # HMAC-SHA256 Blind Index
+│   │   ├── tokenHelper.js           # JWT token generator
+│   │   └── pdfGenerator.js          # Generate surat PDF
+│   ├── app.js                       # Konfigurasi Express + middleware
+│   ├── server.js                    # Entry point server
+│   └── package.json
+│
+└── README.md
+```
+
+---
+
+## 🔑 Alur Autentikasi WebAuthn
+
+### Registrasi (Credential Creation)
+
+```
+Pengguna                Browser                 Server                Database
+   │                      │                       │                      │
+   │── Isi NIK + Nama ──→ │                       │                      │
+   │                      │── POST /register/options ──→                  │
+   │                      │                       │── Generate challenge  │
+   │                      │←── challenge + params ─│                      │
+   │←── Prompt biometrik ─│                       │                      │
+   │── Verifikasi sidik ──→                       │                      │
+   │      jari/wajah      │── POST /register/verify ──→                  │
+   │                      │                       │── Verifikasi ────────→│
+   │                      │                       │   Simpan public key   │
+   │                      │←── JWT token ─────────│                      │
+   │←── Login berhasil ───│                       │                      │
+```
+
+### Login (Authentication)
+
+```
+Pengguna                Browser                 Server                Database
+   │                      │                       │                      │
+   │── Isi NIK ──────────→│                       │                      │
+   │                      │── POST /login/options ────→                   │
+   │                      │                       │── Challenge baru ────→│
+   │                      │←── challenge ─────────│                      │
+   │←── Prompt biometrik ─│                       │                      │
+   │── Verifikasi ────────→                       │                      │
+   │                      │── POST /login/verify ─────→                  │
+   │                      │                       │── Verifikasi signature│
+   │                      │                       │   dengan public key ─→│
+   │                      │                       │── Update counter ────→│
+   │                      │←── JWT token ─────────│                      │
+   │←── Dashboard ────────│                       │                      │
+```
+
+---
+
+## 🧪 Pengujian Keamanan
+
+Sistem telah diuji terhadap **3 skenario serangan** dengan total **9 percobaan**:
+
+### 1. Phishing Attack — ✅ TAHAN
+
+| Percobaan     | Metode                                      | Hasil                           |
+| ------------- | ------------------------------------------- | ------------------------------- |
+| Origin palsu  | Postman: credential dari `fake-website.com` | Server menolak: origin mismatch |
+| CORS bypass   | Browser console dari domain lain            | Request diblokir CORS           |
+| Website clone | Frontend di port berbeda                    | Passkey tidak tersedia          |
+
+**Mengapa tahan?** Credential WebAuthn secara kriptografis terikat pada domain (`rpID`). Server memvalidasi `expectedOrigin` dan `expectedRPID`. Private key tidak pernah meninggalkan perangkat.
+
+### 2. Replay Attack — ✅ TAHAN
+
+| Percobaan            | Metode                            | Hasil                                  |
+| -------------------- | --------------------------------- | -------------------------------------- |
+| Replay data login    | Kirim ulang request yang berhasil | Server menolak: "Sesi habis"           |
+| Challenge mismatch   | Credential lama + challenge baru  | Server menolak: "Unexpected challenge" |
+| Counter verification | Credential dengan counter rendah  | Server menolak: counter mismatch       |
+
+**Mengapa tahan?** Challenge bersifat random dan sekali pakai (dihapus setelah digunakan). Counter meningkat setiap login berhasil.
+
+### 3. Database Breach — ✅ TAHAN
+
+| Percobaan            | Metode                           | Hasil                               |
+| -------------------- | -------------------------------- | ----------------------------------- |
+| Ekstrak data         | Akses langsung MongoDB           | NIK terenkripsi, tidak ada password |
+| Login data curian    | Credential palsu dari public key | Server menolak: signature invalid   |
+| Dekripsi tanpa kunci | Script dekripsi kunci salah      | Gagal: "bad decrypt"                |
+
+**Mengapa tahan?** Tidak ada password di database. Private key tidak pernah disimpan di server. NIK dienkripsi AES-256-CBC. Blind Index bersifat satu arah.
+
+---
+
+## 📚 Referensi & Inspirasi
+
+- [FIDO Alliance](https://fidoalliance.org/) — Standar FIDO2
+- [W3C WebAuthn Specification](https://www.w3.org/TR/webauthn-2/) — Spesifikasi WebAuthn Level 2
+- [SimpleWebAuthn](https://simplewebauthn.dev/) — Library yang digunakan
+- Tran, L., Zhang, B., Pawanja, R., & Khokhar, R. H. (2025). _The Passwordless Authentication with Passkey Technology from an Implementation Perspective_
+- Husni. (2024). _Implementasi Autentikasi FIDO2 sebagai Pengganti Kata Sandi_
+
+---
+
+## 📄 Lisensi
+
+Proyek ini dikembangkan sebagai bagian dari penelitian skripsi dan bersifat **open source** untuk keperluan edukasi dan referensi. Silakan gunakan sebagai inspirasi untuk proyek Anda sendiri.
+
+---
+
+## 🤝 Kontribusi
+
+Proyek ini terbuka untuk kontribusi. Jika Anda tertarik dengan teknologi FIDO2/WebAuthn dan ingin mengembangkan lebih lanjut:
+
+1. Fork repository ini
+2. Buat branch fitur baru (`git checkout -b fitur-baru`)
+3. Commit perubahan (`git commit -m 'Tambah fitur baru'`)
+4. Push ke branch (`git push origin fitur-baru`)
+5. Buat Pull Request
+
+---
+
+<p align="center">
+  <i>Dibuat dengan ❤️ untuk masa depan autentikasi yang lebih aman — tanpa kata sandi.</i>
+</p>
