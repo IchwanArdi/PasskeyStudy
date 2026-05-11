@@ -1,0 +1,504 @@
+# 🔒 Panduan Pengujian Keamanan WebAuthn — Skripsi Bab 4
+
+## Ringkasan Arsitektur Keamanan Project
+
+Project Anda menggunakan **FIDO2/WebAuthn Passwordless Authentication** dengan arsitektur:
+
+```mermaid
+graph LR
+    subgraph "Client (React + Vite)"
+        A["Browser WebAuthn API"] --> B["startRegistration / startAuthentication"]
+    end
+    subgraph "Server (Express.js)"
+        C["Challenge Generator"] --> D["Verify Registration/Authentication"]
+        D --> E["MongoDB (Encrypted)"]
+    end
+    B -->|"HTTPS + Origin Check"| C
+    D -->|"Public Key Crypto"| A
+```
+
+| Layer | Teknologi | Fungsi Keamanan |
+|-------|-----------|-----------------|
+| Autentikasi | WebAuthn (SimpleWebAuthn) | Public-key cryptography, challenge-response |
+| Enkripsi Data | AES-256-CBC | NIK dienkripsi sebelum disimpan di DB |
+| Blind Index | HMAC-SHA256 | Pencarian NIK tanpa dekripsi seluruh DB |
+| Session Token | JWT (7 hari) | Otorisasi setelah login |
+| Anti-Brute Force | Rate Limiter | Max 30 auth requests / 15 menit (production) |
+| HTTP Security | Helmet.js + CORS | Header keamanan + origin restriction |
+
+---
+
+## 🎯 Skenario 1: PHISHING ATTACK
+
+### Definisi
+Phishing attack adalah serangan di mana penyerang membuat **website palsu** yang menyerupai website asli untuk **mencuri kredensial pengguna**.
+
+### Mengapa WebAuthn Tahan Phishing?
+
+WebAuthn memiliki **origin binding** bawaan. Saat registrasi, credential dikunci ke domain tertentu (`rpID`). Saat login, browser **secara otomatis memvalidasi** bahwa domain yang meminta autentikasi sama dengan domain saat registrasi.
+
+Mekanisme dalam kode Anda:
+
+```javascript
+// server/utils/webauthn.js (Line 15-18)
+const rpID = process.env.RP_ID || 'localhost';          // Domain terdaftar
+const origin = process.env.RP_ORIGIN || 'http://localhost:5173';  // Origin frontend
+
+// Verifikasi WAJIB cocok (Line 86-91)
+const verification = await verifyRegistrationResponse({
+    response: body,
+    expectedChallenge,
+    expectedOrigin: origin,    // ← ORIGIN HARUS SAMA
+    expectedRPID: rpID,        // ← DOMAIN HARUS COCOK
+});
+```
+
+### Langkah Pengujian Phishing Attack
+
+#### Tools yang Dibutuhkan
+- **Postman** atau **cURL** (untuk simulasi request dari domain palsu)
+- Browser DevTools (Network tab)
+
+#### Langkah-Langkah:
+
+##### Percobaan 1: Simulasi Phishing via Postman (Mengirim Response dengan Origin Salah)
+
+> [!IMPORTANT]
+> Skenario ini mensimulasikan: "Apa yang terjadi jika penyerang mencuri data autentikasi dari website palsu dan mengirimnya ke server asli?"
+
+1. **Jalankan server** (`npm start` di folder server)
+2. **Buka Postman**, buat request baru:
+
+**Step A — Ambil Login Options (Normal)**
+```
+POST http://localhost:5000/api/auth/webauthn/login/options
+Content-Type: application/json
+
+{
+  "identifier": "1234567890123456"
+}
+```
+→ Catat `challenge` dari response
+
+**Step B — Kirim Credential Palsu dengan Origin Berbeda**
+```
+POST http://localhost:5000/api/auth/webauthn/login/verify
+Content-Type: application/json
+Origin: https://fake-website.com
+
+{
+  "identifier": "1234567890123456",
+  "credential": {
+    "id": "credential_id_dari_step_a",
+    "rawId": "credential_id_dari_step_a",
+    "response": {
+      "authenticatorData": "data_palsu_base64",
+      "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiY2hhbGxlbmdlX2Zyb21fc3RlcF9hIiwib3JpZ2luIjoiaHR0cHM6Ly9mYWtlLXdlYnNpdGUuY29tIn0=",
+      "signature": "signature_palsu"
+    },
+    "type": "public-key",
+    "clientExtensionResults": {}
+  }
+}
+```
+
+> [!NOTE]
+> `clientDataJSON` di atas berisi `"origin":"https://fake-website.com"` yang sudah di-encode Base64. Server akan menolak karena origin tidak cocok.
+
+**Hasil yang Diharapkan:**
+```json
+{
+  "message": "Login gagal",
+  "error": "Unexpected registration response origin \"https://fake-website.com\", expected \"http://localhost:5173\""
+}
+```
+
+##### Percobaan 2: Simulasi Website Palsu (Frontend di Port Berbeda)
+
+1. Copy folder `client/dist` ke lokasi lain
+2. Serve di port berbeda: `npx serve -s dist -l 3000`
+3. Coba login dari `http://localhost:3000`
+4. **Hasil**: Browser tidak akan menemukan passkey karena passkey terkunci ke `rpID=localhost` DAN `origin=http://localhost:5173`
+
+##### Percobaan 3: CORS Protection Test
+
+Buka browser console di `https://google.com` dan coba panggil API server:
+```javascript
+fetch('http://localhost:5000/api/auth/webauthn/login/options', {
+  method: 'POST',
+  headers: {'Content-Type': 'application/json'},
+  body: JSON.stringify({identifier: '1234567890123456'})
+})
+```
+**Hasil**: CORS akan memblokir request karena `google.com` bukan `allowedOrigins`.
+
+### Bukti dalam Kode
+
+| File | Line | Mekanisme Anti-Phishing |
+|------|------|------------------------|
+| [webauthn.js](file:///c:/Users/Asus/OneDrive/Desktop/webauthn-passwordless-demo/server/utils/webauthn.js#L89) | 89 | `expectedOrigin: origin` — origin HARUS cocok |
+| [webauthn.js](file:///c:/Users/Asus/OneDrive/Desktop/webauthn-passwordless-demo/server/utils/webauthn.js#L90) | 90 | `expectedRPID: rpID` — domain HARUS cocok |
+| [app.js](file:///c:/Users/Asus/OneDrive/Desktop/webauthn-passwordless-demo/server/app.js#L42-L56) | 42-56 | CORS hanya izinkan origin tertentu |
+| Browser API | - | Passkey terkunci ke domain registrasi |
+
+### ✅ Kesimpulan Phishing
+**WebAuthn TAHAN terhadap Phishing Attack** karena:
+1. Credential terikat ke domain (`rpID`) → tidak bisa digunakan di domain lain
+2. Origin divalidasi server → response dari website palsu ditolak
+3. CORS membatasi akses API hanya dari origin resmi
+4. Private key **tidak pernah meninggalkan perangkat** → tidak ada yang bisa dicuri
+
+---
+
+## 🔄 Skenario 2: REPLAY ATTACK
+
+### Definisi
+Replay attack adalah serangan di mana penyerang **merekam/menyadap** data autentikasi yang sah, lalu **mengirim ulang** data tersebut untuk login.
+
+### Mengapa WebAuthn Tahan Replay Attack?
+
+WebAuthn menggunakan **dua mekanisme** anti-replay:
+1. **Challenge one-time-use**: Setiap login menghasilkan challenge random baru yang hanya valid sekali
+2. **Counter**: Authenticator menaikkan counter di setiap login, server menolak jika counter tidak naik
+
+### Langkah Pengujian Replay Attack
+
+#### Tools yang Dibutuhkan
+- **Postman** (untuk mengirim ulang data yang sudah dipakai)
+- **Browser DevTools** (Network tab, untuk capture request asli)
+
+#### Langkah-Langkah:
+
+##### Percobaan 1: Replay Challenge yang Sudah Digunakan
+
+1. **Login normal** di browser dan buka DevTools → Network tab
+2. **Catat/copy** isi body dari request `POST /api/auth/webauthn/login/verify`:
+   - Salin seluruh request body (identifier + credential)
+3. **Login berhasil** → challenge sudah dihapus dari server
+
+4. **Buka Postman** dan kirim ulang data yang sama:
+```
+POST http://localhost:5000/api/auth/webauthn/login/verify
+Content-Type: application/json
+
+{
+  // Paste body yang sama persis dari step 2
+}
+```
+
+**Hasil yang Diharapkan:**
+```json
+{
+  "message": "Sesi habis"
+}
+```
+
+**Penjelasan**: Challenge sudah dihapus dari Map setelah login berhasil:
+```javascript
+// server/routes/auth.js (Line 119)
+challenges.delete(user._id.toString());  // ← Challenge dihapus setelah dipakai
+```
+
+##### Percobaan 2: Replay dengan Challenge Valid tapi Credential Lama
+
+1. **Minta challenge baru** via Postman:
+```
+POST http://localhost:5000/api/auth/webauthn/login/options
+Content-Type: application/json
+
+{"identifier": "1234567890123456"}
+```
+2. **Kirim credential lama** (dari login sebelumnya) dengan challenge baru:
+```
+POST http://localhost:5000/api/auth/webauthn/login/verify
+Content-Type: application/json
+
+{
+  "identifier": "1234567890123456",
+  "credential": {
+    // credential dari login sebelumnya (challenge lama)
+  }
+}
+```
+
+**Hasil yang Diharapkan:**
+```json
+{
+  "message": "Login gagal",
+  "error": "Unexpected challenge"
+}
+```
+
+**Penjelasan**: `clientDataJSON` di dalam credential mengandung challenge. Server membandingkan challenge di credential vs challenge yang tersimpan. Jika berbeda → **DITOLAK**.
+
+##### Percobaan 3: Counter Manipulation Test
+
+1. Login normal berhasil → counter naik (misal dari 0 ke 1)
+2. Coba kirim ulang credential lama (yang counter-nya masih 0)
+3. Server menolak karena `counter credential (0) < counter di DB (1)`
+
+```javascript
+// server/utils/webauthn.js (Line 170)
+counter: Number(credential.counter) || 0,  // Counter dari DB
+// Library verifikasi akan cek: response.counter > stored.counter
+```
+
+### Bukti dalam Kode
+
+| File | Line | Mekanisme Anti-Replay |
+|------|------|----------------------|
+| [auth.js](file:///c:/Users/Asus/OneDrive/Desktop/webauthn-passwordless-demo/server/routes/auth.js#L87) | 87 | Challenge random baru setiap login |
+| [auth.js](file:///c:/Users/Asus/OneDrive/Desktop/webauthn-passwordless-demo/server/routes/auth.js#L119) | 119 | `challenges.delete()` — challenge dihapus setelah pakai |
+| [auth.js](file:///c:/Users/Asus/OneDrive/Desktop/webauthn-passwordless-demo/server/routes/auth.js#L108) | 108 | Cek challenge ada/tidak sebelum verifikasi |
+| [webauthn.js](file:///c:/Users/Asus/OneDrive/Desktop/webauthn-passwordless-demo/server/utils/webauthn.js#L88) | 88 | `expectedChallenge` dicocokkan saat verifikasi |
+| [webauthn.js](file:///c:/Users/Asus/OneDrive/Desktop/webauthn-passwordless-demo/server/utils/webauthn.js#L170) | 170 | Counter tracking per credential |
+| [auth.js](file:///c:/Users/Asus/OneDrive/Desktop/webauthn-passwordless-demo/server/routes/auth.js#L115) | 115 | Counter diupdate setelah login berhasil |
+
+### ✅ Kesimpulan Replay Attack
+**WebAuthn TAHAN terhadap Replay Attack** karena:
+1. Challenge bersifat **random dan one-time-use** → tidak bisa dipakai ulang
+2. Challenge **dihapus dari server** setelah digunakan
+3. Counter naik setiap login → credential lama ditolak
+4. Signature mengandung challenge → signature lama tidak cocok dengan challenge baru
+
+---
+
+## 💾 Skenario 3: DATABASE BREACH
+
+### Definisi
+Database breach adalah situasi di mana **penyerang berhasil mengakses database** dan mencuri data yang tersimpan.
+
+### Mengapa WebAuthn Tahan Database Breach?
+
+Dalam sistem password tradisional, jika DB bocor → penyerang mendapat password hash → bisa di-crack. Pada WebAuthn:
+- **Private key TIDAK pernah dikirim ke server** → tidak ada di database
+- Yang tersimpan di DB hanya **public key** → tidak bisa digunakan untuk login
+- NIK dienkripsi dengan **AES-256-CBC**
+- NIK dicari menggunakan **Blind Index (HMAC-SHA256)**
+
+### Langkah Pengujian Database Breach
+
+#### Tools yang Dibutuhkan
+- **MongoDB Compass** atau **mongosh** (untuk akses database langsung)
+- **Postman** (untuk mencoba login dengan data curian)
+- **Node.js REPL** (untuk simulasi dekripsi)
+
+#### Langkah-Langkah:
+
+##### Percobaan 1: Mengekstrak Data dari MongoDB (Simulasi Breach)
+
+1. **Buka MongoDB Compass** dan connect ke database:
+   ```
+   mongodb+srv://ichwanpwt22_db_user:VfkhqjZtdeUmOutf@passkey.tltkiyi.mongodb.net/
+   ```
+   
+2. **Lihat collection `users`** dan catat data satu user:
+   ```json
+   {
+     "username": "John Doe",
+     "nik": "a1b2c3d4e5f6:7890abcdef123456",  // ← Terenkripsi AES-256!
+     "nikHash": "abc123def456...",              // ← Hash satu arah
+     "webauthnCredentials": [{
+       "credentialID": "abc123...",
+       "credentialPublicKey": "MFkwEwYH...",   // ← Hanya PUBLIC key
+       "counter": 5
+     }]
+   }
+   ```
+
+3. **Screenshot data ini** untuk bukti Bab 4 — tunjukkan bahwa:
+   - ❌ NIK **tidak terbaca** (terenkripsi)
+   - ❌ Tidak ada **password** di database
+   - ❌ Hanya ada **public key**, bukan private key
+
+##### Percobaan 2: Coba Login Menggunakan Public Key Curian
+
+1. **Copy `credentialPublicKey`** dari MongoDB
+2. **Buka Postman** dan coba buat credential palsu:
+```
+POST http://localhost:5000/api/auth/webauthn/login/verify
+Content-Type: application/json
+
+{
+  "identifier": "1234567890123456",
+  "credential": {
+    "id": "credentialID_dari_DB",
+    "rawId": "credentialID_dari_DB",
+    "response": {
+      "authenticatorData": "fake_authenticator_data",
+      "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiY2hhbGxlbmdlX3ZhbGlkIiwib3JpZ2luIjoiaHR0cDovL2xvY2FsaG9zdDo1MTczIn0=",
+      "signature": "fake_signature"
+    },
+    "type": "public-key"
+  }
+}
+```
+
+**Hasil yang Diharapkan:**
+```json
+{
+  "message": "Login gagal",
+  "error": "Signature verification failed"
+}
+```
+
+**Penjelasan**: Untuk membuat signature yang valid, penyerang membutuhkan **private key** yang tersimpan di **perangkat korban** (TPM/Secure Enclave). Public key yang ada di DB hanya bisa **memverifikasi** signature, bukan **membuat** signature.
+
+##### Percobaan 3: Coba Dekripsi NIK Tanpa Kunci
+
+1. **Buat file test** `test_decrypt.js`:
+```javascript
+import crypto from 'crypto';
+
+// Data curian dari DB
+const encryptedNik = "a1b2c3d4e5f6:7890abcdef123456"; // dari MongoDB
+
+// Coba dekripsi tanpa ENCRYPTION_KEY yang benar
+const wrongKey = crypto.createHash('sha256').update('kunci_salah').digest('base64').substring(0, 32);
+const parts = encryptedNik.split(':');
+const iv = Buffer.from(parts[0], 'hex');
+const encrypted = Buffer.from(parts[1], 'hex');
+
+try {
+  const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(wrongKey), iv);
+  let decrypted = decipher.update(encrypted);
+  decrypted = Buffer.concat([decrypted, decipher.final()]);
+  console.log('GAGAL: Data bisa didekripsi:', decrypted.toString());
+} catch (error) {
+  console.log('BERHASIL TERLINDUNGI: Dekripsi gagal tanpa kunci yang benar');
+  console.log('Error:', error.message);
+}
+```
+
+**Hasil yang Diharapkan:**
+```
+BERHASIL TERLINDUNGI: Dekripsi gagal tanpa kunci yang benar
+Error: error:06065064:digital envelope routines:EVP_DecryptFinal_ex:bad decrypt
+```
+
+##### Percobaan 4: Buktikan Blind Index Tidak Bisa Di-reverse
+
+```javascript
+import crypto from 'crypto';
+
+// nikHash curian dari DB
+const nikHash = "abc123def456..."; // dari MongoDB
+
+// HMAC SHA-256 adalah SATU ARAH — tidak bisa di-reverse
+// Penyerang hanya bisa brute-force, tapi NIK 16 digit = 10^16 kombinasi
+console.log('nikHash:', nikHash);
+console.log('Apakah bisa dikembalikan ke NIK asli? TIDAK.');
+console.log('Untuk brute-force 16 digit: 10^16 = 10.000.000.000.000.000 kombinasi');
+```
+
+### Bukti dalam Kode
+
+| File | Line | Mekanisme Anti-Breach |
+|------|------|----------------------|
+| [User.js](file:///c:/Users/Asus/OneDrive/Desktop/webauthn-passwordless-demo/server/models/User.js#L60-L66) | 60-66 | NIK dienkripsi (AES-256-CBC) sebelum masuk DB |
+| [User.js](file:///c:/Users/Asus/OneDrive/Desktop/webauthn-passwordless-demo/server/models/User.js#L34) | 34 | Blind Index (HMAC-SHA256) untuk pencarian |
+| [encryption.js](file:///c:/Users/Asus/OneDrive/Desktop/webauthn-passwordless-demo/server/utils/encryption.js#L11-L28) | 11-28 | Implementasi AES-256-CBC dengan random IV |
+| [hash.js](file:///c:/Users/Asus/OneDrive/Desktop/webauthn-passwordless-demo/server/utils/hash.js#L13-L23) | 13-23 | HMAC-SHA256 satu arah |
+| WebAuthn Standard | - | Private key TIDAK PERNAH dikirim ke server |
+
+### ✅ Kesimpulan Database Breach
+**WebAuthn TAHAN terhadap Database Breach** karena:
+1. **Tidak ada password** di database → tidak ada yang bisa di-crack
+2. **Private key tidak pernah tersimpan di server** → penyerang tidak bisa membuat signature
+3. **Public key tidak cukup untuk login** → hanya bisa verifikasi, bukan otentikasi
+4. **NIK dienkripsi AES-256-CBC** → tidak terbaca tanpa kunci
+5. **Blind Index satu arah** → tidak bisa di-reverse
+
+---
+
+## 📊 Template Tabel Hasil Pengujian untuk Bab 4
+
+### Tabel Ringkasan Pengujian
+
+| No | Skenario Serangan | Metode Pengujian | Hasil | Status |
+|----|-------------------|------------------|-------|--------|
+| 1 | Phishing Attack — Origin Palsu | Postman: kirim credential dari origin `fake-website.com` | Server menolak: "origin mismatch" | ✅ **TAHAN** |
+| 2 | Phishing Attack — CORS Bypass | Browser console dari domain lain | Request diblokir oleh CORS | ✅ **TAHAN** |
+| 3 | Phishing Attack — Website Clone | Serve frontend di port berbeda | Passkey tidak tersedia di domain lain | ✅ **TAHAN** |
+| 4 | Replay Attack — Kirim Ulang Credential | Postman: replay request login yang berhasil | Server menolak: "Sesi habis" (challenge sudah dihapus) | ✅ **TAHAN** |
+| 5 | Replay Attack — Challenge Lama + Credential Lama | Postman: challenge baru + credential lama | Server menolak: "Unexpected challenge" | ✅ **TAHAN** |
+| 6 | Replay Attack — Counter Manipulation | Postman: credential dengan counter lebih rendah | Server menolak: counter mismatch | ✅ **TAHAN** |
+| 7 | Database Breach — Ekstrak Data | MongoDB Compass: baca data user | NIK terenkripsi, tidak ada password, hanya public key | ✅ **TAHAN** |
+| 8 | Database Breach — Login pakai Public Key | Postman: buat credential palsu dari data DB | Server menolak: "Signature verification failed" | ✅ **TAHAN** |
+| 9 | Database Breach — Dekripsi NIK | Node.js script tanpa kunci yang benar | Dekripsi gagal (bad decrypt error) | ✅ **TAHAN** |
+| 10 | Database Breach — Reverse Blind Index | Analisis: coba kembalikan nikHash ke NIK | Hash satu arah, tidak bisa di-reverse | ✅ **TAHAN** |
+
+### Tabel Perbandingan: Password vs WebAuthn
+
+| Aspek Keamanan | Password Tradisional | WebAuthn (Project Ini) |
+|---------------|---------------------|----------------------|
+| Phishing Attack | ❌ Rentan — Password bisa diketik di situs palsu | ✅ Tahan — Credential terkunci ke domain |
+| Replay Attack | ❌ Rentan — Password yang sama bisa dikirim ulang | ✅ Tahan — Challenge + counter one-time |
+| Database Breach | ⚠️ Rentan — Hash bisa di-crack (rainbow table) | ✅ Tahan — Private key tidak di server |
+| Brute Force | ❌ Rentan — Password bisa ditebak | ✅ Tahan — Kriptografi asimetris + rate limit |
+| Credential Stuffing | ❌ Rentan — Password sering reused | ✅ Tahan — Credential unik per domain |
+| Keylogger | ❌ Rentan — Keystroke direkam | ✅ Tahan — Biometrik, bukan input keyboard |
+
+---
+
+## 🛠️ Tools yang Diperlukan
+
+### 1. Postman (Wajib)
+- **Kegunaan**: Mengirim HTTP request manual ke API server
+- **Download**: [postman.com/downloads](https://www.postman.com/downloads/)
+- **Alternatif gratis**: Insomnia, Thunder Client (extension VS Code)
+- **Dipakai untuk**: Skenario 1 (Phishing), Skenario 2 (Replay), Skenario 3 (Database Breach)
+
+### 2. MongoDB Compass (Wajib)
+- **Kegunaan**: Mengakses database langsung untuk simulasi breach
+- **Download**: [mongodb.com/products/compass](https://www.mongodb.com/products/compass)
+- **Dipakai untuk**: Skenario 3 (Database Breach)
+
+### 3. Browser DevTools (Sudah Ada)
+- **Kegunaan**: Capture network requests, inspect data
+- **Cara buka**: F12 atau Ctrl+Shift+I
+- **Tab yang dipakai**: Network, Console
+- **Dipakai untuk**: Skenario 1 (CORS), Skenario 2 (Capture request)
+
+### 4. cURL (Opsional, sudah ada di Windows 10+)
+- **Kegunaan**: Alternatif Postman via command line
+- **Dipakai untuk**: Quick test dari terminal
+
+---
+
+## ⚠️ Catatan Penting & Rekomendasi
+
+### Hal yang Perlu Diperhatikan
+
+> [!WARNING]
+> **Challenge disimpan di in-memory Map**, bukan di session/database. Ini berarti:
+> - Jika server restart, semua challenge hilang → user yang sedang di tengah proses harus ulang
+> - Tidak ada TTL (time-to-live) pada challenge → secara teori, challenge yang belum dipakai akan terus ada di memory
+> - Untuk skripsi ini sudah cukup, tapi untuk production sebaiknya gunakan Redis atau session
+
+> [!WARNING]
+> **Rate Limiter hanya aktif di production** (`NODE_ENV=production`). Di development, tidak ada pembatasan request. Ini normal untuk development, tapi pastikan disebutkan di skripsi bahwa di production rate limiter sudah aktif.
+
+> [!NOTE]
+> **Counter fallback ke 0 untuk iCloud Keychain** (Line 193-206 di webauthn.js). Ini adalah trade-off antara kompatibilitas Apple dan keamanan counter. Untuk skripsi, jelaskan bahwa ini adalah keputusan desain yang umum dilakukan, karena Apple iCloud Keychain tidak mendukung counter.
+
+### Rekomendasi Perbaikan Minor (Opsional untuk Skripsi)
+
+1. **Tambahkan TTL untuk challenge Map** — agar challenge expired otomatis setelah 60 detik
+2. **Log semua percobaan serangan** — tambahkan logging untuk failed authentication attempts
+3. **Aktifkan rate limiter juga di development** — untuk pengujian yang lebih realistis
+
+---
+
+## 📋 Urutan Pengujian yang Disarankan
+
+1. ✅ Pastikan project berjalan normal (register + login berhasil)
+2. 📸 Screenshot tampilan normal untuk perbandingan
+3. 🔍 Lakukan pengujian **Phishing Attack** (3 percobaan)
+4. 🔄 Lakukan pengujian **Replay Attack** (3 percobaan)
+5. 💾 Lakukan pengujian **Database Breach** (4 percobaan)
+6. 📊 Isi tabel hasil pengujian
+7. ✍️ Tulis analisis dan kesimpulan
+
+> [!TIP]
+> Untuk setiap percobaan, **screenshot hasilnya** (Postman response, MongoDB Compass, Browser console). Screenshot ini akan menjadi **bukti** yang kuat di Bab 4.

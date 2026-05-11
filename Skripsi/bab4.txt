@@ -1,0 +1,266 @@
+﻿BAB IV
+HASIL DAN PEMBAHASAN
+
+A.	Hasil Pengembangan Sistem
+Berdasarkan metode Research and Development (R&D) dengan model Prototyping yang telah dirancang pada BAB III, pengembangan sistem dilakukan dalam tiga iterasi. Bagian ini menyajikan hasil implementasi dari setiap iterasi beserta evaluasi yang dilakukan.
+
+1.	Hasil Iterasi 1: Implementasi Dasar Sistem
+Iterasi pertama menghasilkan prototipe awal sistem yang mencakup implementasi arsitektur client-server, struktur basis data, dan fitur autentikasi dasar FIDO2/WebAuthn.
+
+a)	Implementasi Arsitektur Sistem
+Sistem diimplementasikan menggunakan arsitektur client-server dengan pemisahan antara frontend dan backend. Frontend dibangun menggunakan React.js v19 dengan Vite v7 sebagai build tool dan di-deploy pada platform Vercel. Backend dibangun menggunakan Node.js dengan Express v5 dan di-deploy secara terpisah pada platform Vercel. Komunikasi antara frontend dan backend dilakukan melalui REST API dengan format JSON. Gambar 4.1 menunjukkan arsitektur sistem yang telah diimplementasikan.
+[Gambar 4.1. Arsitektur Sistem yang Diimplementasikan (Sumber: Hasil Penelitian, 2026)]
+
+b)	Implementasi Struktur Basis Data
+Basis data diimplementasikan menggunakan MongoDB Atlas dengan dua koleksi utama, yaitu koleksi User dan koleksi Pengajuan. Koleksi User menyimpan data pengguna, kredensial WebAuthn, dan recovery codes. Koleksi Pengajuan menyimpan data permohonan surat keterangan. Seluruh data kependudukan sensitif dienkripsi menggunakan AES-256-CBC sebelum disimpan ke basis data. Gambar 4.2 menunjukkan struktur data pada koleksi User di MongoDB.
+[Gambar 4.2. Struktur Koleksi User pada MongoDB Compass (Sumber: Hasil Penelitian, 2026)]
+Pada Gambar 4.2 terlihat bahwa field nik tersimpan dalam bentuk ciphertext (contoh: "a1b2c3d4:e5f6g7h8...") yang tidak dapat dibaca secara langsung, sedangkan field nikHash tersimpan sebagai hash HMAC-SHA256 untuk keperluan pencarian tanpa mendekripsi seluruh dokumen. Field webauthnCredentials berisi array kredensial yang mencakup credentialID, credentialPublicKey dalam format Base64, dan counter untuk pencegahan replay attack.
+
+c)	Implementasi Registrasi WebAuthn
+Proses registrasi diimplementasikan dalam dua tahap sesuai standar FIDO2/WebAuthn. Tahap pertama, frontend mengirimkan NIK dan nama pengguna ke endpoint /api/auth/webauthn/register/options. Server menghasilkan challenge acak dan parameter kriptografi yang dikirim kembali ke browser. Tahap kedua, browser memicu prompt biometrik melalui fungsi startRegistration() dari library @simplewebauthn/browser, dan credential yang dihasilkan dikirim ke endpoint /api/auth/webauthn/register/verify untuk diverifikasi dan disimpan. Gambar 4.3 menunjukkan halaman registrasi dan prompt biometrik pada browser.
+[Gambar 4.3. Halaman Registrasi dan Prompt Biometrik (Sumber: Hasil Penelitian, 2026)]
+Setelah registrasi berhasil, sistem secara otomatis menghasilkan empat recovery codes yang di-hash menggunakan SHA-256 sebelum disimpan ke basis data. Kode asli ditampilkan kepada pengguna untuk disimpan sebagai cadangan. Gambar 4.4 menunjukkan tampilan recovery codes setelah registrasi berhasil.
+[Gambar 4.4. Tampilan Recovery Codes Setelah Registrasi (Sumber: Hasil Penelitian, 2026)]
+
+d)	Implementasi Login WebAuthn
+Proses login diimplementasikan menggunakan mekanisme challenge-response. Pengguna memasukkan NIK, kemudian server menghasilkan challenge baru melalui endpoint /api/auth/webauthn/login/options. Browser memicu verifikasi biometrik melalui fungsi startAuthentication(), dan hasil tanda tangan digital dikirim ke endpoint /api/auth/webauthn/login/verify. Server memverifikasi signature menggunakan public key yang tersimpan, memperbarui counter, dan mengeluarkan token JWT. Gambar 4.5 menunjukkan halaman login dan proses verifikasi biometrik.
+[Gambar 4.5. Halaman Login dan Verifikasi Biometrik (Sumber: Hasil Penelitian, 2026)]
+
+e)	Evaluasi Iterasi 1
+Evaluasi iterasi pertama menunjukkan bahwa fitur registrasi dan login WebAuthn berfungsi sesuai rancangan. Namun ditemukan beberapa temuan yang perlu diperbaiki pada iterasi berikutnya, yaitu: (1) fitur layanan administrasi belum diimplementasikan, (2) manajemen perangkat belum tersedia, dan (3) antarmuka pengguna masih dalam tahap dasar.
+
+2.	Hasil Iterasi 2: Implementasi Fitur Lengkap dan Pengujian Fungsional
+Iterasi kedua menghasilkan implementasi fitur lengkap sistem, mencakup fitur layanan administrasi, manajemen perangkat, pemulihan akun, serta pengujian fungsional.
+
+a)	Implementasi Middleware Keamanan
+Server dikonfigurasi dengan beberapa lapisan keamanan. Helmet digunakan untuk mengatur HTTP security headers. CORS dikonfigurasi untuk membatasi akses API hanya dari domain frontend yang diizinkan. Rate limiting diimplementasikan dengan batas 300 permintaan per IP per 15 menit secara global dan 30 percobaan autentikasi per IP per 15 menit pada endpoint autentikasi. Express Session dikonfigurasi untuk manajemen sesi cookie. Tabel 4.1 merangkum konfigurasi keamanan yang diimplementasikan.
+Tabel 4.1. Konfigurasi Middleware Keamanan
+No	Middleware	Konfigurasi	Fungsi
+1	Helmet	crossOriginResourcePolicy: cross-origin	Mengatur HTTP security headers
+2	CORS	origin: whitelist domain, credentials: true	Membatasi akses API lintas domain
+3	Rate Limiter Global	300 req/IP/15 menit	Mencegah serangan DoS
+4	Rate Limiter Auth	30 req/IP/15 menit	Mencegah brute force autentikasi
+5	Express Session	httpOnly: true, secure: true (production)	Manajemen sesi server-side
+
+b)	Implementasi Enkripsi Data Kependudukan
+Seluruh data kependudukan sensitif dienkripsi menggunakan AES-256-CBC dengan Initialization Vector (IV) acak sebelum disimpan ke basis data. Pada koleksi User, field nik dienkripsi secara otomatis melalui Mongoose pre-save hook dan didekripsi secara otomatis melalui post-init hook. Pada koleksi Pengajuan, field namaLengkap, nik, tempatLahir, tanggalLahir, dan alamat dienkripsi menggunakan Mongoose setter dan didekripsi menggunakan getter. Pencarian data terenkripsi dilakukan melalui Blind Index menggunakan HMAC-SHA256 yang disimpan pada field nikHash. Gambar 4.6 menunjukkan perbandingan data sebelum dan sesudah enkripsi di MongoDB.
+[Gambar 4.6. Data Terenkripsi pada MongoDB Compass (Sumber: Hasil Penelitian, 2026)]
+
+c)	Implementasi Fitur Pengajuan SKTM
+Fitur pengajuan Surat Keterangan Tidak Mampu (SKTM) diimplementasikan sebagai media pengujian sistem autentikasi. Pengguna yang telah terautentikasi dapat mengisi formulir pengajuan yang mencakup data pribadi, penghasilan, jumlah tanggungan, keperluan, dan dokumen pengantar. Data pengajuan dienkripsi sebelum disimpan dan melalui alur persetujuan admin. Surat yang disetujui dapat diunduh dalam format PDF yang dibuat menggunakan library pdf-lib. Gambar 4.7 menunjukkan halaman formulir pengajuan SKTM.
+[Gambar 4.7. Halaman Formulir Pengajuan SKTM (Sumber: Hasil Penelitian, 2026)]
+
+d)	Implementasi Manajemen Perangkat
+Fitur manajemen perangkat memungkinkan pengguna melihat daftar perangkat terdaftar, menambah perangkat baru, mengubah nama perangkat, dan menghapus perangkat dengan proteksi minimal satu perangkat aktif. Proteksi ini memastikan pengguna tidak terkunci dari akun karena menghapus satu-satunya perangkat autentikasi. Gambar 4.8 menunjukkan halaman manajemen perangkat.
+[Gambar 4.8. Halaman Manajemen Perangkat (Sumber: Hasil Penelitian, 2026)]
+
+e)	Implementasi Pemulihan Akun
+Pemulihan akun diimplementasikan menggunakan recovery codes yang dihasilkan saat registrasi. Pengguna memasukkan NIK dan salah satu recovery code untuk mendapatkan token sementara (1 jam), kemudian mendaftarkan perangkat baru. Setelah pemulihan berhasil, recovery codes diperbaharui secara otomatis. Selain itu, admin dapat membuat kode darurat untuk warga yang kehilangan seluruh akses. Gambar 4.9 menunjukkan alur pemulihan akun.
+[Gambar 4.9. Halaman Pemulihan Akun (Sumber: Hasil Penelitian, 2026)]
+
+f)	Implementasi Dashboard Admin
+Dashboard admin diimplementasikan dengan otorisasi berbasis peran. Admin dapat melihat dan mengelola pengajuan surat (menyetujui atau menolak), melihat daftar pengguna terdaftar, dan membuat kode darurat pemulihan akun. Gambar 4.10 menunjukkan dashboard admin.
+[Gambar 4.10. Dashboard Admin â€” Manajemen Pengajuan (Sumber: Hasil Penelitian, 2026)]
+
+g)	Hasil Pengujian Fungsional (Black Box Testing)
+Pengujian fungsional dilakukan menggunakan metode Black Box Testing terhadap seluruh kebutuhan fungsional yang telah ditetapkan pada BAB III. Tabel 4.2 menyajikan hasil pengujian fungsional.
+Tabel 4.2. Hasil Pengujian Fungsional
+No	Kode	Skenario Pengujian	Hasil yang Diharapkan	Hasil Aktual	Status
+1	F-01	Pengguna mengisi NIK (16 digit) dan nama lalu verifikasi biometrik	Akun berhasil dibuat dan pengguna diarahkan ke dashboard	Akun berhasil dibuat, recovery codes ditampilkan, pengguna diarahkan ke dashboard	Berhasil
+2	F-02	Pengguna memasukkan NIK lalu verifikasi biometrik	Login berhasil sesuai peran	Login berhasil, warga diarahkan ke dashboard warga, admin diarahkan ke dashboard admin	Berhasil
+3	F-03	Pengguna memasukkan NIK dan recovery code lalu daftar perangkat baru	Akun berhasil dipulihkan	Recovery code terverifikasi, perangkat baru terdaftar, recovery codes baru dihasilkan	Berhasil
+4	F-04	Pengguna menambah perangkat dan mencoba hapus satu-satunya perangkat	Penambahan berhasil; penghapusan ditolak	Perangkat baru berhasil ditambahkan; penghapusan satu-satunya perangkat ditolak dengan pesan peringatan	Berhasil
+5	F-05	Pengguna mengubah nama	Data profil berhasil diperbarui	Nama pengguna berhasil diperbarui pada profil	Berhasil
+6	F-06	Pengguna mengisi dan mengirim formulir pengajuan SKTM	Pengajuan tersimpan dengan status diproses	Pengajuan tersimpan dengan data terenkripsi dan status "diproses"	Berhasil
+7	F-07	Pengguna membuka halaman riwayat	Daftar pengajuan dan status ditampilkan	Daftar pengajuan beserta status ditampilkan dengan benar	Berhasil
+8	F-08	Pengguna mengunduh surat yang disetujui	File PDF berhasil diunduh	File PDF berhasil diunduh dengan data yang sesuai	Berhasil
+9	F-09	Admin menyetujui atau menolak pengajuan	Status pengajuan berubah	Status pengajuan berubah sesuai keputusan admin	Berhasil
+10	F-10	Admin membuat kode darurat	Kode darurat berhasil dibuat	Kode darurat 4 karakter berhasil dibuat dan ditampilkan	Berhasil
+11	F-11	Warga mengakses halaman admin	Akses ditolak	Warga diarahkan kembali ke dashboard warga, akses ke endpoint admin mengembalikan status 403	Berhasil
+
+Berdasarkan Tabel 4.2, seluruh 11 skenario pengujian fungsional menghasilkan status Berhasil. Sistem memenuhi seluruh kebutuhan fungsional yang telah ditetapkan pada BAB III.
+
+h)	Evaluasi Iterasi 2
+Evaluasi iterasi kedua menunjukkan bahwa seluruh fitur fungsional telah diimplementasikan dan berfungsi sesuai rancangan. Temuan yang perlu ditindaklanjuti pada iterasi ketiga meliputi: (1) penyempurnaan antarmuka pengguna, (2) penanganan edge case pada autentikasi, dan (3) pelaksanaan pengujian keamanan.
+3.	Hasil Iterasi 3: Penyempurnaan dan Pengujian Keamanan
+Iterasi ketiga berfokus pada penyempurnaan antarmuka, penanganan edge case, dan pelaksanaan pengujian keamanan terhadap tiga skenario ancaman.
+
+a)	Penyempurnaan Antarmuka
+Penyempurnaan antarmuka dilakukan pada beberapa aspek: penambahan pesan konfirmasi dan notifikasi toast pada setiap tindakan penting, penyempurnaan tampilan responsif untuk perangkat mobile, serta penambahan halaman panduan penggunaan. Gambar 4.11 menunjukkan tampilan antarmuka setelah penyempurnaan.
+[Gambar 4.11. Tampilan Antarmuka Setelah Penyempurnaan pada Desktop dan Mobile (Sumber: Hasil Penelitian, 2026)]
+
+b)	Penanganan Edge Case Autentikasi
+Penanganan edge case diimplementasikan untuk mendukung autentikator yang tidak sepenuhnya mendukung counter, seperti Apple iCloud Keychain yang selalu mengirimkan counter bernilai 0. Ketika terjadi counter mismatch, sistem melakukan percobaan ulang verifikasi dengan counter 0 sebelum menolak autentikasi. Pendekatan ini memastikan kompatibilitas lintas perangkat tanpa mengorbankan keamanan secara signifikan.
+
+c)	Validasi Lintas Perangkat
+Pengujian dilakukan pada dua perangkat sesuai Tabel 3.1, yaitu Laptop ASUS dengan browser Chrome pada Windows 11 dan Smartphone Poco M3 dengan browser Chrome pada Android. Tabel 4.3 menyajikan hasil validasi lintas perangkat.
+Tabel 4.3. Hasil Validasi Lintas Perangkat
+No	Fitur	Laptop ASUS (Chrome/Windows)	Poco M3 (Chrome/Android)
+1	Registrasi WebAuthn	Berhasil (Windows Hello)	Berhasil (Sidik Jari)
+2	Login WebAuthn	Berhasil	Berhasil
+3	Pemulihan Akun	Berhasil	Berhasil
+4	Pengajuan SKTM	Berhasil	Berhasil
+5	Responsivitas UI	Tampilan desktop sesuai	Tampilan mobile responsif
+
+B.	Hasil Pengujian Keamanan
+Pengujian keamanan dilakukan melalui tiga skenario serangan sesuai rancangan pada BAB III untuk membuktikan mekanisme keamanan FIDO2/WebAuthn dalam menghadapi ancaman phishing attack, replay attack, dan database breach.
+
+1.	Skenario 1: Simulasi Phishing Attack
+Pengujian phishing attack bertujuan membuktikan bahwa kredensial WebAuthn tidak dapat digunakan pada domain selain domain yang terdaftar saat registrasi.
+
+a)	Percobaan 1: Mengirim Credential dengan Origin Palsu
+Pengujian dilakukan menggunakan Postman untuk mensimulasikan penyerang yang mengirimkan credential dari website palsu ke server asli. Credential yang dikirim berisi clientDataJSON dengan origin "https://fake-website.com" yang berbeda dari origin asli "http://localhost:5173".
+Prosedur:
+1) Server dijalankan pada http://localhost:5000.
+2) Permintaan login options dikirim ke endpoint /api/auth/webauthn/login/options dengan NIK pengguna terdaftar untuk mendapatkan challenge.
+3) Credential palsu dikirim ke endpoint /api/auth/webauthn/login/verify dengan clientDataJSON yang berisi origin "https://fake-website.com".
+Hasil: Server menolak autentikasi dengan pesan error "origin mismatch". Hal ini terjadi karena fungsi verifyAuthenticationResponse() pada server memvalidasi bahwa origin dalam clientDataJSON harus sama dengan expectedOrigin yang dikonfigurasi. Gambar 4.12 menunjukkan respons penolakan dari server.
+[Gambar 4.12. Respons Server Menolak Origin Palsu pada Postman (Sumber: Hasil Penelitian, 2026)]
+
+b)	Percobaan 2: Mengakses API dari Domain Berbeda (CORS)
+Pengujian dilakukan dengan membuka console browser pada domain https://google.com dan mencoba mengirimkan request ke API server menggunakan JavaScript fetch().
+Prosedur:
+1) Browser dibuka pada halaman https://google.com.
+2) Console browser digunakan untuk mengirim fetch request ke http://localhost:5000/api/auth/webauthn/login/options.
+Hasil: Browser memblokir request dengan error "CORS policy: No 'Access-Control-Allow-Origin' header". Server dikonfigurasi hanya mengizinkan origin dari daftar allowedOrigins yang telah ditentukan. Gambar 4.13 menunjukkan error CORS pada console browser.
+[Gambar 4.13. Error CORS pada Browser Console (Sumber: Hasil Penelitian, 2026)]
+
+c)	Percobaan 3: Website Clone pada Port Berbeda
+Pengujian dilakukan dengan menjalankan salinan frontend pada port berbeda (http://localhost:3000) untuk mensimulasikan website phishing.
+Prosedur:
+1) Frontend di-build dan disajikan pada http://localhost:3000 menggunakan npx serve.
+2) Pengguna mencoba login melalui http://localhost:3000.
+Hasil: Browser tidak menampilkan passkey yang terdaftar karena credential WebAuthn terikat pada origin spesifik (http://localhost:5173). Meskipun rpID sama (localhost), perbedaan port menyebabkan origin berbeda sehingga passkey tidak tersedia.
+
+d)	Analisis Mekanisme Pertahanan Phishing
+Berdasarkan ketiga percobaan, sistem terbukti tahan terhadap phishing attack melalui tiga lapisan pertahanan:
+1) Origin Binding: Credential WebAuthn secara kriptografis terikat pada domain dan origin saat registrasi. Browser secara otomatis menyertakan origin ke dalam clientDataJSON yang ditandatangani oleh private key.
+2) Server-side Origin Validation: Server memvalidasi expectedOrigin dan expectedRPID pada setiap verifikasi autentikasi, menolak respons yang tidak cocok.
+3) CORS Policy: Server membatasi akses API hanya dari origin yang diizinkan, mencegah request dari domain tidak terdaftar.
+4) Private Key Isolation: Private key tidak pernah meninggalkan perangkat pengguna, sehingga tidak ada kredensial yang dapat dicuri melalui website palsu.
+
+2.	Skenario 2: Simulasi Replay Attack
+Pengujian replay attack bertujuan membuktikan bahwa data autentikasi yang berhasil disadap tidak dapat digunakan ulang oleh penyerang.
+
+a)	Percobaan 1: Mengirim Ulang Data Login yang Berhasil
+Pengujian dilakukan dengan merekam request login yang berhasil menggunakan Browser DevTools, kemudian mengirim ulang data yang sama menggunakan Postman.
+Prosedur:
+1) Login dilakukan secara normal melalui browser dengan DevTools Network tab aktif.
+2) Body request POST /api/auth/webauthn/login/verify disalin dari DevTools.
+3) Request yang sama dikirim ulang menggunakan Postman.
+Hasil: Server menolak dengan respons {"message": "Sesi habis"}. Hal ini terjadi karena challenge dihapus dari server-side Map setelah login berhasil melalui perintah challenges.delete(user._id.toString()). Gambar 4.14 menunjukkan respons penolakan.
+[Gambar 4.14. Respons Server Menolak Replay â€” "Sesi habis" (Sumber: Hasil Penelitian, 2026)]
+
+b)	Percobaan 2: Credential Lama dengan Challenge Baru
+Pengujian dilakukan dengan meminta challenge baru dari server, kemudian mengirim credential lama (dari login sebelumnya).
+Prosedur:
+1) Challenge baru diminta melalui Postman ke endpoint /api/auth/webauthn/login/options.
+2) Credential dari login sebelumnya (yang berisi challenge lama di dalam clientDataJSON) dikirim ke endpoint /api/auth/webauthn/login/verify.
+Hasil: Server menolak dengan error "Unexpected challenge". Hal ini terjadi karena clientDataJSON di dalam credential berisi challenge yang di-hash dan dibandingkan dengan expectedChallenge yang tersimpan di server. Karena challenge berbeda, verifikasi gagal. Gambar 4.15 menunjukkan respons penolakan.
+[Gambar 4.15. Respons Server Menolak Challenge Tidak Cocok (Sumber: Hasil Penelitian, 2026)]
+
+c)	Percobaan 3: Verifikasi Counter Mechanism
+Pengujian dilakukan untuk memverifikasi bahwa counter pada credential meningkat setiap login dan server menolak counter yang tidak meningkat.
+Prosedur:
+1) Nilai counter pada credential pengguna dicatat dari MongoDB sebelum login (contoh: counter = 5).
+2) Login dilakukan secara normal dan counter diperiksa setelah login (contoh: counter = 6).
+3) Credential dengan counter lama (5) dicoba dikirim ulang.
+Hasil: Counter berhasil meningkat dari 5 menjadi 6 setelah login. Credential dengan counter lebih rendah ditolak oleh library verifikasi karena counter tidak meningkat. Gambar 4.16 menunjukkan perubahan counter pada MongoDB.
+[Gambar 4.16. Perubahan Counter Sebelum dan Sesudah Login pada MongoDB (Sumber: Hasil Penelitian, 2026)]
+
+d)	Analisis Mekanisme Pertahanan Replay Attack
+Berdasarkan ketiga percobaan, sistem terbukti tahan terhadap replay attack melalui dua mekanisme utama:
+1) Challenge One-Time-Use: Server menghasilkan challenge acak untuk setiap permintaan autentikasi dan menghapusnya setelah digunakan. Challenge yang sama tidak dapat digunakan dua kali.
+2) Counter Incrementing: Setiap credential memiliki counter yang meningkat pada setiap autentikasi berhasil. Server menolak respons autentikasi jika counter yang dikirim tidak lebih besar dari counter yang tersimpan di basis data.
+
+3.	Skenario 3: Simulasi Database Breach
+Pengujian database breach bertujuan membuktikan bahwa kebocoran basis data tidak mengekspos data sensitif dan tidak memungkinkan penyerang untuk login.
+
+a)	Percobaan 1: Mengekstrak dan Mengevaluasi Data dari MongoDB
+Pengujian dilakukan dengan mengakses langsung basis data MongoDB menggunakan MongoDB Compass untuk mensimulasikan penyerang yang berhasil mendapatkan akses ke basis data.
+Prosedur:
+1) MongoDB Compass digunakan untuk terhubung ke basis data.
+2) Koleksi users dibuka dan data pengguna dievaluasi.
+Hasil: Data yang ditemukan pada koleksi users menunjukkan bahwa:
+- Field nik tersimpan dalam bentuk ciphertext AES-256-CBC (contoh: "3a8f2b1c...:9d4e5f6a...") dan tidak dapat dibaca secara langsung.
+- Field nikHash tersimpan sebagai hash HMAC-SHA256 satu arah yang tidak dapat dikembalikan ke NIK asli.
+- Tidak ada field password atau kata sandi di seluruh dokumen.
+- Field webauthnCredentials.credentialPublicKey berisi kunci publik dalam format Base64, bukan kunci privat.
+- Field backupCodes.code tersimpan sebagai hash SHA-256 satu arah.
+Gambar 4.17 menunjukkan data pengguna pada MongoDB Compass.
+[Gambar 4.17. Data Pengguna pada MongoDB Compass â€” NIK Terenkripsi (Sumber: Hasil Penelitian, 2026)]
+
+b)	Percobaan 2: Mencoba Login Menggunakan Data Curian dari Database
+Pengujian dilakukan dengan menggunakan data yang diekstrak dari basis data (credentialID dan credentialPublicKey) untuk mencoba login melalui Postman.
+Prosedur:
+1) CredentialID dan credentialPublicKey disalin dari MongoDB Compass.
+2) Credential palsu dibuat dengan data tersebut dan dikirim ke endpoint /api/auth/webauthn/login/verify melalui Postman.
+Hasil: Server menolak dengan error "Signature verification failed". Hal ini terjadi karena untuk menghasilkan signature yang valid, diperlukan private key yang tersimpan di perangkat pengguna (Trusted Platform Module/Secure Enclave). Public key yang tersimpan di basis data hanya dapat digunakan untuk memverifikasi signature, bukan membuatnya. Gambar 4.18 menunjukkan respons penolakan.
+[Gambar 4.18. Respons Server Menolak Credential Palsu dari Data Database (Sumber: Hasil Penelitian, 2026)]
+
+c)	Percobaan 3: Mencoba Dekripsi NIK Tanpa Kunci Enkripsi
+Pengujian dilakukan dengan membuat script Node.js untuk mencoba mendekripsi NIK yang terenkripsi menggunakan kunci yang salah.
+Prosedur:
+1) NIK terenkripsi disalin dari MongoDB.
+2) Script dekripsi dijalankan dengan kunci yang berbeda dari ENCRYPTION_KEY asli.
+Hasil: Dekripsi gagal dengan error "bad decrypt", membuktikan bahwa NIK terenkripsi tidak dapat dibaca tanpa kunci enkripsi yang benar. Kunci enkripsi tersimpan di environment variable server dan tidak terdapat di dalam basis data. Gambar 4.19 menunjukkan hasil percobaan dekripsi.
+[Gambar 4.19. Percobaan Dekripsi NIK Gagal Tanpa Kunci yang Benar (Sumber: Hasil Penelitian, 2026)]
+
+d)	Analisis Mekanisme Pertahanan Database Breach
+Berdasarkan ketiga percobaan, sistem terbukti tahan terhadap database breach melalui empat mekanisme:
+1) Tidak Ada Password: Sistem tidak menyimpan kata sandi di basis data sehingga tidak ada password hash yang dapat di-crack melalui rainbow table atau brute force.
+2) Private Key Isolation: Kunci privat WebAuthn tidak pernah dikirim dan disimpan di server. Kunci publik yang tersimpan di basis data hanya dapat memverifikasi signature, bukan membuatnya.
+3) Enkripsi AES-256-CBC: Data kependudukan sensitif (NIK, nama, alamat, dll.) dienkripsi menggunakan AES-256-CBC dengan IV acak. Kunci enkripsi tersimpan di environment variable, terpisah dari basis data.
+4) Hash Satu Arah: NIK di-hash menggunakan HMAC-SHA256 sebagai Blind Index untuk pencarian. Recovery codes di-hash menggunakan SHA-256. Kedua hash bersifat satu arah dan tidak dapat dikembalikan ke bentuk asli.
+
+4.	Ringkasan Hasil Pengujian Keamanan
+Tabel 4.4 merangkum seluruh hasil pengujian keamanan yang telah dilakukan.
+Tabel 4.4. Ringkasan Hasil Pengujian Keamanan
+No	Skenario Serangan	Percobaan	Hasil	Status
+1	Phishing Attack	Origin palsu via Postman	Server menolak: origin mismatch	Tahan
+2	Phishing Attack	CORS dari domain lain	Browser memblokir request	Tahan
+3	Phishing Attack	Website clone port berbeda	Passkey tidak tersedia	Tahan
+4	Replay Attack	Kirim ulang data login berhasil	Server menolak: "Sesi habis"	Tahan
+5	Replay Attack	Credential lama + challenge baru	Server menolak: "Unexpected challenge"	Tahan
+6	Replay Attack	Counter verification	Counter meningkat, credential lama ditolak	Tahan
+7	Database Breach	Ekstrak data dari MongoDB	NIK terenkripsi, tidak ada password, hanya public key	Tahan
+8	Database Breach	Login pakai data curian	Server menolak: "Signature verification failed"	Tahan
+9	Database Breach	Dekripsi NIK tanpa kunci	Dekripsi gagal: "bad decrypt"	Tahan
+
+Berdasarkan Tabel 4.4, seluruh 9 percobaan pengujian keamanan menunjukkan bahwa sistem tahan terhadap ketiga skenario serangan. Hasil ini membuktikan bahwa mekanisme keamanan FIDO2/WebAuthn yang diimplementasikan mampu melindungi sistem dari ancaman phishing attack, replay attack, dan database breach.
+
+C.	Pembahasan
+Berdasarkan hasil pengembangan dan pengujian yang telah diuraikan, bagian ini membahas temuan-temuan penting serta keterkaitan hasil dengan tujuan penelitian.
+
+1.	Kesesuaian dengan Tujuan Penelitian
+Tujuan penelitian ini adalah merancang dan mengimplementasikan sistem autentikasi passwordless berbasis FIDO2/WebAuthn pada prototipe website layanan administrasi Kelurahan Karangpucung serta menguji fungsionalitas dan keamanannya. Berdasarkan hasil yang diperoleh:
+a) Sistem berhasil dirancang dan diimplementasikan menggunakan arsitektur client-server dengan React.js pada frontend dan Node.js/Express pada backend, menggunakan library SimpleWebAuthn v13.2.2.
+b) Seluruh 11 kebutuhan fungsional (F-01 hingga F-11) berhasil diimplementasikan dan diuji dengan status Berhasil pada pengujian Black Box Testing.
+c) Seluruh 6 kebutuhan non-fungsional (FN-01 hingga FN-06) berhasil dipenuhi melalui implementasi kriptografi WebAuthn, enkripsi AES-256-CBC, Blind Index HMAC-SHA256, Helmet, rate limiting, dan desain responsif.
+d) Pengujian keamanan terhadap 3 skenario ancaman (9 percobaan) seluruhnya menunjukkan status Tahan.
+
+2.	Perbandingan dengan Penelitian Terdahulu
+Tabel 4.5 menyajikan perbandingan kontribusi penelitian ini terhadap penelitian terdahulu yang telah dikaji pada BAB II.
+Tabel 4.5. Perbandingan dengan Penelitian Terdahulu
+No	Aspek	Arianto dkk. (2025)	Atmawijaya & Radiyah (2024)	Akmal dkk. (2026)	Tran dkk. (2025)	Penelitian Ini
+1	Pendekatan	OAuth 2.0 + OTP	FIDO + FaceNet (MFA)	Analisis 2FA	WebAuthn Passwordless	WebAuthn Passwordless
+2	Kata Sandi	Masih ada	Masih ada (faktor pertama)	Masih ada	Dieliminasi	Dieliminasi
+3	Konteks Domain	Sistem TSA	Kepegawaian	Media sosial	Generik	Layanan administrasi kelurahan
+4	Enkripsi Data	Tidak dibahas	Tidak dibahas	Tidak dibahas	Tidak dibahas	AES-256-CBC + Blind Index
+5	Pengujian Keamanan	Brute force, sniffing, MITM	Black box, UAT	Studi literatur	Perbandingan analitik	Phishing, replay, database breach
+
+Berdasarkan Tabel 4.5, penelitian ini memberikan kontribusi berupa: (1) eliminasi kata sandi secara total melalui FIDO2/WebAuthn, (2) penerapan pada konteks spesifik layanan administrasi kelurahan di Indonesia, (3) implementasi perlindungan data kependudukan sensitif melalui enkripsi AES-256-CBC dan Blind Index, serta (4) pengujian keamanan terhadap tiga skenario ancaman yang berbeda dari penelitian terdahulu.
+
+3.	Analisis Keamanan Berdasarkan Prinsip CIA Triad
+Sebagaimana dibahas pada BAB II mengenai kerangka keamanan CIA Triad, implementasi sistem ini memenuhi ketiga prinsip tersebut:
+a) Confidentiality: Data kependudukan sensitif dienkripsi menggunakan AES-256-CBC sehingga tidak terbaca meskipun basis data bocor. Private key tidak pernah meninggalkan perangkat pengguna.
+b) Integrity: Mekanisme challenge-response dan counter memastikan bahwa data autentikasi tidak dapat dimanipulasi atau digunakan ulang. Signature digital memastikan integritas setiap transaksi autentikasi.
+c) Availability: Sistem dapat diakses melalui browser desktop maupun mobile. Mekanisme rate limiting melindungi dari serangan DoS. Recovery codes memastikan pengguna tetap dapat mengakses akun meskipun perangkat hilang.
+
+4.	Keterbatasan Sistem
+Meskipun sistem terbukti memenuhi tujuan penelitian, terdapat beberapa keterbatasan yang perlu disampaikan:
+a) Challenge disimpan di in-memory Map yang bersifat volatile. Jika server restart, challenge yang belum digunakan akan hilang dan pengguna harus mengulangi proses autentikasi.
+b) Rate limiting hanya aktif pada environment production. Pada environment development, tidak ada pembatasan permintaan.
+c) Beberapa autentikator seperti Apple iCloud Keychain tidak mendukung counter secara konsisten (selalu mengirim counter 0), sehingga diperlukan penanganan khusus berupa fallback ke counter 0.
+d) Sistem bersifat prototipe dan pengujian menggunakan data dummy, belum diuji dengan jumlah pengguna dan volume data dalam skala nyata.
+e) Pengujian keamanan terbatas pada tiga skenario yang telah ditetapkan dan tidak mencakup penetration testing terhadap infrastruktur server.

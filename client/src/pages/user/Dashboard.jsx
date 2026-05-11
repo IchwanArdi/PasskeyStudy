@@ -5,12 +5,12 @@ import { FileText, Clock, ChevronRight } from 'lucide-react';
 import LetterIcon from '../../components/LetterIcon';
 import VillageCarousel from '../../components/VillageCarousel';
 
-// Daftar jenis surat yang tersedia di aplikasi
+// Daftar jenis surat yang tersedia
 const layananList = [
   { jenis: 'tidak_mampu', label: 'Ket. Tidak Mampu', desc: 'Keterangan ekonomi' },
 ];
 
-// Label dan warna status biar simpel diliatnya
+// Label dan warna status
 const statusLabel = { diproses: 'Diproses', disetujui: 'Disetujui', ditolak: 'Ditolak' };
 const statusColor = {
   disetujui: 'text-[var(--success)]',
