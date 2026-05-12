@@ -3,10 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { isAuthenticated, clearAuth, api } from '../../utils/auth';
 import { toast } from 'react-toastify';
 import { useTheme } from '../../utils/useTheme';
-import { 
-  Check, Shield, User, CreditCard, Calendar, 
-  Key, Settings, Sun, Moon, LogOut, ChevronRight, HelpCircle
-} from 'lucide-react';
+import { Check, Shield, User, CreditCard, Calendar, Key, Settings, Sun, Moon, LogOut, ChevronRight, HelpCircle } from 'lucide-react';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -33,7 +30,7 @@ const Profile = () => {
   const fetchProfile = useCallback(async () => {
     try {
       setLoading(true);
-      const profileData = await api.get("/user/me");
+      const profileData = await api.get('/user/me');
       const userData = profileData?.user || profileData;
       setUser(userData);
       setFormData({
@@ -41,7 +38,7 @@ const Profile = () => {
         nik: userData?.nik || '',
       });
       // Ambil daftar perangkat buat kasih info status keamanan
-      const credsData = await api.get("/user/credentials");
+      const credsData = await api.get('/user/credentials');
       const credsArray = Array.isArray(credsData) ? credsData : credsData?.credentials || [];
       setCredentials(credsArray);
     } catch (error) {
@@ -68,7 +65,7 @@ const Profile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.put("/user/me", formData);
+      await api.put('/user/me', formData);
       setUser({ ...user, ...formData });
       setEditMode(false);
       toast.success('Profil berhasil diperbarui!');
@@ -80,36 +77,36 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] flex items-center justify-center">
+      <div className="min-h-screen bg-(--bg) text-(--text) flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-emerald-500 mx-auto mb-4" />
-          <p className="text-sm font-medium text-[var(--text-muted)]">Memuat profil...</p>
+          <p className="text-sm font-medium text-(--text-muted)">Memuat profil...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] font-sans pt-12 md:pt-0 pb-24 px-6 md:px-0 transition-colors duration-300">
+    <div className="min-h-screen bg-(--bg) text-(--text) font-sans pt-12 md:pt-0 pb-24 px-6 md:px-0 transition-colors duration-300">
       <div className="max-w-5xl mx-auto">
         {/* Header Halaman */}
-        <div className="mb-10 border-b border-[var(--border)] pb-8">
+        <div className="mb-10 border-b border-(--border) pb-8">
           <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-[0.2em] mb-2">Profil Pengguna</p>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-2 bg-gradient-to-r from-[var(--heading-from)] to-[var(--heading-to)] bg-clip-text text-transparent">Pengaturan Akun</h1>
-          <p className="text-[var(--text-muted)] text-sm md:text-base font-medium">Kelola informasi pribadi dan keamanan autentikasi Anda.</p>
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-2 bg-linear-to-r from-(--heading-from) to-(--heading-to) bg-clip-text text-transparent">Pengaturan Akun</h1>
+          <p className="text-(--text-muted) text-sm md:text-base font-medium">Kelola informasi pribadi dan keamanan autentikasi Anda.</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
             {/* Kartu Informasi Akun */}
-            <div className="bg-[var(--bg-raised)] border border-[var(--border)] rounded-2xl p-8 shadow-sm">
+            <div className="bg-(--bg-raised) border border-(--border) rounded-2xl p-8 shadow-sm">
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-base font-bold flex items-center gap-2.5">
-                  <User className="w-5 h-5 text-[var(--primary)]" />
+                  <User className="w-5 h-5 text-(--primary)" />
                   Informasi Akun
                 </h2>
                 {!editMode && (
-                  <button onClick={() => setEditMode(true)} className="px-4 py-2 bg-[var(--bg-overlay)] hover:opacity-80 text-[var(--text)] rounded-xl text-sm font-medium transition-all border border-[var(--border)] flex items-center gap-2">
+                  <button onClick={() => setEditMode(true)} className="px-4 py-2 bg-(--bg-overlay) hover:opacity-80 text-(--text) rounded-xl text-sm font-medium transition-all border border-(--border) flex items-center gap-2">
                     Edit
                   </button>
                 )}
@@ -118,18 +115,18 @@ const Profile = () => {
               {editMode ? (
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div>
-                    <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">Username</label>
+                    <label className="block text-sm font-medium text-(--text-muted) mb-2">Username</label>
                     <input
                       type="text"
                       name="username"
                       value={formData.username}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl text-sm focus:outline-none focus:border-[var(--primary-hover)] focus:ring-1 focus:ring-[var(--primary-glow)] transition-all"
+                      className="w-full px-4 py-3 bg-(--input-bg) border border-(--input-border) rounded-xl text-sm focus:outline-none focus:border-(--primary-hover) focus:ring-1 focus:ring-(--primary-glow) transition-all"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">NIK</label>
+                    <label className="block text-sm font-medium text-(--text-muted) mb-2">NIK</label>
                     <input
                       type="text"
                       inputMode="numeric"
@@ -137,11 +134,11 @@ const Profile = () => {
                       value={formData.nik}
                       onChange={(e) => setFormData({ ...formData, nik: e.target.value.replace(/\D/g, '').slice(0, 16) })}
                       required
-                      className="w-full px-4 py-3 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl text-sm focus:outline-none focus:border-[var(--primary-hover)] focus:ring-1 focus:ring-[var(--primary-glow)] transition-all"
+                      className="w-full px-4 py-3 bg-(--input-bg) border border-(--input-border) rounded-xl text-sm focus:outline-none focus:border-(--primary-hover) focus:ring-1 focus:ring-(--primary-glow) transition-all"
                     />
                   </div>
                   <div className="flex gap-3 pt-2">
-                    <button type="submit" className="px-5 py-2.5 bg-[var(--primary)] hover:bg-[var(--primary-hover)] !text-white rounded-xl text-sm font-semibold transition-all flex items-center gap-2 shadow-md hover:shadow-lg">
+                    <button type="submit" className="px-5 py-2.5 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-xl text-sm font-semibold transition-all flex items-center gap-2 shadow-md hover:shadow-lg">
                       <Check className="w-4 h-4" />
                       Simpan
                     </button>
@@ -151,7 +148,7 @@ const Profile = () => {
                         setEditMode(false);
                         setFormData({ username: user.username, nik: user.nik });
                       }}
-                      className="px-5 py-2.5 bg-[var(--bg-overlay)] text-[var(--text-muted)] rounded-xl text-sm font-medium hover:border-[var(--border-hover)] transition-all border border-[var(--border)]"
+                      className="px-5 py-2.5 bg-(--bg-overlay) text-(--text-muted) rounded-xl text-sm font-medium hover:border-(--border-hover) transition-all border border-(--border)"
                     >
                       Batal
                     </button>
@@ -159,22 +156,22 @@ const Profile = () => {
                 </form>
               ) : (
                 <div className="space-y-1">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4 border-b border-[var(--border)]">
-                    <div className="flex items-center gap-2.5 text-[var(--text-muted)] mb-1.5 sm:mb-0">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4 border-b border-(--border)">
+                    <div className="flex items-center gap-2.5 text-(--text-muted) mb-1.5 sm:mb-0">
                       <Shield className="w-4 h-4" />
                       <span className="text-sm font-medium">Username</span>
                     </div>
                     <span className="text-sm font-semibold">{user?.username}</span>
                   </div>
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4 border-b border-[var(--border)]">
-                    <div className="flex items-center gap-2.5 text-[var(--text-muted)] mb-1.5 sm:mb-0">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4 border-b border-(--border)">
+                    <div className="flex items-center gap-2.5 text-(--text-muted) mb-1.5 sm:mb-0">
                       <CreditCard className="w-4 h-4" />
                       <span className="text-sm font-medium">NIK</span>
                     </div>
                     <span className="text-sm font-semibold">{user?.nik}</span>
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4">
-                    <div className="flex items-center gap-2.5 text-[var(--text-muted)] mb-1.5 sm:mb-0">
+                    <div className="flex items-center gap-2.5 text-(--text-muted) mb-1.5 sm:mb-0">
                       <Calendar className="w-4 h-4" />
                       <span className="text-sm font-medium">Tanggal Dibuat</span>
                     </div>
@@ -185,81 +182,69 @@ const Profile = () => {
             </div>
 
             {/* Bagian Pengaturan & Navigasi */}
-            <div className="bg-[var(--bg-raised)] border border-[var(--border)] rounded-2xl p-8 shadow-sm">
+            <div className="bg-(--bg-raised) border border-(--border) rounded-2xl p-8 shadow-sm">
               <h2 className="text-base font-bold flex items-center gap-2.5 mb-8">
-                <Settings className="w-5 h-5 text-[var(--primary)]" />
+                <Settings className="w-5 h-5 text-(--primary)" />
                 Pengaturan Aplikasi
               </h2>
 
               <div className="space-y-3">
                 {/* Switcher Mode Gelap */}
-                <button
-                  onClick={toggleTheme}
-                  className="w-full h-16 flex items-center justify-between px-4 bg-[var(--bg-overlay)] border border-[var(--border)] rounded-2xl hover:border-[var(--border-hover)] transition-all group"
-                >
+                <button onClick={toggleTheme} className="w-full h-16 flex items-center justify-between px-4 bg-(--bg-overlay) border border-(--border) rounded-2xl hover:border-(--border-hover) transition-all group">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-[var(--primary-subtle)] flex items-center justify-center text-[var(--primary)] group-hover:scale-110 transition-transform">
+                    <div className="w-10 h-10 rounded-xl bg-(--primary-subtle) flex items-center justify-center text-(--primary) group-hover:scale-110 transition-transform">
                       {isDark ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
                     </div>
                     <div className="text-left">
                       <span className="text-sm font-bold block">Mode Gelap</span>
-                      <span className="text-[10px] text-[var(--text-muted)] font-medium uppercase tracking-wider">{isDark ? 'Aktif' : 'Nonaktif'}</span>
+                      <span className="text-[10px] text-(--text-muted) font-medium uppercase tracking-wider">{isDark ? 'Aktif' : 'Nonaktif'}</span>
                     </div>
                   </div>
-                  <div className={`w-11 h-6 rounded-full p-1 transition-all ${isDark ? 'bg-[var(--primary)]' : 'bg-[var(--text-secondary)]'}`}>
+                  <div className={`w-11 h-6 rounded-full p-1 transition-all ${isDark ? 'bg-(--primary)' : 'bg-(--text-secondary)'}`}>
                     <div className={`w-4 h-4 bg-white rounded-full transition-transform duration-300 ${isDark ? 'translate-x-5' : 'translate-x-0'}`} />
                   </div>
                 </button>
 
                 {/* Link ke Panduan */}
-                <Link
-                  to="/panduan"
-                  className="w-full h-16 flex items-center justify-between px-4 bg-[var(--bg-overlay)] border border-[var(--border)] rounded-2xl hover:border-[var(--border-hover)] transition-all group"
-                >
+                <Link to="/panduan" className="w-full h-16 flex items-center justify-between px-4 bg-(--bg-overlay) border border-(--border) rounded-2xl hover:border-(--border-hover) transition-all group">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-[var(--primary-subtle)] flex items-center justify-center text-[var(--primary)] group-hover:scale-110 transition-transform">
+                    <div className="w-10 h-10 rounded-xl bg-(--primary-subtle) flex items-center justify-center text-(--primary) group-hover:scale-110 transition-transform">
                       <HelpCircle className="w-5 h-5" />
                     </div>
                     <div className="text-left">
                       <span className="text-sm font-bold block">Panduan & FAQ</span>
-                      <span className="text-[10px] text-[var(--text-muted)] font-medium uppercase tracking-wider">Cara Penggunaan Aplikasi</span>
+                      <span className="text-[10px] text-(--text-muted) font-medium uppercase tracking-wider">Cara Penggunaan Aplikasi</span>
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-[var(--primary)] opacity-50 group-hover:translate-x-1 transition-transform" />
+                  <ChevronRight className="w-5 h-5 text-(--primary) opacity-50 group-hover:translate-x-1 transition-transform" />
                 </Link>
 
                 {/* Kelola Perangkat (WebAuthn) */}
-                <Link
-                  to="/manage-devices"
-                  className="w-full h-16 flex items-center justify-between px-4 bg-[var(--bg-overlay)] border border-[var(--border)] rounded-2xl hover:border-[var(--border-hover)] transition-all group"
-                >
+                <Link to="/manage-devices" className="w-full h-16 flex items-center justify-between px-4 bg-(--bg-overlay) border border-(--border) rounded-2xl hover:border-(--border-hover) transition-all group">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-[var(--primary-subtle)] flex items-center justify-center text-[var(--primary)] group-hover:scale-110 transition-transform">
+                    <div className="w-10 h-10 rounded-xl bg-(--primary-subtle) flex items-center justify-center text-(--primary) group-hover:scale-110 transition-transform">
                       <Shield className="w-5 h-5" />
                     </div>
                     <div className="text-left">
                       <span className="text-sm font-bold block">Keamanan Perangkat</span>
-                      <span className="text-[10px] text-[var(--text-muted)] font-medium uppercase tracking-wider">Kelola Kunci Keamanan</span>
+                      <span className="text-[10px] text-(--text-muted) font-medium uppercase tracking-wider">Kelola Kunci Keamanan</span>
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-[var(--primary)] opacity-50 group-hover:translate-x-1 transition-transform" />
+                  <ChevronRight className="w-5 h-5 text-(--primary) opacity-50 group-hover:translate-x-1 transition-transform" />
                 </Link>
 
                 {/* Tombol Keluar */}
-                <button
-                  onClick={handleLogout}
-                  className="w-full h-16 flex items-center justify-between px-4 bg-[var(--bg-overlay)] border border-[var(--danger-border)] hover:bg-[var(--danger-subtle)] rounded-2xl transition-all group"
-                >
+                <button onClick={handleLogout} className="w-full h-16 flex items-center justify-between px-4 bg-(--bg-overlay) border border-(--danger-border) hover:bg-(--danger-subtle) rounded-2xl transition-all group">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-[var(--danger-subtle)] flex items-center justify-center text-[var(--danger)] group-hover:scale-110 transition-transform">
+                    <div className="w-10 h-10 rounded-xl bg-(--danger-subtle) flex items-center justify-center text-(--danger) group-hover:scale-110 transition-transform">
                       <LogOut className="w-5 h-5" />
                     </div>
                     <div className="text-left">
                       <span className="text-sm font-bold block">Keluar</span>
-                      <span className="text-[10px] text-[var(--text-muted)] font-medium uppercase tracking-wider">Akhiri Akses</span>
+                      <span className="text-[10px] text-(--text-muted) font-medium uppercase tracking-wider">Akhiri Akses</span>
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-[var(--danger)] opacity-50 group-hover:translate-x-1 transition-transform" />
+                  <ChevronRight className="w-5 h-5 text-(--danger) opacity-50 group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
             </div>
@@ -267,12 +252,12 @@ const Profile = () => {
 
           {/* Sidebar Info Keamanan */}
           <div className="space-y-6">
-            <div className="bg-[var(--bg-raised)] border border-[var(--primary-border)] p-6 rounded-2xl shadow-sm">
-              <h3 className="text-xs font-semibold text-[var(--primary)] mb-4 uppercase tracking-widest">Keamanan</h3>
+            <div className="bg-(--bg-raised) border border-(--primary-border) p-6 rounded-2xl shadow-sm">
+              <h3 className="text-xs font-semibold text-(--primary) mb-4 uppercase tracking-widest">Keamanan</h3>
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-emerald-400" />
-                  <span className="text-xs font-medium text-[var(--text-muted)] dark:text-gray-400">{credentials.length} perangkat aktif</span>
+                  <span className="text-xs font-medium text-(--text-muted) dark:text-gray-400">{credentials.length} perangkat aktif</span>
                 </div>
                 <div className="flex items-center gap-2.5">
                   <div className="w-2 h-2 rounded-full bg-emerald-400" />
@@ -281,11 +266,9 @@ const Profile = () => {
               </div>
             </div>
 
-            <div className="bg-[var(--bg-raised)] border border-[var(--border)] rounded-2xl p-6 shadow-sm">
-              <p className="text-xs font-semibold text-[var(--text-muted)] mb-2 uppercase tracking-widest">Status</p>
-              <p className="text-sm text-[var(--text-muted)] dark:text-gray-400 leading-relaxed italic">
-                Akun dilindungi kunci biometrik (Login Tanpa Password).
-              </p>
+            <div className="bg-(--bg-raised) border border-(--border) rounded-2xl p-6 shadow-sm">
+              <p className="text-xs font-semibold text-(--text-muted) mb-2 uppercase tracking-widest">Status</p>
+              <p className="text-sm text-(--text-muted) dark:text-gray-400 leading-relaxed italic">Akun dilindungi kunci biometrik (Login Tanpa Password).</p>
             </div>
           </div>
         </div>

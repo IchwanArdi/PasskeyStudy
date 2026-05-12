@@ -57,14 +57,14 @@ const VillageCarousel = () => {
   const handleEnd = () => {
     if (!isDragging) return;
     setIsDragging(false);
-    
+
     // Ambang batas geseran (threshold) untuk memicu pindah slide
     if (dragOffset > 100) {
       prevSlide();
     } else if (dragOffset < -100) {
       nextSlide();
     }
-    
+
     setDragOffset(0);
     resetTimer();
   };
@@ -72,7 +72,7 @@ const VillageCarousel = () => {
   return (
     <div className="relative w-full h-full overflow-hidden rounded-3xl bg-black/20 group">
       {/* Pembungkus Slide dengan transisi */}
-      <div 
+      <div
         className={`flex w-full h-full transition-transform duration-500 ease-out ${isDragging ? 'transition-none' : ''}`}
         style={{ transform: `translateX(calc(-${currentIndex * 100}% + ${dragOffset}px))` }}
         onMouseDown={handleStart}
@@ -85,31 +85,19 @@ const VillageCarousel = () => {
       >
         {images.map((img, idx) => (
           <div key={idx} className="w-full h-full shrink-0 select-none">
-            <img 
-              src={img.src} 
-              alt={img.title} 
-              className="w-full h-full object-cover pointer-events-none"
-            />
+            <img src={img.src} alt={img.title} className="w-full h-full object-cover pointer-events-none" />
             {/* Hamparan Gradasi Hitam di Bagian Bawah */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
           </div>
         ))}
       </div>
 
       {/* Tombol Navigasi Kiri/Kanan (Hanya tampil di Desktop saat hover) */}
       <div className="absolute inset-0 flex items-center justify-between p-4 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-        <button 
-          onClick={prevSlide}
-          className="p-3 rounded-2xl bg-black/20 backdrop-blur-md border border-white/10 text-white pointer-events-auto hover:bg-emerald-500 transition-all font-bold"
-          aria-label="Slide sebelumnya"
-        >
+        <button onClick={prevSlide} className="p-3 rounded-2xl bg-black/20 backdrop-blur-md border border-white/10 text-white pointer-events-auto hover:bg-emerald-500 transition-all font-bold" aria-label="Slide sebelumnya">
           <ChevronLeft size={24} />
         </button>
-        <button 
-          onClick={nextSlide}
-          className="p-3 rounded-2xl bg-black/20 backdrop-blur-md border border-white/10 text-white pointer-events-auto hover:bg-emerald-500 transition-all font-bold"
-          aria-label="Slide berikutnya"
-        >
+        <button onClick={nextSlide} className="p-3 rounded-2xl bg-black/20 backdrop-blur-md border border-white/10 text-white pointer-events-auto hover:bg-emerald-500 transition-all font-bold" aria-label="Slide berikutnya">
           <ChevronRight size={24} />
         </button>
       </div>
@@ -123,9 +111,7 @@ const VillageCarousel = () => {
               setCurrentIndex(idx);
               resetTimer();
             }}
-            className={`h-1.5 rounded-full transition-all duration-300 ${
-              currentIndex === idx ? 'w-8 bg-emerald-400' : 'w-2 bg-white/30'
-            }`}
+            className={`h-1.5 rounded-full transition-all duration-300 ${currentIndex === idx ? 'w-8 bg-emerald-400' : 'w-2 bg-white/30'}`}
           />
         ))}
       </div>

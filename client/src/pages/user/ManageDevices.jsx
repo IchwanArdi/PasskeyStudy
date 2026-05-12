@@ -31,7 +31,7 @@ const ManageDevices = () => {
   const fetchCredentials = async () => {
     try {
       setLoading(true);
-      const data = await api.get("/user/credentials");
+      const data = await api.get('/user/credentials');
       const credsArray = Array.isArray(data) ? data : data?.credentials || [];
       setCredentials(credsArray);
     } catch (error) {
@@ -47,7 +47,7 @@ const ManageDevices = () => {
     setAddingDevice(true);
     try {
       // Step 1: Minta opsi registrasi dari server (Challenge dll)
-      const options = await api.post("/user/credentials/add-options");
+      const options = await api.post('/user/credentials/add-options');
 
       // Step 2: Mulai "upacara" registrasi di browser
       // Browser akan minta sidik jari / wajah / PIN keamanan
@@ -56,7 +56,7 @@ const ManageDevices = () => {
       });
 
       // Step 3: Kirim hasil verifikasi dari browser balik ke server buat disimpan
-      await api.post("/user/credentials/add-verify", {
+      await api.post('/user/credentials/add-verify', {
         credential,
         nickname: newDeviceName.trim() || 'Perangkat Baru',
       });
@@ -70,9 +70,7 @@ const ManageDevices = () => {
       if (error.name === 'NotAllowedError') {
         toast.error('Gagal mendeteksi jari Anda (Dibatalkan)');
       } else if (error.name === 'InvalidStateError' || error.message?.includes('already registered')) {
-        toast.info(
-          'Perangkat ini sudah pernah didaftarkan sebelumnya. Anda bisa langsung masuk.'
-        );
+        toast.info('Perangkat ini sudah pernah didaftarkan sebelumnya. Anda bisa langsung masuk.');
         setShowAddModal(false);
       } else {
         toast.error('Gagal menghubungkan ke perangkat');
@@ -112,7 +110,6 @@ const ManageDevices = () => {
       setShowDeleteAccountModal(false);
     }
   };
-
 
   // Ubah nama panggilan perangkat biar gampang dikenali (misal: "HP Samsung Bapak")
   const handleUpdateNickname = async (credentialID) => {
@@ -161,182 +158,153 @@ const ManageDevices = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] flex items-center justify-center">
+      <div className="min-h-screen bg-(--bg) text-(--text) flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-emerald-500 mx-auto mb-4" />
-          <p className="text-sm font-medium text-[var(--text-muted)]">Memuat perangkat...</p>
+          <p className="text-sm font-medium text-(--text-muted)">Memuat perangkat...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] font-sans pt-8 pb-24 px-6 transition-colors duration-300">
+    <div className="min-h-screen bg-(--bg) text-(--text) font-sans pt-8 pb-24 px-6 transition-colors duration-300">
       <div className="max-w-4xl mx-auto">
         {/* Judul Halaman */}
         <div className="mb-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[var(--primary-subtle)] border border-[var(--primary-border)] rounded-full text-[var(--primary)] text-xs font-semibold mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-(--primary-subtle) border border-(--primary-border) rounded-full text-(--primary) text-xs font-semibold mb-4">
             <Shield className="w-3 h-3" />
             Bantuan Keamanan
           </div>
-          <h1 className="text-3xl font-bold tracking-tight mb-2 bg-gradient-to-r from-[var(--heading-from)] to-[var(--heading-to)] bg-clip-text text-transparent">Kelola Perangkat</h1>
-          <p className="text-[var(--text-muted)] text-base">
-            Kelola kunci keamanan dan authenticator yang terdaftar pada akun Anda.
-          </p>
+          <h1 className="text-3xl font-bold tracking-tight mb-2 bg-linear-to-r from-(--heading-from) to-(--heading-to) bg-clip-text text-transparent">Kelola Perangkat</h1>
+          <p className="text-(--text-muted) text-base">Kelola kunci keamanan dan authenticator yang terdaftar pada akun Anda.</p>
         </div>
 
         {/* Tombol Tambah Perangkat */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-sm font-semibold">Perangkat Terdaftar</h2>
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 px-2 md:px-5 py-2.5 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-xl text-sm font-semibold transition-all shadow-md hover:shadow-lg"
-          >
+          <button onClick={() => setShowAddModal(true)} className="flex items-center gap-2 px-2 md:px-5 py-2.5 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-xl text-sm font-semibold transition-all shadow-md hover:shadow-lg">
             <Plus className="w-4 h-4" />
             Tambah Perangkat
           </button>
         </div>
 
         {/* Baris Daftar Perangkat */}
-          <div className="space-y-4">
-            {credentials.map((cred, index) => (
-              <div
-                key={cred.credentialID || index}
-                className="bg-[var(--bg-raised)] border border-[var(--border)] rounded-2xl p-6 group hover:bg-[var(--bg-overlay)] hover:border-[var(--primary-border)] transition-all shadow-sm"
-              >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  {/* Info Perangkat */}
-                  <div className="flex items-start gap-4 flex-1 min-w-0">
-                    <div
-                      className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
-                        cred.deviceType === 'platform'
-                          ? 'bg-[var(--primary-subtle)] border border-[var(--primary-border)] text-[var(--primary)]'
-                          : 'bg-purple-500/10 border border-purple-500/20 text-purple-400'
-                      }`}
-                    >
-                      {getDeviceIcon(cred)}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      {/* Mode Edit Nama Perangkat */}
-                      {editingId === cred.credentialID ? (
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="text"
-                            value={editNickname}
-                            onChange={(e) => setEditNickname(e.target.value)}
-                            maxLength={50}
-                            autoFocus
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') handleUpdateNickname(cred.credentialID);
-                              if (e.key === 'Escape') setEditingId(null);
-                            }}
-                            className="px-3 py-1.5 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-lg text-sm text-[var(--text)] focus:outline-none focus:border-[var(--primary-hover)] flex-1 max-w-[250px]"
-                          />
-                          <button
-                            onClick={() => handleUpdateNickname(cred.credentialID)}
-                            className="p-1.5 text-[var(--primary)] hover:bg-[var(--primary-subtle)] rounded-lg transition-colors"
-                          >
-                            <Check className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => setEditingId(null)}
-                            className="p-1.5 text-[var(--text-muted)] hover:bg-[var(--card-bg-hover)] rounded-lg transition-colors"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          <h3 className="text-sm font-semibold truncate">
-                            {cred.nickname || 'My Authenticator'}
-                          </h3>
-                          <button
-                            onClick={() => {
-                              setEditingId(cred.credentialID);
-                              setEditNickname(cred.nickname || 'My Authenticator');
-                            }}
-                            className="p-1 text-[var(--text-muted)] hover:text-[var(--text)] opacity-0 group-hover:opacity-100 transition-all"
-                            title="Ubah nama"
-                          >
-                            <Edit3 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      )}
-
-                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5">
-                        <span className={`inline-flex items-center gap-1 text-xs font-medium ${
-                          cred.deviceType === 'platform' ? 'text-[var(--primary)]' : 'text-purple-400'
-                        }`}>
-                          {getDeviceLabel(cred)}
-                        </span>
-                      </div>
-                    </div>
+        <div className="space-y-4">
+          {credentials.map((cred, index) => (
+            <div key={cred.credentialID || index} className="bg-(--bg-raised) border border-(--border) rounded-2xl p-6 group hover:bg-(--bg-overlay) hover:border-(--primary-border) transition-all shadow-sm">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                {/* Info Perangkat */}
+                <div className="flex items-start gap-4 flex-1 min-w-0">
+                  <div
+                    className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
+                      cred.deviceType === 'platform' ? 'bg-(--primary-subtle) border border-(--primary-border) text-(--primary)' : 'bg-purple-500/10 border border-purple-500/20 text-purple-400'
+                    }`}
+                  >
+                    {getDeviceIcon(cred)}
                   </div>
-
-                  {/* Waktu & Tombol Aksi */}
-                  <div className="flex items-center gap-6 sm:gap-8 shrink-0">
-                    <div className="hidden sm:block text-right">
-                      <div className="flex items-center gap-1.5 text-xs text-[var(--text-muted)] mb-1">
-                        <Calendar className="w-3 h-3" />
-                        Didaftarkan
-                      </div>
-                      <p className="text-xs font-medium text-[var(--text)]">{formatDate(cred.createdAt)}</p>
-                    </div>
-
-                    {/* Tombol Hapus dengan Konfirmasi */}
-                    {deleteConfirmId === cred.credentialID ? (
+                  <div className="flex-1 min-w-0">
+                    {/* Mode Edit Nama Perangkat */}
+                    {editingId === cred.credentialID ? (
                       <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => handleDelete(cred.credentialID)}
-                          className="px-3 py-1.5 bg-red-500/15 text-red-400 rounded-lg text-xs font-semibold hover:bg-red-500/25 transition-colors"
-                        >
-                          Hapus
+                        <input
+                          type="text"
+                          value={editNickname}
+                          onChange={(e) => setEditNickname(e.target.value)}
+                          maxLength={50}
+                          autoFocus
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleUpdateNickname(cred.credentialID);
+                            if (e.key === 'Escape') setEditingId(null);
+                          }}
+                          className="px-3 py-1.5 bg-(--input-bg) border border-(--input-border) rounded-lg text-sm text-(--text) focus:outline-none focus:border-(--primary-hover) flex-1 max-w-62.5"
+                        />
+                        <button onClick={() => handleUpdateNickname(cred.credentialID)} className="p-1.5 text-(--primary) hover:bg-(--primary-subtle) rounded-lg transition-colors">
+                          <Check className="w-4 h-4" />
                         </button>
-                        <button
-                          onClick={() => setDeleteConfirmId(null)}
-                          className="px-3 py-1.5 bg-[var(--bg-overlay)] text-[var(--text-muted)] border border-[var(--border)] rounded-lg text-xs font-medium hover:border-[var(--border-hover)] transition-colors"
-                        >
-                          Batal
+                        <button onClick={() => setEditingId(null)} className="p-1.5 text-(--text-muted) hover:bg-(--card-bg-hover) rounded-lg transition-colors">
+                          <X className="w-4 h-4" />
                         </button>
                       </div>
                     ) : (
-                      <button
-                        onClick={() => {
-                          if (credentials.length <= 1) {
-                            setShowDeleteAccountModal(true);
-                          } else {
-                            setDeleteConfirmId(cred.credentialID);
-                          }
-                        }}
-                        className="p-2 text-[var(--text-muted)] hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all "
-                        title="Hapus perangkat"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-sm font-semibold truncate">{cred.nickname || 'My Authenticator'}</h3>
+                        <button
+                          onClick={() => {
+                            setEditingId(cred.credentialID);
+                            setEditNickname(cred.nickname || 'My Authenticator');
+                          }}
+                          className="p-1 text-(--text-muted) hover:text-(--text) opacity-0 group-hover:opacity-100 transition-all"
+                          title="Ubah nama"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     )}
+
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5">
+                      <span className={`inline-flex items-center gap-1 text-xs font-medium ${cred.deviceType === 'platform' ? 'text-(--primary)' : 'text-purple-400'}`}>{getDeviceLabel(cred)}</span>
+                    </div>
                   </div>
                 </div>
 
-                {/* Tampilan waktu mendaftar khusus di HP (Mobile) */}
-                <div className="flex gap-6 mt-4 sm:hidden">
-                  <div>
-                    <p className="text-xs text-[var(--text-muted)] mb-0.5">Didaftarkan</p>
-                    <p className="text-xs font-medium text-[var(--text)]">{formatDate(cred.createdAt)}</p>
+                {/* Waktu & Tombol Aksi */}
+                <div className="flex items-center gap-6 sm:gap-8 shrink-0">
+                  <div className="hidden sm:block text-right">
+                    <div className="flex items-center gap-1.5 text-xs text-(--text-muted) mb-1">
+                      <Calendar className="w-3 h-3" />
+                      Didaftarkan
+                    </div>
+                    <p className="text-xs font-medium text-(--text)">{formatDate(cred.createdAt)}</p>
                   </div>
+
+                  {/* Tombol Hapus dengan Konfirmasi */}
+                  {deleteConfirmId === cred.credentialID ? (
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => handleDelete(cred.credentialID)} className="px-3 py-1.5 bg-red-500/15 text-red-400 rounded-lg text-xs font-semibold hover:bg-red-500/25 transition-colors">
+                        Hapus
+                      </button>
+                      <button onClick={() => setDeleteConfirmId(null)} className="px-3 py-1.5 bg-(--bg-overlay) text-(--text-muted) border border-(--border) rounded-lg text-xs font-medium hover:border-(--border-hover) transition-colors">
+                        Batal
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        if (credentials.length <= 1) {
+                          setShowDeleteAccountModal(true);
+                        } else {
+                          setDeleteConfirmId(cred.credentialID);
+                        }
+                      }}
+                      className="p-2 text-(--text-muted) hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all "
+                      title="Hapus perangkat"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
               </div>
-            ))}
-          </div>
+
+              {/* Tampilan waktu mendaftar khusus di HP (Mobile) */}
+              <div className="flex gap-6 mt-4 sm:hidden">
+                <div>
+                  <p className="text-xs text-(--text-muted) mb-0.5">Didaftarkan</p>
+                  <p className="text-xs font-medium text-(--text)">{formatDate(cred.createdAt)}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
 
         {/* Tips Keamanan (Footer) */}
-        <div className="mt-8 bg-[var(--warning-subtle)] border border-[var(--warning-border)] rounded-2xl p-6">
+        <div className="mt-8 bg-(--warning-subtle) border border-(--warning-border) rounded-2xl p-6">
           <div className="flex items-start gap-3">
             <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
             <div>
               <h3 className="text-sm font-semibold text-amber-400 mb-1">Tips Keamanan</h3>
-              <p className="text-xs text-[var(--text-muted)] dark:text-gray-400 leading-relaxed">
-                Disarankan untuk mendaftarkan minimal 2 perangkat sebagai cadangan. Jika salah satu perangkat hilang atau rusak,
-                Anda masih bisa login menggunakan perangkat lainnya. Setiap perangkat memiliki Private Key yang unik dan
+              <p className="text-xs text-(--text-muted) dark:text-gray-400 leading-relaxed">
+                Disarankan untuk mendaftarkan minimal 2 perangkat sebagai cadangan. Jika salah satu perangkat hilang atau rusak, Anda masih bisa login menggunakan perangkat lainnya. Setiap perangkat memiliki Private Key yang unik dan
                 independen satu sama lain.
               </p>
             </div>
@@ -348,21 +316,14 @@ const ManageDevices = () => {
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
           {/* Backdrop (Latar Belakang Gelap) */}
-          <div
-            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-            onClick={() => !addingDevice && setShowAddModal(false)}
-          />
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => !addingDevice && setShowAddModal(false)} />
           {/* Box Modal */}
-          <div className="relative w-full max-w-md bg-[var(--bg-raised)] border border-[var(--border)] shadow-xl rounded-2xl p-8">
+          <div className="relative w-full max-w-md bg-(--bg-raised) border border-(--border) shadow-xl rounded-2xl p-8">
             <h2 className="text-xl font-bold mb-2">Tambah Perangkat Baru</h2>
-            <p className="text-sm text-[var(--text-muted)] mb-6">
-              Gunakan Sidik Jari/Wajah di HP, Laptop, atau Tablet lainnya.
-            </p>
+            <p className="text-sm text-(--text-muted) mb-6">Gunakan Sidik Jari/Wajah di HP, Laptop, atau Tablet lainnya.</p>
 
             <div className="mb-6">
-              <label className="block text-sm font-medium text-[var(--text-muted)] mb-2">
-                Nama Panggilan Perangkat (Opsional)
-              </label>
+              <label className="block text-sm font-medium text-(--text-muted) mb-2">Nama Panggilan Perangkat (Opsional)</label>
               <input
                 type="text"
                 value={newDeviceName}
@@ -370,7 +331,7 @@ const ManageDevices = () => {
                 placeholder="cth: Iphone 15, Samsung A54, Laptop, dll"
                 maxLength={50}
                 disabled={addingDevice}
-                className="w-full px-4 py-3 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--primary-hover)] focus:ring-1 focus:ring-[var(--primary-glow)] transition-all disabled:opacity-50"
+                className="w-full px-4 py-3 bg-(--input-bg) border border-(--input-border) rounded-xl text-sm text-(--text) placeholder:text-(--text-muted) focus:outline-none focus:border-(--primary-hover) focus:ring-1 focus:ring-(--primary-glow) transition-all disabled:opacity-50"
               />
             </div>
 
@@ -378,7 +339,7 @@ const ManageDevices = () => {
               <button
                 onClick={handleAddDevice}
                 disabled={addingDevice}
-                className="flex-1 px-2 md:px-6 py-3 bg-[var(--primary)] hover:bg-[var(--primary-hover)] text-white rounded-xl font-semibold text-sm transition-all disabled:opacity-50 shadow-md flex items-center justify-center gap-2"
+                className="flex-1 px-2 md:px-6 py-3 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-xl font-semibold text-sm transition-all disabled:opacity-50 shadow-md flex items-center justify-center gap-2"
               >
                 {addingDevice ? (
                   <>
@@ -395,7 +356,7 @@ const ManageDevices = () => {
               <button
                 onClick={() => setShowAddModal(false)}
                 disabled={addingDevice}
-                className="px-5 py-3 bg-[var(--bg-overlay)] border border-[var(--border)] text-[var(--text-muted)] rounded-xl text-sm font-medium hover:border-[var(--border-hover)] transition-all disabled:opacity-50"
+                className="px-5 py-3 bg-(--bg-overlay) border border-(--border) text-(--text-muted) rounded-xl text-sm font-medium hover:border-(--border-hover) transition-all disabled:opacity-50"
               >
                 Batal
               </button>
@@ -407,17 +368,15 @@ const ManageDevices = () => {
       {/* Modal Hapus Akun (Peringatan Kritis) */}
       {showDeleteAccountModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
-          <div
-            className="absolute inset-0  backdrop-blur-sm"
-            onClick={() => !deletingAccount && setShowDeleteAccountModal(false)}
-          />
-          <div className="relative w-full max-w-md bg-[var(--bg)] border border-red-500/20 rounded-2xl p-8 shadow-2xl shadow-red-500/10">
+          <div className="absolute inset-0  backdrop-blur-sm" onClick={() => !deletingAccount && setShowDeleteAccountModal(false)} />
+          <div className="relative w-full max-w-md bg-(--bg) border border-red-500/20 rounded-2xl p-8 shadow-2xl shadow-red-500/10">
             <div className="w-16 h-16 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6">
               <AlertTriangle className="w-8 h-8 text-red-500 animate-pulse" />
             </div>
             <h2 className="text-xl font-bold text-center text-red-500 mb-4">Peringatan Kritis!</h2>
-            <p className="text-sm border-l-2 border-red-500 pl-4 py-2 text-[var(--text-muted)] mb-8 leading-relaxed bg-red-500/[0.03]">
-              Ini adalah <strong>satu-satunya alat masuk Anda</strong>. Menghapus alat keamanan terakhir ini akan <strong className="text-red-400">Menghapus Seluruh Akun dan Data Anda secara Permanen</strong> dari sistem desa. Tindakan ini tidak dapat dibatalkan.
+            <p className="text-sm border-l-2 border-red-500 pl-4 py-2 text-(--text-muted) mb-8 leading-relaxed bg-red-500/3">
+              Ini adalah <strong>satu-satunya alat masuk Anda</strong>. Menghapus alat keamanan terakhir ini akan <strong className="text-red-400">Menghapus Seluruh Akun dan Data Anda secara Permanen</strong> dari sistem desa. Tindakan ini
+              tidak dapat dibatalkan.
             </p>
             <div className="flex gap-3">
               <button
@@ -430,7 +389,7 @@ const ManageDevices = () => {
               <button
                 onClick={() => setShowDeleteAccountModal(false)}
                 disabled={deletingAccount}
-                className="px-5 py-3 bg-[var(--bg-overlay)] border border-[var(--border)] text-[var(--text)] rounded-xl text-sm font-semibold hover:border-[var(--border-hover)] transition-all disabled:opacity-50"
+                className="px-5 py-3 bg-(--bg-overlay) border border-(--border) text-(--text) rounded-xl text-sm font-semibold hover:border-(--border-hover) transition-all disabled:opacity-50"
               >
                 Batal
               </button>

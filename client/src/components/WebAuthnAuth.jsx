@@ -43,15 +43,15 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
 
     try {
       setMessage('Meminta opsi registrasi...');
-      const options = await api.post("/auth/webauthn/register/options", { nik, username });
-      
+      const options = await api.post('/auth/webauthn/register/options', { nik, username });
+
       // Memulai proses pembuatan kunci di perangkat (pop-up biometrik)
       const credential = await startRegistration({
         ...options,
       });
 
       setMessage('Menyimpan kunci aman ke server...');
-      const verifyResponse = await api.post("/auth/webauthn/register/verify", {
+      const verifyResponse = await api.post('/auth/webauthn/register/verify', {
         nik,
         credential,
       });
@@ -65,9 +65,9 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
       if (err.name === 'AbortError' || err.name === 'NotAllowedError' || err.message?.includes('timed out')) {
         setLoading(false);
         setMessage('');
-        return; 
+        return;
       }
-      
+
       // Pesan khusus jika NIK sudah terdaftar
       if (err.name === 'InvalidStateError' || err.message?.includes('already registered')) {
         setError('NIK ini sudah terdaftar. Silakan langsung gunakan menu Login.');
@@ -99,7 +99,7 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
 
     try {
       setMessage('Menghubungkan ke sistem desa...');
-      const options = await api.post("/auth/webauthn/login/options", { identifier: nik });
+      const options = await api.post('/auth/webauthn/login/options', { identifier: nik });
 
       if (!options || !options.challenge) {
         throw new Error('Gagal mendapatkan respon dari server.');
@@ -111,7 +111,7 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
       });
 
       setMessage('Memverifikasi autentikasi...');
-      const verifyResponse = await api.post("/auth/webauthn/login/verify", {
+      const verifyResponse = await api.post('/auth/webauthn/login/verify', {
         identifier: nik,
         credential,
       });
@@ -135,7 +135,6 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
   return (
     <div className="space-y-5">
       <form onSubmit={mode === 'register' ? handleRegister : handleLogin} className="space-y-5">
-        
         {/* Input Nama Lengkap (Hanya saat Registrasi) */}
         {mode === 'register' && (
           <div>
@@ -153,7 +152,7 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
               }}
               required
               disabled={loading}
-              className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-[var(--text)] placeholder-gray-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all text-sm"
+              className="w-full px-4 py-3 bg-white/3 border border-white/8 rounded-xl text-(--text) placeholder-gray-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all text-sm"
               placeholder="Masukkan nama lengkap Anda"
             />
           </div>
@@ -172,27 +171,17 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
             onChange={handleNikChange}
             required
             disabled={loading}
-            className="w-full px-4 py-3 bg-white/[0.03] border border-white/[0.08] rounded-xl text-[var(--text)] placeholder-gray-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all text-sm"
-            placeholder= "Masukkan 16 digit NIK"
+            className="w-full px-4 py-3 bg-white/3 border border-white/8 rounded-xl text-(--text) placeholder-gray-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all text-sm"
+            placeholder="Masukkan 16 digit NIK"
           />
-          {mode === 'register' && nik.length > 0 && nik.length < 16 && (
-            <p className="text-[10px] text-yellow-400 mt-1.5 font-medium">{nik.length}/16 digit</p>
-          )}
+          {mode === 'register' && nik.length > 0 && nik.length < 16 && <p className="text-[10px] text-yellow-400 mt-1.5 font-medium">{nik.length}/16 digit</p>}
         </div>
 
         {/* Notifikasi Error */}
-        {error && (
-          <div className="px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 text-sm">
-            {error}
-          </div>
-        )}
+        {error && <div className="px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 text-sm">{error}</div>}
 
         {/* Notifikasi Status Proses */}
-        {message && (
-          <div className="px-4 py-3 bg-emerald-500/[0.06] border border-emerald-500/15 rounded-xl text-emerald-500 font-medium text-sm">
-            {message}
-          </div>
-        )}
+        {message && <div className="px-4 py-3 bg-emerald-500/6 border border-emerald-500/15 rounded-xl text-emerald-500 font-medium text-sm">{message}</div>}
 
         {/* Tombol Aksi Utama */}
         <button

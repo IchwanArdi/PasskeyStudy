@@ -3,10 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { isAuthenticated, clearAuth, api } from '../../utils/auth';
 import { toast } from 'react-toastify';
 import { useTheme } from '../../utils/useTheme';
-import { 
-  Edit, Check, Shield, User, CreditCard, Calendar, 
-  Settings, Sun, Moon, LogOut, ChevronRight, HelpCircle
-} from 'lucide-react';
+import { Edit, Check, Shield, User, CreditCard, Calendar, Settings, Sun, Moon, LogOut, ChevronRight, HelpCircle } from 'lucide-react';
 
 const AdminProfile = () => {
   const navigate = useNavigate();
@@ -32,17 +29,17 @@ const AdminProfile = () => {
   const fetchProfile = useCallback(async () => {
     try {
       setLoading(true);
-      const profileData = await api.get("/user/me");
+      const profileData = await api.get('/user/me');
       const userData = profileData.user || profileData;
       setUser(userData);
-      
+
       setFormData({
         username: userData?.username || '',
         nik: userData?.nik || '',
       });
 
       // Ambil daftar kunci keamanan (WebAuthn)
-      const credsData = await api.get("/user/credentials");
+      const credsData = await api.get('/user/credentials');
       const credsArray = Array.isArray(credsData) ? credsData : credsData?.credentials || [];
       setCredentials(credsArray);
     } catch (error) {
@@ -71,7 +68,7 @@ const AdminProfile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.put("/user/me", formData);
+      await api.put('/user/me', formData);
       setUser({ ...user, ...formData });
       setEditMode(false);
       toast.success('Profil admin berhasil diperbarui');
@@ -83,40 +80,41 @@ const AdminProfile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] flex items-center justify-center">
+      <div className="min-h-screen bg-(--bg) text-(--text) flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-red-500 mx-auto mb-4" />
-          <p className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">Memuat Profil Admin...</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-(--text-muted)">Memuat Profil Admin...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] font-sans pt-12 md:pt-0 pb-24 px-6 md:px-0 transition-colors duration-300">
+    <div className="min-h-screen bg-(--bg) text-(--text) font-sans pt-12 md:pt-0 pb-24 px-6 md:px-0 transition-colors duration-300">
       <div className="max-w-5xl mx-auto">
-        <div className="mb-10 border-b border-[var(--card-border)] pb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-red-500/[0.08] border border-red-500/20 rounded-full text-red-400 text-[10px] font-black uppercase tracking-wider mb-4">
+        <div className="mb-10 border-b border-(--card-border) pb-8">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-red-500/8 border border-red-500/20 rounded-full text-red-400 text-[10px] font-black uppercase tracking-wider mb-4">
             <Shield className="w-3 h-3" />
             Administrator Utama
           </div>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-[var(--heading-from)] to-[var(--heading-to)] bg-clip-text text-transparent">
-            Pengaturan Akun
-          </h1>
-          <p className="text-[var(--text-muted)] text-sm md:text-base font-bold">Kelola informasi pribadi dan keamanan autentikasi kunci Anda.</p>
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight bg-linear-to-r from-(--heading-from) to-(--heading-to) bg-clip-text text-transparent">Pengaturan Akun</h1>
+          <p className="text-(--text-muted) text-sm md:text-base font-bold">Kelola informasi pribadi dan keamanan autentikasi kunci Anda.</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
             {/* Kartu Informasi Akun */}
-            <div className="glass-card rounded-[2rem] p-8">
+            <div className="glass-card rounded-4xl p-8">
               <div className="flex items-center justify-between mb-8">
-                <h2 className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2.5 text-[var(--text-muted)]">
+                <h2 className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2.5 text-(--text-muted)">
                   <User className="w-5 h-5 text-red-400" />
                   Identitas Admin
                 </h2>
                 {!editMode && (
-                  <button onClick={() => setEditMode(true)} className="px-4 py-2 bg-[var(--card-bg)] hover:opacity-80 text-[var(--text)] rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-[var(--card-border)] flex items-center gap-2">
+                  <button
+                    onClick={() => setEditMode(true)}
+                    className="px-4 py-2 bg-(--card-bg) hover:opacity-80 text-(--text) rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-(--card-border) flex items-center gap-2"
+                  >
                     <Edit className="w-3.5 h-3.5" /> Edit Profil
                   </button>
                 )}
@@ -125,18 +123,18 @@ const AdminProfile = () => {
               {editMode ? (
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div>
-                    <label className="block text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-2 pl-1">Username Baru</label>
+                    <label className="block text-[10px] font-black text-(--text-muted) uppercase tracking-widest mb-2 pl-1">Username Baru</label>
                     <input
                       type="text"
                       name="username"
                       value={formData.username}
                       onChange={handleChange}
                       required
-                      className="w-full px-5 py-4 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl text-sm focus:outline-none focus:border-red-500/40 transition-all font-bold"
+                      className="w-full px-5 py-4 bg-(--card-bg) border border-(--card-border) rounded-2xl text-sm focus:outline-none focus:border-red-500/40 transition-all font-bold"
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-2 pl-1">NIK Baru</label>
+                    <label className="block text-[10px] font-black text-(--text-muted) uppercase tracking-widest mb-2 pl-1">NIK Baru</label>
                     <input
                       type="text"
                       inputMode="numeric"
@@ -144,11 +142,11 @@ const AdminProfile = () => {
                       value={formData.nik}
                       onChange={(e) => setFormData({ ...formData, nik: e.target.value.replace(/\D/g, '').slice(0, 16) })}
                       required
-                      className="w-full px-5 py-4 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl text-sm focus:outline-none focus:border-red-500/40 transition-all font-bold"
+                      className="w-full px-5 py-4 bg-(--card-bg) border border-(--card-border) rounded-2xl text-sm focus:outline-none focus:border-red-500/40 transition-all font-bold"
                     />
                   </div>
                   <div className="flex gap-3 pt-4">
-                    <button type="submit" className="px-6 py-3 bg-red-600 hover:bg-red-500 !text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 shadow-xl shadow-red-500/20">
+                    <button type="submit" className="px-6 py-3 bg-red-600 hover:bg-red-500 text-white! rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 shadow-xl shadow-red-500/20">
                       <Check className="w-4 h-4" /> Simpan Perubahan
                     </button>
                     <button
@@ -157,7 +155,7 @@ const AdminProfile = () => {
                         setEditMode(false);
                         setFormData({ username: user.username, nik: user.nik });
                       }}
-                      className="px-6 py-3 bg-[var(--card-bg)] text-[var(--text-muted)] rounded-2xl text-[10px] font-black uppercase tracking-widest hover:opacity-80 transition-all border border-[var(--card-border)]"
+                      className="px-6 py-3 bg-(--card-bg) text-(--text-muted) rounded-2xl text-[10px] font-black uppercase tracking-widest hover:opacity-80 transition-all border border-(--card-border)"
                     >
                       Batal
                     </button>
@@ -165,22 +163,22 @@ const AdminProfile = () => {
                 </form>
               ) : (
                 <div className="space-y-1">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between py-5 border-b border-[var(--card-border)]">
-                    <div className="flex items-center gap-2.5 text-[var(--text-muted)] mb-1.5 sm:mb-0">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between py-5 border-b border-(--card-border)">
+                    <div className="flex items-center gap-2.5 text-(--text-muted) mb-1.5 sm:mb-0">
                       <Shield className="w-4 h-4" />
                       <span className="text-[10px] font-black uppercase tracking-widest">Username</span>
                     </div>
                     <span className="text-sm font-bold">{user?.username}</span>
                   </div>
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between py-5 border-b border-[var(--card-border)]">
-                    <div className="flex items-center gap-2.5 text-[var(--text-muted)] mb-1.5 sm:mb-0">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between py-5 border-b border-(--card-border)">
+                    <div className="flex items-center gap-2.5 text-(--text-muted) mb-1.5 sm:mb-0">
                       <CreditCard className="w-4 h-4" />
                       <span className="text-[10px] font-black uppercase tracking-widest">NIK Terdaftar</span>
                     </div>
                     <span className="text-sm font-bold">{user?.nik}</span>
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between py-5">
-                    <div className="flex items-center gap-2.5 text-[var(--text-muted)] mb-1.5 sm:mb-0">
+                    <div className="flex items-center gap-2.5 text-(--text-muted) mb-1.5 sm:mb-0">
                       <Calendar className="w-4 h-4" />
                       <span className="text-[10px] font-black uppercase tracking-widest">Bergabung Sejak</span>
                     </div>
@@ -191,25 +189,22 @@ const AdminProfile = () => {
             </div>
 
             {/* Menu Pengaturan Tambahan */}
-            <div className="glass-card rounded-[2rem] p-8">
-              <h2 className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2.5 mb-8 text-[var(--text-muted)]">
+            <div className="glass-card rounded-4xl p-8">
+              <h2 className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2.5 mb-8 text-(--text-muted)">
                 <Settings className="w-5 h-5 text-red-400" />
                 Pengaturan Aplikasi
               </h2>
 
               <div className="space-y-4">
                 {/* Switcher Mode Gelap */}
-                <button
-                  onClick={toggleTheme}
-                  className="w-full h-20 flex items-center justify-between px-6 rounded-[24px] group"
-                >
+                <button onClick={toggleTheme} className="w-full h-20 flex items-center justify-between px-6 rounded-3xl group">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-red-400 group-hover:scale-110 transition-transform shadow-inner">
                       {isDark ? <Moon className="w-6 h-6" /> : <Sun className="w-6 h-6" />}
                     </div>
                     <div className="text-left">
                       <span className="text-sm font-bold block">Visual Tema Gelap</span>
-                      <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-muted)]">{isDark ? 'Saat ini: Aktif' : 'Saat ini: Nonaktif'}</span>
+                      <span className="text-[9px] font-black uppercase tracking-widest text-(--text-muted)\">{isDark ? 'Saat ini: Aktif' : 'Saat ini: Nonaktif'}</span>
                     </div>
                   </div>
                   <div className={`w-12 h-6 rounded-full p-1 transition-all ${isDark ? 'bg-red-600' : 'bg-gray-300'}`}>
@@ -218,51 +213,42 @@ const AdminProfile = () => {
                 </button>
 
                 {/* Link ke Panduan */}
-                <Link
-                  to="/admin/panduan"
-                  className="w-full h-20 flex items-center justify-between px-6 rounded-[24px] group"
-                >
+                <Link to="/admin/panduan" className="w-full h-20 flex items-center justify-between px-6 rounded-3xl group">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-red-400 group-hover:scale-110 transition-transform">
                       <HelpCircle className="w-6 h-6" />
                     </div>
                     <div className="text-left">
                       <span className="text-sm font-bold block">Panduan Admin</span>
-                      <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-muted)]">Tata cara pengelolaan surat</span>
+                      <span className="text-[9px] font-black uppercase tracking-widest text-(--text-muted)\">Tata cara pengelolaan surat</span>
                     </div>
                   </div>
                   <ChevronRight className="w-5 h-5 text-red-400/30 group-hover:translate-x-1 transition-transform" />
                 </Link>
 
                 {/* Link Kelola Perangkat */}
-                <Link
-                  to="/admin/manage-devices"
-                  className="w-full h-20 flex items-center justify-between px-6 rounded-[24px] group"
-                >
+                <Link to="/admin/manage-devices" className="w-full h-20 flex items-center justify-between px-6 rounded-3xl group">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-red-400 group-hover:scale-110 transition-transform">
                       <Shield className="w-6 h-6" />
                     </div>
                     <div className="text-left">
                       <span className="text-sm font-bold block">Keamanan Kunci Perangkat</span>
-                      <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-muted)]">Daftar kunci biometrik aktif</span>
+                      <span className="text-[9px] font-black uppercase tracking-widest text-(--text-muted)\">Daftar kunci biometrik aktif</span>
                     </div>
                   </div>
                   <ChevronRight className="w-5 h-5 text-emerald-400/30 group-hover:translate-x-1 transition-transform" />
                 </Link>
 
                 {/* Tombol Logout */}
-                <button
-                  onClick={handleLogout}
-                  className="w-full h-20 flex items-center justify-between px-6 rounded-[24px] group"
-                >
+                <button onClick={handleLogout} className="w-full h-20 flex items-center justify-between px-6 rounded-3xl group">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-red-400 group-hover:scale-110 transition-transform">
                       <LogOut className="w-6 h-6" />
                     </div>
                     <div className="text-left">
                       <span className="text-sm font-bold block">Keluar Kelola</span>
-                      <span className="text-[9px] font-black uppercase tracking-widest text-[var(--text-muted)]">Tutup sesi administrasi</span>
+                      <span className="text-[9px] font-black uppercase tracking-widest text-(--text-muted)\">Tutup sesi administrasi</span>
                     </div>
                   </div>
                   <ChevronRight className="w-5 h-5 text-red-400/30 group-hover:translate-x-1 transition-transform" />
@@ -273,26 +259,22 @@ const AdminProfile = () => {
 
           {/* Sidebar Status Keamanan */}
           <div className="space-y-6">
-            <div className="bg-red-500/[0.04] border border-red-500/10 p-7 rounded-[2rem]">
-              <h3 className="text-[10px] font-black text-red-400 mb-5 uppercase tracking-widest border-b border-red-400/10 pb-2">Status Proteksi</h3>
+            <div className="bg-red-500/4 border border-red-500/10 p-7 rounded-4xl\">
+              \n <h3 className="text-[10px] font-black text-red-400 mb-5 uppercase tracking-widest border-b border-red-400/10 pb-2\">Status Proteksi</h3>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)] animate-pulse" />
-                  <span className="text-xs font-bold text-[var(--text-muted)]">{credentials.length} Kunci Terdaftar</span>
+                  <span className="text-xs font-bold text-(--text-muted)">{credentials.length} Kunci Terdaftar</span>
                 </div>
-                <div className="p-4 bg-[var(--card-bg)] rounded-2xl border border-[var(--card-border)]">
-                  <p className="text-xs text-[var(--text-muted)] font-medium leading-relaxed">
-                    Akun administrator Anda terlindungi oleh autentikasi biometrik standar industri (WebAuthn).
-                  </p>
+                <div className="p-4 bg-(--card-bg) rounded-2xl border border-(--card-border)">
+                  <p className="text-xs text-(--text-muted) font-medium leading-relaxed">Akun administrator Anda terlindungi oleh autentikasi biometrik standar industri (WebAuthn).</p>
                 </div>
               </div>
             </div>
 
-            <div className="p-7 rounded-[2rem] border border-[var(--card-border)] bg-[var(--card-bg)]">
-              <p className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-2">Informasi Sistem</p>
-              <p className="text-xs text-[var(--text-muted)] font-medium leading-relaxed">
-                Segala perubahan informasi admin akan dicatat dalam log sistem desa untuk keperluan audit keamanan.
-              </p>
+            <div className="p-7 rounded-4xl border border-(--card-border) bg-(--card-bg)">
+              <p className="text-[9px] font-black text-(--text-muted) uppercase tracking-widest mb-2">Informasi Sistem</p>
+              <p className="text-xs text-(--text-muted) font-medium leading-relaxed">Segala perubahan informasi admin akan dicatat dalam log sistem desa untuk keperluan audit keamanan.</p>
             </div>
           </div>
         </div>

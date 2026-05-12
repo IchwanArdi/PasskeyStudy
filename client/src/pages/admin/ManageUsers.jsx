@@ -44,8 +44,6 @@ const AdminUsers = () => {
     fetchUsers();
   }, [navigate, fetchUsers]);
 
-
-
   // Fungsi buat bikin kode darurat untuk warga
   const handleGenerateEmergencyCode = async (userId, name) => {
     if (!window.confirm(`kode darurat untuk ${name}? Gunakan jika warga benar-benar kehilangan akses.`)) return;
@@ -54,9 +52,9 @@ const AdminUsers = () => {
     try {
       const res = await fetch(`${API_URL}/recovery/admin/emergency-code`, {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}` 
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
         body: JSON.stringify({ userId }),
       });
@@ -74,10 +72,9 @@ const AdminUsers = () => {
   // Logika filter: Gabungkan pencarian teks dan filter role
   const filteredUsers = users.filter((u) => {
     const term = search.toLowerCase();
-    const searchMatch = (u.username && u.username.toLowerCase().includes(term)) || 
-                        (u.nik && u.nik.toLowerCase().includes(term));
+    const searchMatch = (u.username && u.username.toLowerCase().includes(term)) || (u.nik && u.nik.toLowerCase().includes(term));
     const roleMatch = roleFilter === 'semua' || u.role === roleFilter;
-    
+
     return searchMatch && roleMatch;
   });
 
@@ -85,18 +82,17 @@ const AdminUsers = () => {
     <div className="animate-in fade-in duration-500 max-w-5xl mx-auto space-y-6 px-5 md:px-0 pt-8 md:pt-0 pb-24 md:pb-0">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-
           <p className="text-[10px] text-red-400 font-bold uppercase tracking-[0.2em] mb-2">Manajemen Pengguna</p>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-[var(--heading-from)] to-[var(--heading-to)] bg-clip-text text-transparent">Daftar Warga Desa</h1>
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight bg-linear-to-r from-(--heading-from) to-(--heading-to) bg-clip-text text-transparent">Daftar Warga Desa</h1>
         </div>
-        
+
         <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
           {/* Pilih Role (Filter) */}
           <div className="relative w-full sm:w-auto">
             <select
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
-              className="w-full sm:w-auto appearance-none pl-4 pr-10 py-2.5 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl text-sm font-semibold text-[var(--text)] focus:outline-none focus:border-blue-500/50 transition-all cursor-pointer hover:bg-[var(--card-bg-hover)]"
+              className="w-full sm:w-auto appearance-none pl-4 pr-10 py-2.5 bg-(--card-bg) border border-(--card-border) rounded-2xl text-sm font-semibold text-(--text) focus:outline-none focus:border-blue-500/50 transition-all cursor-pointer hover:bg-(--card-bg-hover)"
             >
               <option value="semua">Tampilkan Semua</option>
               <option value="admin">Khusus Admin</option>
@@ -110,22 +106,22 @@ const AdminUsers = () => {
           {/* Kotak Pencarian */}
           <div className="relative w-full sm:w-64">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-4 w-4 text-[var(--text-muted)]" />
+              <Search className="h-4 w-4 text-(--text-muted)" />
             </div>
             <input
               type="text"
               placeholder="Cari nama atau NIK..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl text-sm text-[var(--text)] focus:outline-none focus:border-blue-500/50 transition-all placeholder:text-[var(--text-muted)]"
+              className="w-full pl-10 pr-4 py-2.5 bg-(--card-bg) border border-(--card-border) rounded-2xl text-sm text-(--text) focus:outline-none focus:border-blue-500/50 transition-all placeholder:text-(--text-muted)"
             />
           </div>
-          
+
           {/* Tombol Refresh */}
-          <button 
-            onClick={fetchUsers} 
+          <button
+            onClick={fetchUsers}
             title="Muat ulang data"
-            className="w-full sm:w-auto p-2.5 flex-shrink-0 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-2xl text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--card-bg-hover)] transition-all flex items-center justify-center"
+            className="w-full sm:w-auto p-2.5 shrink-0 bg-(--card-bg) border border-(--card-border) rounded-2xl text-(--text-muted) hover:text-(--text) hover:bg-(--card-bg-hover) transition-all flex items-center justify-center"
           >
             <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
           </button>
@@ -141,17 +137,14 @@ const AdminUsers = () => {
             </div>
             <div>
               <p className="text-xs font-bold text-amber-400 uppercase tracking-widest mb-1">Kode Darurat Dibuat!</p>
-              <p className="text-sm text-[var(--text-muted)]">Berikan kode ini ke <b className="text-[var(--text)]">{emergencyResult.username}</b></p>
+              <p className="text-sm text-(--text-muted)">
+                Berikan kode ini ke <b className="text-(--text)">{emergencyResult.username}</b>
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <div className="px-6 py-3 bg-[var(--card-bg)] border border-[var(--card-border)] rounded-xl font-mono text-2xl font-black tracking-[0.5em] text-[var(--text)]">
-              {emergencyResult.code}
-            </div>
-            <button 
-              onClick={() => setEmergencyResult(null)}
-              className="p-3 text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
-            >
+            <div className="px-6 py-3 bg-(--card-bg) border border-(--card-border) rounded-xl font-mono text-2xl font-black tracking-[0.5em] text-(--text)">{emergencyResult.code}</div>
+            <button onClick={() => setEmergencyResult(null)} className="p-3 text-(--text-muted) hover:text-(--text) transition-colors">
               Tutup
             </button>
           </div>
@@ -159,7 +152,7 @@ const AdminUsers = () => {
       )}
 
       {/* Tabel Data User */}
-      <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-[2rem] overflow-hidden">
+      <div className="bg-(--card-bg) border border-(--card-border) rounded-4xl overflow-hidden">
         {loading ? (
           <div className="py-24 flex justify-center">
             <div className="w-8 h-8 border-2 border-white/10 border-t-blue-400 rounded-full animate-spin" />
@@ -173,23 +166,23 @@ const AdminUsers = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-[var(--card-bg)] border-b border-[var(--card-border)]">
-                  <th className="px-6 py-4 text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest">Identitas Pengguna</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest">Hak Akses</th>
-                  <th className="px-6 py-4 text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest text-right">Tindakan Tambahan</th>
+                <tr className="bg-(--card-bg) border-b border-(--card-border)">
+                  <th className="px-6 py-4 text-[10px] font-black text-(--text-muted) uppercase tracking-widest">Identitas Pengguna</th>
+                  <th className="px-6 py-4 text-[10px] font-black text-(--text-muted) uppercase tracking-widest">Hak Akses</th>
+                  <th className="px-6 py-4 text-[10px] font-black text-(--text-muted) uppercase tracking-widest text-right">Tindakan Tambahan</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/[0.03]">
+              <tbody className="divide-y divide-white/3">
                 {filteredUsers.map((u) => (
-                  <tr key={u._id} className="hover:bg-white/[0.02] transition-colors group">
+                  <tr key={u._id} className="hover:bg-white/2 transition-colors group">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 font-black shrink-0 border border-blue-500/10 shadow-inner">
-                          {u.username?.charAt(0)?.toUpperCase()}
-                        </div>
+                        <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 font-black shrink-0 border border-blue-500/10 shadow-inner">{u.username?.charAt(0)?.toUpperCase()}</div>
                         <div>
-                          <p className="text-sm font-bold text-[var(--text)]">{u.username}</p>
-                          <p className="text-[10px] text-[var(--text-muted)] flex items-center gap-1 mt-0.5"><CreditCard className="w-3 h-3" /> {u.nik}</p>
+                          <p className="text-sm font-bold text-(--text)">{u.username}</p>
+                          <p className="text-[10px] text-(--text-muted) flex items-center gap-1 mt-0.5">
+                            <CreditCard className="w-3 h-3" /> {u.nik}
+                          </p>
                         </div>
                       </div>
                     </td>
@@ -199,9 +192,7 @@ const AdminUsers = () => {
                           <ShieldCheck className="w-3 h-3" /> Admin Utama
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--text-muted)] text-[9px] font-bold uppercase tracking-wider rounded-lg">
-                          Warga Aktif
-                        </span>
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-(--card-bg) border border-(--card-border) text-(--text-muted) text-[9px] font-bold uppercase tracking-wider rounded-lg">Warga Aktif</span>
                       )}
                     </td>
                     <td className="px-6 py-4 text-right">
