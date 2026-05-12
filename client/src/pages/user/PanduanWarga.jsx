@@ -1,9 +1,6 @@
 import { useState } from 'react';
-import {
-  HelpCircle, ChevronDown,
-  Shield, UserPlus, AlertTriangle,
-  BookOpen, MessageCircle, Info
-} from 'lucide-react';
+import { HelpCircle, ChevronDown, Shield, UserPlus, AlertTriangle, BookOpen, MessageCircle, Info } from 'lucide-react';
+import { Lamp } from 'lucide-react';
 
 // Konten tanya jawab (FAQ) yang dikategorikan
 const faqSections = [
@@ -88,63 +85,48 @@ const faqSections = [
 // Map warna per kategori
 const colorMap = {
   blue: {
-    bg: 'bg-[var(--bg-raised)]',
-    border: 'border-[var(--border)]',
+    bg: 'bg-(--bg-raised)',
+
     text: 'text-blue-400',
-    iconBg: 'bg-[var(--bg-overlay)]',
-    activeBg: 'bg-[var(--bg-overlay)]',
+    activeBg: 'bg-(--bg-overlay)',
     activeBorder: 'border-blue-400/30',
   },
   emerald: {
-    bg: 'bg-[var(--bg-raised)]',
-    border: 'border-[var(--border)]',
-    text: 'text-[var(--primary)]',
-    iconBg: 'bg-[var(--primary-subtle)]',
-    activeBg: 'bg-[var(--bg-overlay)]',
-    activeBorder: 'border-[var(--primary-border)]',
+    bg: 'bg-(--bg-raised)',
+
+    text: 'text-(--primary)',
+    activeBg: 'bg-(--bg-overlay)',
+    activeBorder: 'border-(--primary-border)',
   },
   amber: {
-    bg: 'bg-[var(--bg-raised)]',
-    border: 'border-[var(--border)]',
-    text: 'text-[var(--warning)]',
-    iconBg: 'bg-[var(--warning-subtle)]',
-    activeBg: 'bg-[var(--bg-overlay)]',
-    activeBorder: 'border-[var(--warning-border)]',
+    bg: 'bg-(--bg-raised)',
+
+    text: 'text-(--warning)',
+    activeBg: 'bg-(--bg-overlay)',
+    activeBorder: 'border-(--warning-border)',
   },
   red: {
-    bg: 'bg-[var(--bg-raised)]',
-    border: 'border-[var(--border)]',
-    text: 'text-[var(--danger)]',
-    iconBg: 'bg-[var(--danger-subtle)]',
-    activeBg: 'bg-[var(--bg-overlay)]',
-    activeBorder: 'border-[var(--danger-border)]',
+    bg: 'bg-(--bg-raised)',
+
+    text: 'text-(--danger)',
+    activeBg: 'bg-(--bg-overlay)',
+    activeBorder: 'border-(--danger-border)',
   },
 };
 
 const AccordionItem = ({ item, isOpen, onToggle, color }) => {
   const c = colorMap[color];
   return (
-    <div
-      className={`rounded-xl border transition-all duration-200 ${
-        isOpen ? `${c.activeBg} ${c.activeBorder}` : 'bg-[var(--bg-raised)] border-[var(--border)] hover:border-[var(--border-hover)]'
-      }`}
-    >
-      <button
-        onClick={onToggle}
-        className="w-full flex items-center justify-between px-5 py-4 text-left"
-      >
-        <span className={`text-sm font-semibold leading-snug pr-4 ${isOpen ? c.text : 'text-[var(--text)]'}`}>
-          {item.q}
-        </span>
-        <div className={`flex-shrink-0 w-7 h-7 rounded-lg ${c.iconBg} flex items-center justify-center transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}>
+    <div className={`rounded-xl border transition-all duration-200 ${isOpen ? `${c.activeBg} ${c.activeBorder}` : 'bg-(--bg-raised) border-(--border) hover:border-(--border-hover)'}`}>
+      <button onClick={onToggle} className="w-full flex items-center justify-between px-5 py-4 text-left">
+        <span className={`text-sm font-semibold leading-snug pr-4 ${isOpen ? c.text : 'text-(--text)'}`}>{item.q}</span>
+        <div className={`shrink-0 w-7 h-7 rounded-lg ${c.iconBg} flex items-center justify-center transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}>
           <ChevronDown className={`w-4 h-4 ${c.text}`} />
         </div>
       </button>
       {isOpen && (
         <div className="px-5 pb-5 animate-fade-in-up">
-          <div className="text-sm text-[var(--text-muted)] leading-relaxed whitespace-pre-line">
-            {item.a}
-          </div>
+          <div className="text-sm text-white leading-relaxed whitespace-pre-line">{item.a}</div>
         </div>
       )}
     </div>
@@ -160,36 +142,22 @@ const PanduanWarga = () => {
     setOpenItems((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const filteredSections = activeSection
-    ? faqSections.filter((s) => s.id === activeSection)
-    : faqSections;
+  const filteredSections = activeSection ? faqSections.filter((s) => s.id === activeSection) : faqSections;
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] font-sans pt-12 md:pt-0 pb-24 px-4 md:px-0 transition-colors duration-300">
+    <div className="min-h-screen bg-(--bg) text-(--text) font-sans pt-12 md:pt-0 pb-24 px-4 md:px-0 transition-colors duration-300">
       <div className="max-w-3xl mx-auto">
         {/* Header Panduan */}
         <div className="mb-8 pt-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[var(--primary-subtle)] border border-[var(--primary-border)] rounded-full text-[var(--primary)] text-[10px] font-bold uppercase tracking-wider mb-4">
-            <HelpCircle className="w-3 h-3" />
-            Bantuan
-          </div>
-          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight mb-2 bg-gradient-to-r from-[var(--heading-from)] to-[var(--heading-to)] bg-clip-text text-transparent">
-            Panduan Penggunaan
-          </h1>
-          <p className="text-[var(--text-muted)] text-sm font-medium">
-            Semua yang perlu Anda ketahui tentang cara menggunakan Layanan Desa Digital.
-          </p>
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight mb-2 bg-linear-to-r from-(--heading-from) to-(--heading-to) bg-clip-text text-transparent">Panduan Penggunaan</h1>
+          <p className="text-(--text-muted) text-sm font-medium">Semua yang perlu Anda ketahui tentang cara menggunakan Layanan Desa Digital.</p>
         </div>
 
         {/* Filter Kategori */}
         <div className="flex flex-wrap gap-2 mb-8">
           <button
             onClick={() => setActiveSection(null)}
-            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
-              !activeSection
-                ? 'bg-[var(--text)] text-[var(--bg)]'
-                : 'bg-[var(--bg-raised)] text-[var(--text-muted)] hover:border-[var(--border-hover)] border border-[var(--border)]'
-            }`}
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${!activeSection ? 'bg-(--text) text-(--bg)' : 'bg-(--bg-raised) text-(--text-muted) hover:border-(--border-hover) border border-(--border)'}`}
           >
             Semua
           </button>
@@ -201,9 +169,7 @@ const PanduanWarga = () => {
                 key={section.id}
                 onClick={() => setActiveSection(isActive ? null : section.id)}
                 className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-                  isActive
-                    ? `bg-[var(--bg-overlay)] ${c.text} border ${c.activeBorder}`
-                    : 'bg-[var(--bg-raised)] text-[var(--text-muted)] hover:border-[var(--border-hover)] border border-[var(--border)]'
+                  isActive ? `bg-(--bg-overlay) ${c.text} border ${c.activeBorder}` : 'bg-(--bg-raised) text-(--text-muted) hover:border-(--border-hover) border border-(--border)'
                 }`}
               >
                 <section.icon className="w-3.5 h-3.5" />
@@ -226,19 +192,13 @@ const PanduanWarga = () => {
                   </div>
                   <div>
                     <h2 className="text-base font-bold">{section.title}</h2>
-                    <p className="text-xs text-[var(--text-muted)]">{section.subtitle}</p>
+                    <p className="text-xs text-(--text-muted)">{section.subtitle}</p>
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   {section.items.map((item, i) => (
-                    <AccordionItem
-                      key={i}
-                      item={item}
-                      isOpen={openItems[`${section.id}-${i}`]}
-                      onToggle={() => toggleItem(section.id, i)}
-                      color={section.color}
-                    />
+                    <AccordionItem key={i} item={item} isOpen={openItems[`${section.id}-${i}`]} onToggle={() => toggleItem(section.id, i)} color={section.color} />
                   ))}
                 </div>
               </div>
@@ -247,11 +207,9 @@ const PanduanWarga = () => {
         </div>
 
         {/* Kartu Kontak Admin */}
-        <div className="mt-10 bg-[var(--bg-raised)] rounded-2xl p-6 border border-[var(--border)] text-center shadow-sm">
+        <div className="mt-10 bg-(--bg-raised) rounded-2xl p-6 border border-(--border) text-center shadow-sm">
           <h2 className="text-lg font-bold mb-2">Punya Masalah Lain?</h2>
-          <p className="text-sm text-[var(--text-muted)] mb-6 max-w-sm mx-auto">
-            Hubungi Admin melalui WhatsApp untuk bantuan lebih lanjut.
-          </p>
+          <p className="text-sm text-(--text-muted) mb-6 max-w-sm mx-auto">Hubungi Admin melalui WhatsApp untuk bantuan lebih lanjut.</p>
           <a
             href="https://wa.me/6281297988091"
             target="_blank"
@@ -264,15 +222,13 @@ const PanduanWarga = () => {
         </div>
 
         {/* Tips Penting */}
-        <div className="mt-6 p-5 flex items-start gap-4">
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 border border-[var(--warning-border)]">
-            <Info className="w-5 h-5 text-[var(--warning)]" />
+        <div className="mt-6 p-5 flex items-start gap-4 border border-(--warning-border) rounded-xl bg-(--bg-raised)">
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border border-(--warning-border)">
+            <Info className="w-5 h-5 text-(--warning)" />
           </div>
           <div>
             <p className="text-sm font-bold text-amber-400 mb-1">Tips Penting</p>
-            <p className="text-xs text-dark leading-relaxed">
-              Selalu simpan Kunci Cadangan Anda di tempat yang aman. Kunci ini satu-satunya cara memulihkan akun kalau HP Anda rusak atau hilang.
-            </p>
+            <p className="text-xs text-dark leading-relaxed">Selalu simpan Kunci Cadangan Anda di tempat yang aman. Kunci ini satu-satunya cara memulihkan akun kalau HP Anda rusak atau hilang.</p>
           </div>
         </div>
       </div>
