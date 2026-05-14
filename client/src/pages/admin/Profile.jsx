@@ -123,7 +123,7 @@ const AdminProfile = () => {
               {editMode ? (
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div>
-                    <label className="block text-[10px] font-black text-(--text-muted) uppercase tracking-widest mb-2 pl-1">Username Baru</label>
+                    <label className="block text-[10px] font-black text-(--text-muted) uppercase tracking-widest mb-2 pl-1">Nama Pengguna Baru</label>
                     <input
                       type="text"
                       name="username"
@@ -166,7 +166,7 @@ const AdminProfile = () => {
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between py-5 border-b border-(--card-border)">
                     <div className="flex items-center gap-2.5 text-(--text-muted) mb-1.5 sm:mb-0">
                       <Shield className="w-4 h-4" />
-                      <span className="text-[10px] font-black uppercase tracking-widest">Username</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest">Nama Pengguna</span>
                     </div>
                     <span className="text-sm font-bold">{user?.username}</span>
                   </div>

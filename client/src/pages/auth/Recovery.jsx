@@ -141,7 +141,7 @@ const Recovery = () => {
                     }}
                     required
                     maxLength={4}
-                    className="w-full px-4 py-3 bg-white/3 border border-white/8 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all text-sm font-mono tracking-[0.5em] text-center text-lg"
+                    className="w-full px-4 py-3 bg-white/3 border border-white/8 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all text-lg font-mono tracking-[0.5em] text-center"
                     placeholder="XXXX"
                   />
                 </div>
@@ -231,7 +231,7 @@ const Recovery = () => {
                   onClick={() => navigate('/dashboard')}
                   className="w-full py-4 bg-emerald-500 text-black font-bold rounded-xl hover:bg-emerald-400 transition-all text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 active:scale-95"
                 >
-                  Masuk ke Dashboard <ArrowRight className="w-4 h-4" />
+                  Masuk ke Beranda <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
             )}

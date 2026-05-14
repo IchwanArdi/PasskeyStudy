@@ -41,7 +41,7 @@ const Login = () => {
           <div className="flex items-center gap-3 p-3.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl mb-6">
             <Shield className="w-4 h-4 text-emerald-500 shrink-0" />
             <p className="text-xs text-gray-500 leading-relaxed font-medium">
-              Masuk cukup pakai <span className="text-(--text) font-bold">Sidik Jari atau Wajah</span> — aman tanpa perlu hafal password.
+              Masuk cukup pakai <span className="text-(--text) font-bold">Sidik Jari atau Wajah</span> — aman tanpa perlu hafal kata sandi.
             </p>
           </div>
 

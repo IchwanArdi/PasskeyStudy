@@ -29,10 +29,10 @@ const slides = [
   },
   {
     icon: ShieldCheck,
-    title: 'Login Tanpa Password',
+    title: 'Masuk Tanpa Kata Sandi',
     subtitle: 'Aman dengan Sidik Jari atau Wajah',
     desa: null,
-    desc: 'Daftar dan masuk menggunakan teknologi WebAuthn/FIDO2 — tidak perlu mengingat password lagi.',
+    desc: 'Daftar dan masuk menggunakan teknologi WebAuthn/FIDO2 — tidak perlu mengingat kata sandi lagi.',
     color: 'from-violet-500/20 to-purple-500/10',
     accent: 'text-violet-400',
     border: 'border-violet-500/20',

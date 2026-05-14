@@ -16,8 +16,8 @@ const faqSections = [
         a: 'Layanan Desa Digital adalah platform online yang memudahkan warga Desa untuk mengurus surat administrasi (seperti Surat Keterangan Tidak Mampu / SKTM) langsung dari HP, tanpa harus antre di kantor desa.',
       },
       {
-        q: 'Apa bedanya dengan login pakai password biasa?',
-        a: 'Di sini Anda tidak perlu mengingat password sama sekali. Cukup gunakan sidik jari, wajah (Face ID), atau PIN HP Anda untuk masuk. Teknologi ini jauh lebih aman karena kunci keamanan tersimpan di HP Anda, bukan di server.',
+        q: 'Apa bedanya dengan masuk pakai kata sandi biasa?',
+        a: 'Di sini Anda tidak perlu mengingat kata sandi sama sekali. Cukup gunakan sidik jari, wajah (Face ID), atau PIN HP Anda untuk masuk. Teknologi ini jauh lebih aman karena kunci keamanan tersimpan di HP Anda, bukan di server.',
       },
       {
         q: 'Apakah data saya aman?',

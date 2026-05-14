@@ -107,7 +107,7 @@ const Profile = () => {
                 </h2>
                 {!editMode && (
                   <button onClick={() => setEditMode(true)} className="px-4 py-2 bg-(--bg-overlay) hover:opacity-80 text-(--text) rounded-xl text-sm font-medium transition-all border border-(--border) flex items-center gap-2">
-                    Edit
+                    Ubah Profil
                   </button>
                 )}
               </div>
@@ -115,7 +115,7 @@ const Profile = () => {
               {editMode ? (
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div>
-                    <label className="block text-sm font-medium text-(--text-muted) mb-2">Username</label>
+                    <label className="block text-sm font-medium text-(--text-muted) mb-2">Nama Pengguna</label>
                     <input
                       type="text"
                       name="username"
@@ -159,7 +159,7 @@ const Profile = () => {
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between py-4 border-b border-(--border)">
                     <div className="flex items-center gap-2.5 text-(--text-muted) mb-1.5 sm:mb-0">
                       <Shield className="w-4 h-4" />
-                      <span className="text-sm font-medium">Username</span>
+                      <span className="text-sm font-medium">Nama Pengguna</span>
                     </div>
                     <span className="text-sm font-semibold">{user?.username}</span>
                   </div>
