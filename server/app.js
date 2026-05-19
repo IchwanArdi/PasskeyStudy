@@ -70,11 +70,6 @@ app.use(
 // Compression
 app.use(compression());
 
-// Logging (skip in test)
-if (process.env.NODE_ENV !== 'test') {
-  app.use(morgan('combined'));
-}
-
 app.set('trust proxy', 1); // penting di Railway / Vercel
 
 // Session setup (single-admin auth)
@@ -137,21 +132,15 @@ if (isProduction) {
 
 // ROUTING: Mendaftarkan semua kumpulan endpoint/API yang tersedia di backend
 app.use('/api/auth', authRoutes);
-app.use('/auth', authRoutes); // Alias untuk kompatibilitas
-
 app.use('/api/user', userRoutes);
-app.use('/user', userRoutes); // Alias untuk kompatibilitas
-
 app.use('/api/recovery', recoveryRoutes);
-app.use('/recovery', recoveryRoutes); // Alias untuk kompatibilitas
-
 app.use('/api/pengajuan', pengajuanRoutes);
-app.use('/pengajuan', pengajuanRoutes); // Alias untuk kompatibilitas
+
 
 // Middleware Error Handler Global (Menangkap error dari CORS dll)
 app.use((err, req, res, next) => {
   if (err.message && err.message.startsWith('CORS')) {
-    return res.status(403).json({ 
+    return res.status(403).json({
       error: 'Akses Ditolak (CORS Policy)',
       message: err.message,
       keterangan: 'Sistem keamanan memblokir permintaan dari domain yang tidak dikenal. Ini merupakan perlindungan terhadap potensi serangan Phishing.'
@@ -159,9 +148,9 @@ app.use((err, req, res, next) => {
   }
   // Jangan membocorkan error stack di production
   const isProduction = process.env.NODE_ENV === 'production';
-  res.status(500).json({ 
+  res.status(500).json({
     error: 'Terjadi kesalahan pada server',
-    details: isProduction ? null : err.message 
+    details: isProduction ? null : err.message
   });
 });
 
