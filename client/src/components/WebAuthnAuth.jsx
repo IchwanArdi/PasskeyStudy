@@ -125,7 +125,9 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
         setMessage('');
         return;
       }
-      setError(err.response?.data?.message || err.message || 'Login gagal, pastikan akun sudah terdaftar.');
+      const errorMsg = err.response?.data?.message || err.message;
+      console.log("Pesan Error Login:", errorMsg);
+      setError(errorMsg || 'Login gagal, pastikan akun sudah terdaftar.');
       setMessage('');
     } finally {
       setLoading(false);

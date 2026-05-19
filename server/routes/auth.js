@@ -116,16 +116,26 @@ router.post('/webauthn/login/verify', async (req, res) => {
       });
     }
 
+    // Mencocokkan ID kredensial yang dikirim dengan yang tersimpan di database
     const userCredential = user.webauthnCredentials.find(c => c.credentialID === credential.id);
-    if (!userCredential) return res.status(400).json({ message: 'Perangkat tidak dikenali' });
+    if (!userCredential) {
+      console.log(`[AUTENTIKASI GAGAL] Perangkat tidak terdaftar untuk pengguna: ${user.username}`);
+      return res.status(400).json({ message: 'Perangkat tidak terdaftar' });
+    }
 
+    // Verifikasi tanda tangan digital biometrik
     const verification = await verifyAuthentication(credential, expectedChallenge, user, userCredential);
     if (verification.verified) {
+      // Memperbarui jumlah percobaan (counter)
       userCredential.counter = verification.newCounter;
+      // Memperbarui waktu terakhir digunakan
       userCredential.lastUsed = new Date();
+      // Menyimpan perubahan ke database
       await user.save();
 
+      // Menghapus challenge dari memori setelah berhasil login
       challenges.delete(user._id.toString());
+      // Generate token
       const token = generateToken(user._id);
 
       res.json({
