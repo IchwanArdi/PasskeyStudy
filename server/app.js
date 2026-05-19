@@ -26,16 +26,9 @@ connectDB().catch((err) => {
 });
 
 // CORS must be configured first to handle preflight requests
-const rawCorsOrigin = process.env.RP_ORIGIN;
-const defaultOrigins = ['http://localhost:5173', 'https://auth-methods.vercel.app'];
-const allowedOrigins = Array.isArray(rawCorsOrigin)
-  ? rawCorsOrigin
-  : typeof rawCorsOrigin === 'string'
-    ? rawCorsOrigin
-      .split(',')
-      .map((o) => o.trim())
-      .filter(Boolean)
-    : defaultOrigins;
+const allowedOrigins = process.env.RP_ORIGIN
+  ? process.env.RP_ORIGIN.split(',').map((o) => o.trim())
+  : ['http://localhost:5173'];
 
 // KEAMANAN: Konfigurasi CORS (Cross-Origin Resource Sharing)
 // Membatasi domain apa saja (contoh: domain frontend localhost/vercel) yang diizinkan mengakses API ini.
