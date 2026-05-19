@@ -12,6 +12,7 @@ const Register = () => {
   const navigate = useNavigate();
   const [showRecoveryCodes, setShowRecoveryCodes] = useState(false);
   const [recoveryCodes, setRecoveryCodes] = useState([]);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   // Tahap sukses daftar: generate & tampilkan kode pemulihan
   const handleSuccess = async () => {
@@ -38,8 +39,14 @@ const Register = () => {
     navigate('/dashboard');
   };
 
-  // Tutup tampilan kode pemulihan
+  // Tutup tampilan kode pemulihan (tampilkan konfirmasi terlebih dahulu)
   const handleDismissCodes = () => {
+    setShowConfirmModal(true);
+  };
+
+  // Eksekusi penutupan kode pemulihan setelah konfirmasi disetujui
+  const handleConfirmDismiss = () => {
+    setShowConfirmModal(false);
     setShowRecoveryCodes(false);
     navigate('/dashboard');
   };
@@ -117,8 +124,41 @@ const Register = () => {
             >
               Sudah Saya Simpan <ArrowRight className="w-4 h-4" />
             </button>
+
           </div>
         </div>
+
+        {/* Modal Konfirmasi Tambahan */}
+        {showConfirmModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all duration-300">
+            <div className="relative w-full max-w-xs bg-(--bg-raised) border border-(--border) rounded-3xl p-6 shadow-2xl text-center animate-fade-in-up">
+              <div className="w-12 h-12 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <AlertTriangle className="w-6 h-6 text-amber-500 animate-pulse" />
+              </div>
+              <h3 className="text-base font-black text-(--text) mb-2">Apakah Anda Yakin?</h3>
+              <p className="text-xs text-gray-500 leading-relaxed mb-6 font-medium">
+                Pastikan Anda benar-benar telah <span className="text-amber-500 font-bold">menyalin</span> atau <span className="text-amber-500 font-bold">mengunduh</span> kode pemulihan ini. 
+                <br />
+                <span className="text-red-400 font-bold mt-1 block">Anda tidak akan bisa melihat kode ini lagi!</span>
+              </p>
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={handleConfirmDismiss}
+                  className="w-full py-3 bg-emerald-500 text-black font-bold rounded-xl hover:bg-emerald-400 hover:shadow-emerald-500/30 transition-all text-xs shadow-lg shadow-emerald-500/10 active:scale-95 cursor-pointer"
+                >
+                  Ya, Saya Sudah Simpan
+                </button>
+                <button
+                  onClick={() => setShowConfirmModal(false)}
+                  className="w-full py-3 bg-(--bg) border border-(--border) text-gray-400 font-bold rounded-xl hover:text-(--text) hover:bg-(--bg-raised) transition-all text-xs cursor-pointer"
+                >
+                  Belum, Periksa Lagi
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
     );
   }
