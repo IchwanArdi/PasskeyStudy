@@ -18,20 +18,20 @@ router.post('/webauthn/register/options', async (req, res) => {
     if (!nik || !inputUsername) return res.status(400).json({ message: 'NIK dan Nama wajib diisi' });
 
     // Cari berdasarkan Blind Index (nikHash)
-    let user = await User.findOne({ nikHash: createHash(nik) }); 
-    
+    let user = await User.findOne({ nikHash: createHash(nik) });
+
     // Jika belum ada, buatkan akun baru (Otomatis daftar)
     if (!user) {
       const username = inputUsername.trim();
       if (username.length < 3) return res.status(400).json({ message: 'Nama minimal 3 karakter' });
-      
+
       const existingName = await User.findOne({ username });
       if (existingName) return res.status(400).json({ message: 'Nama sudah terdaftar' });
 
-      user = new User({ 
-        username, 
+      user = new User({
+        username,
         nik: nik.trim(),
-        nikHash: createHash(nik) 
+        nikHash: createHash(nik)
       });
       await user.save();
     }
@@ -58,12 +58,12 @@ router.post('/webauthn/register/verify', async (req, res) => {
     const credentialData = await verifyRegistration(credential, expectedChallenge, user);
     await user.addWebAuthnCredential(credentialData);
     challenges.delete(user._id.toString());
-    
+
     const token = generateToken(user._id);
-    res.json({ 
-      message: 'Registrasi berhasil', 
-      token, 
-      user: { id: user._id, username: user.username, nik: user.nik, role: user.role || 'warga' } 
+    res.json({
+      message: 'Registrasi berhasil',
+      token,
+      user: { id: user._id, username: user.username, nik: user.nik, role: user.role || 'warga' }
     });
   } catch (error) {
     console.error('Verify register error:', error);
@@ -96,16 +96,25 @@ router.post('/webauthn/login/options', async (req, res) => {
 router.post('/webauthn/login/verify', async (req, res) => {
   try {
     const { identifier, credential } = req.body;
-    const user = await User.findOne({ 
+    if (!identifier) {
+      return res.status(400).json({ message: 'NIK atau Username wajib diisi' });
+    }
+    const user = await User.findOne({
       $or: [
-        { nikHash: createHash(identifier) }, 
+        { nikHash: createHash(identifier) },
         { username: identifier.trim() }
-      ] 
+      ]
     });
     if (!user) return res.status(404).json({ message: 'Pengguna tidak ditemukan' });
 
     const expectedChallenge = challenges.get(user._id.toString());
-    if (!expectedChallenge) return res.status(400).json({ message: 'Sesi habis' });
+    if (!expectedChallenge) {
+      return res.status(400).json({
+        error: 'Sesi Habis (Potensi Replay Attack)',
+        message: 'Sesi habis atau tantangan (challenge) tidak ditemukan.',
+        keterangan: 'Server menolak permintaan karena challenge untuk sesi ini telah dihapus. Ini membuktikan data login lama tidak dapat digunakan kembali.'
+      });
+    }
 
     const userCredential = user.webauthnCredentials.find(c => c.credentialID === credential.id);
     if (!userCredential) return res.status(400).json({ message: 'Perangkat tidak dikenali' });
@@ -115,20 +124,28 @@ router.post('/webauthn/login/verify', async (req, res) => {
       userCredential.counter = verification.newCounter;
       userCredential.lastUsed = new Date();
       await user.save();
-      
+
       challenges.delete(user._id.toString());
       const token = generateToken(user._id);
-      
-      res.json({ 
-        message: 'Login berhasil', 
-        token, 
-        user: { id: user._id, username: user.username, nik: user.nik, role: user.role || 'warga' } 
+
+      res.json({
+        message: 'Login berhasil',
+        token,
+        user: { id: user._id, username: user.username, nik: user.nik, role: user.role || 'warga' }
       });
     } else {
       throw new Error('Verifikasi gagal');
     }
   } catch (error) {
     console.error('Verify login error:', error);
+    // Tangani error challenge mismatch secara rapi untuk skripsi
+    if (error.message && error.message.toLowerCase().includes('challenge')) {
+      return res.status(400).json({
+        error: 'Tantangan Tidak Cocok (Challenge Mismatch)',
+        message: error.message,
+        keterangan: 'Server menolak permintaan karena tanda tangan biometrik lama dikirimkan dengan challenge baru. Ini membuktikan replay attack berhasil digagalkan.'
+      });
+    }
     res.status(400).json({ message: 'Login gagal', error: error.message });
   }
 });

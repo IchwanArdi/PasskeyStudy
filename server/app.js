@@ -31,11 +31,11 @@ const defaultOrigins = ['http://localhost:5173', 'https://auth-methods.vercel.ap
 const allowedOrigins = Array.isArray(rawCorsOrigin)
   ? rawCorsOrigin
   : typeof rawCorsOrigin === 'string'
-  ? rawCorsOrigin
+    ? rawCorsOrigin
       .split(',')
       .map((o) => o.trim())
       .filter(Boolean)
-  : defaultOrigins;
+    : defaultOrigins;
 
 // KEAMANAN: Konfigurasi CORS (Cross-Origin Resource Sharing)
 // Membatasi domain apa saja (contoh: domain frontend localhost/vercel) yang diizinkan mengakses API ini.
@@ -113,7 +113,7 @@ app.get(['/favicon.ico', '/favicon.png'], (req, res) => res.status(204).end());
 
 // Rate limiting (hanya aktif di production)
 if (isProduction) {
-// KEAMANAN: Rate limiter untuk mencegah serangan DoS (Denial of Service) atau brute-force
+  // KEAMANAN: Rate limiter untuk mencegah serangan DoS (Denial of Service) atau brute-force
   const globalLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 menit
     max: 300, // Maks 300 request per IP per window
@@ -148,5 +148,23 @@ app.use('/recovery', recoveryRoutes); // Alias untuk kompatibilitas
 app.use('/api/pengajuan', pengajuanRoutes);
 app.use('/pengajuan', pengajuanRoutes); // Alias untuk kompatibilitas
 
+// Middleware Error Handler Global (Menangkap error dari CORS dll)
+app.use((err, req, res, next) => {
+  if (err.message && err.message.startsWith('CORS')) {
+    return res.status(403).json({ 
+      error: 'Akses Ditolak (CORS Policy)',
+      message: err.message,
+      keterangan: 'Sistem keamanan memblokir permintaan dari domain yang tidak dikenal. Ini merupakan perlindungan terhadap potensi serangan Phishing.'
+    });
+  }
+  // Jangan membocorkan error stack di production
+  const isProduction = process.env.NODE_ENV === 'production';
+  res.status(500).json({ 
+    error: 'Terjadi kesalahan pada server',
+    details: isProduction ? null : err.message 
+  });
+});
+
 // Export app for use in server.js
 export default app;
+
