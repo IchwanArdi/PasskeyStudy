@@ -32,7 +32,7 @@ const Login = () => {
         {/* Bagian Judul */}
         <div className="text-center mb-8">
           <h1 className="text-2xl font-black tracking-tight mb-2">Masuk ke Akun</h1>
-          <p className="text-sm text-gray-500">Layanan Desa Digital</p>
+          <p className="text-sm text-gray-500">Layanan Kelurahan Digital</p>
         </div>
 
         {/* Kartu Login */}

@@ -98,7 +98,7 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
     setMessage('');
 
     try {
-      setMessage('Menghubungkan ke sistem desa...');
+      setMessage('Menghubungkan ke sistem kelurahan...');
       const options = await api.post('/auth/webauthn/login/options', { identifier: nik });
 
       if (!options || !options.challenge) {

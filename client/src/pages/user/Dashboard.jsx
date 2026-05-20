@@ -62,7 +62,7 @@ const Dashboard = () => {
             <p className="text-gray-500 text-xs font-bold mb-1 uppercase tracking-widest leading-none">Halo, {user?.username}</p>
             <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight bg-linear-to-br from-(--heading-from) to-(--heading-to) bg-clip-text text-transparent">
               Selamat Datang di
-              <br className="md:hidden" /> Desa Digital
+              <br className="md:hidden" /> Kelurahan Digital
             </h1>
           </div>
         </div>
@@ -84,7 +84,7 @@ const Dashboard = () => {
                   <br />
                   Tidak Mampu (SKTM)
                 </h2>
-                <p className="text-sm text-emerald-50 md:max-w-xs leading-relaxed">Ajukan permohonan SKTM dengan mudah dan cepat tanpa perlu antre di balai desa.</p>
+                <p className="text-sm text-emerald-50 md:max-w-xs leading-relaxed">Ajukan permohonan SKTM dengan mudah dan cepat tanpa perlu antre di kantor kelurahan.</p>
               </div>
               <div className="hidden sm:flex w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl items-center justify-center border border-white/20 group-hover:scale-110 transition-transform">
                 <LetterIcon jenis="tidak_mampu" className="w-8 h-8 text-white" />

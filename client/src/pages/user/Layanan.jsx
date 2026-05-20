@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import LetterIcon from '../../components/LetterIcon';
 
-// Data statis buat daftar layanan yang tersedia di desa
+// Data statis buat daftar layanan yang tersedia di kelurahan
 const layananList = [
   {
     id: 'tidak_mampu',

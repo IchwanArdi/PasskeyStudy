@@ -12,8 +12,8 @@ const faqSections = [
     color: 'blue',
     items: [
       {
-        q: 'Apa itu Layanan Desa Digital?',
-        a: 'Layanan Desa Digital adalah platform online yang memudahkan warga Desa untuk mengurus surat administrasi (seperti Surat Keterangan Tidak Mampu / SKTM) langsung dari HP, tanpa harus antre di kantor desa.',
+        q: 'Apa itu Layanan Kelurahan Digital?',
+        a: 'Layanan Kelurahan Digital adalah platform online yang memudahkan warga Kelurahan untuk mengurus surat administrasi (seperti Surat Keterangan Tidak Mampu / SKTM) langsung dari HP, tanpa harus antre di kantor kelurahan.',
       },
       {
         q: 'Apa bedanya dengan masuk pakai kata sandi biasa?',
@@ -76,7 +76,7 @@ const faqSections = [
       },
       {
         q: 'Saya lupa/kehilangan Kunci Cadangan, bagaimana?',
-        a: 'Kalau masih bisa login, cek di menu Keamanan Perangkat. Kalau tidak bisa login sama sekali, silakan datang ke Kantor Desa membawa KTP untuk riset akun oleh admin.',
+        a: 'Kalau masih bisa login, cek di menu Keamanan Perangkat. Kalau tidak bisa login sama sekali, silakan datang ke Kantor Kelurahan membawa KTP untuk riset akun oleh admin.',
       },
     ],
   },
@@ -150,7 +150,7 @@ const PanduanWarga = () => {
         {/* Header Panduan */}
         <div className="mb-8 pt-2">
           <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight mb-2 bg-linear-to-r from-(--heading-from) to-(--heading-to) bg-clip-text text-transparent">Panduan Penggunaan</h1>
-          <p className="text-(--text-muted) text-sm font-medium">Semua yang perlu Anda ketahui tentang cara menggunakan Layanan Desa Digital.</p>
+          <p className="text-(--text-muted) text-sm font-medium">Semua yang perlu Anda ketahui tentang cara menggunakan Layanan Kelurahan Digital.</p>
         </div>
 
         {/* Filter Kategori */}
@@ -217,7 +217,7 @@ const PanduanWarga = () => {
             className="inline-flex items-center gap-2 px-6 py-3 bg-[#25D366] hover:bg-[#20ba5a] text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-green-500/20 active:scale-95"
           >
             <MessageCircle className="w-4 h-4" />
-            Chat Admin Desa
+            Chat Admin Kelurahan
           </a>
         </div>
 

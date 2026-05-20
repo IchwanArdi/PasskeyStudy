@@ -75,7 +75,7 @@ const AdminDashboard = () => {
         <header className="flex items-start justify-between">
           <div>
             <p className="text-[10px] text-red-400 font-bold uppercase tracking-[0.2em] mb-2">Panel Kendali Admin</p>
-            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight bg-linear-to-r from-(--heading-from) to-(--heading-to) bg-clip-text text-transparent">DESA DIGITAL</h1>
+            <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight bg-linear-to-r from-(--heading-from) to-(--heading-to) bg-clip-text text-transparent">KELURAHAN DIGITAL</h1>
           </div>
         </header>
 

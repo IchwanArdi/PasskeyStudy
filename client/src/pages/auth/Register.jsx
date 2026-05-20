@@ -59,12 +59,12 @@ const Register = () => {
 
   // Unduh kode pemulihan dalam bentuk file .txt
   const handleDownloadCodes = () => {
-    const text = `Layanan Desa Digital — Kode Pemulihan Akun\nDibuat: ${new Date().toLocaleString('id-ID')}\n${'='.repeat(45)}\n\n${recoveryCodes.map((c, i) => `${i + 1}. ${c}`).join('\n')}\n\n${'='.repeat(45)}\nPERINGATAN: Simpan kode ini di tempat yang sangat aman.\nSetiap kode hanya dapat digunakan satu kali untuk memulihkan akses akun Anda.`;
+    const text = `Layanan Kelurahan Digital — Kode Pemulihan Akun\nDibuat: ${new Date().toLocaleString('id-ID')}\n${'='.repeat(45)}\n\n${recoveryCodes.map((c, i) => `${i + 1}. ${c}`).join('\n')}\n\n${'='.repeat(45)}\nPERINGATAN: Simpan kode ini di tempat yang sangat aman.\nSetiap kode hanya dapat digunakan satu kali untuk memulihkan akses akun Anda.`;
     const blob = new Blob([text], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'kode-pemulihan-desa.txt';
+    a.download = 'kode-pemulihan-kelurahan.txt';
     a.click();
     URL.revokeObjectURL(url);
     toast.success('File kode pemulihan telah diunduh');
@@ -169,7 +169,7 @@ const Register = () => {
       <div className="relative z-10 w-full max-w-sm">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-black tracking-tight mb-2">Daftar Akun</h1>
-          <p className="text-sm text-gray-500">Layanan Desa Digital</p>
+          <p className="text-sm text-gray-500">Layanan Kelurahan Digital</p>
         </div>
 
         <div className="glass-card rounded-3xl p-6 sm:p-8">

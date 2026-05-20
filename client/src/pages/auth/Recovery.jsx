@@ -79,12 +79,12 @@ const Recovery = () => {
 
   // Unduh kode pemulihan dalam bentuk file .txt
   const handleDownloadCodes = () => {
-    const text = `Layanan Desa Digital — Kode Pemulihan Baru\nDibuat: ${new Date().toLocaleString('id-ID')}\n${'='.repeat(45)}\n\n${newRecoveryCodes.map((c, i) => `${i + 1}. ${c}`).join('\n')}\n\n${'='.repeat(45)}\nPERINGATAN: Simpan kode ini di tempat yang sangat aman.\nKode lama Anda sudah tidak berlaku.`;
+    const text = `Layanan Kelurahan Digital — Kode Pemulihan Baru\nDibuat: ${new Date().toLocaleString('id-ID')}\n${'='.repeat(45)}\n\n${newRecoveryCodes.map((c, i) => `${i + 1}. ${c}`).join('\n')}\n\n${'='.repeat(45)}\nPERINGATAN: Simpan kode ini di tempat yang sangat aman.\nKode lama Anda sudah tidak berlaku.`;
     const blob = new Blob([text], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'kode-pemulihan-baru.txt';
+    a.download = 'kode-pemulihan-baru-kelurahan.txt';
     a.click();
     URL.revokeObjectURL(url);
     toast.success('File kode pemulihan telah diunduh');

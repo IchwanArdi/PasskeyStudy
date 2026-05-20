@@ -3,9 +3,9 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 // Daftar gambar yang ditampilkan di carousel
 const images = [
-  { src: '/pwt1.jpg', title: 'Pemandangan Desa 1' },
-  { src: '/pwt2.jpg', title: 'Pemandangan Desa 2' },
-  { src: '/pwt3.jpg', title: 'Pemandangan Desa 3' },
+  { src: '/pwt1.jpg', title: 'Pemandangan Kelurahan 1' },
+  { src: '/pwt2.jpg', title: 'Pemandangan Kelurahan 2' },
+  { src: '/pwt3.jpg', title: 'Pemandangan Kelurahan 3' },
 ];
 
 const VillageCarousel = () => {
@@ -118,7 +118,7 @@ const VillageCarousel = () => {
 
       {/* Label Informasi Foto */}
       <div className="absolute top-6 left-6 px-3 py-1 bg-black/20 backdrop-blur-md border border-white/10 dark:border-black/10 dark:bg-white/20 rounded-full">
-        <span className="text-[10px] font-black dark:text-white text-black uppercase tracking-widest">Foto Desa Kami</span>
+        <span className="text-[10px] font-black dark:text-white text-black uppercase tracking-widest">Foto Kelurahan Kami</span>
       </div>
     </div>
   );
