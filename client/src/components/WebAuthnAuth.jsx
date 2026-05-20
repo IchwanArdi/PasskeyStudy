@@ -42,25 +42,47 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
     setMessage('');
 
     try {
+      console.log('\n==================================================');
+      console.log('[REGISTRASI WEBAUTHN - LANGKAH 1] Meminta opsi registrasi dari server...');
+      console.log(` -> Payload dikirim: NIK = ${nik}, Nama = ${username}`);
+      
       setMessage('Meminta opsi registrasi...');
       const options = await api.post('/auth/webauthn/register/options', { nik, username });
+      
+      console.log(' -> Respon Opsi Registrasi dari server:', options);
+      console.log('    - Challenge dari server:', options.challenge);
+      console.log('    - RpID (Domain):', options.rp.id);
 
-      // Memulai proses pembuatan kunci di perangkat (pop-up biometrik)
+      setMessage('Memicu sensor biometrik perangkat...');
+      console.log('[REGISTRASI WEBAUTHN - LANGKAH 2] Memanggil startRegistration() dari @simplewebauthn/browser...');
+      console.log(' -> Menunggu warga memverifikasi sidik jari/wajah pada prompt browser...');
+      
       const credential = await startRegistration({
         ...options,
       });
+      
+      console.log(' -> Kredensial berhasil dibuat oleh Authenticator Perangkat!');
+      console.log('    - Credential ID:', credential.id);
+      console.log('    - Raw Attestation Object:', credential.response.attestationObject);
+      console.log('    - Client Data JSON (mengandung origin & challenge):', atob(credential.response.clientDataJSON));
 
       setMessage('Menyimpan kunci aman ke server...');
+      console.log('[REGISTRASI WEBAUTHN - LANGKAH 3] Mengirim data kredensial ke server untuk verifikasi...');
+      
       const verifyResponse = await api.post('/auth/webauthn/register/verify', {
         nik,
         credential,
       });
+      
+      console.log(' -> Verifikasi backend berhasil! Pengguna telah terdaftar.');
+      console.log('    - User Info:', verifyResponse.user);
+      console.log('==================================================\n');
 
-      // Simpan token dan info pengguna jika verifikasi berhasil
       setAuth(verifyResponse.token, verifyResponse.user);
       setMessage('Registrasi berhasil!');
       onSuccess(verifyResponse);
     } catch (err) {
+      console.error(' [!] Error saat registrasi:', err);
       // Sembunyikan pesan error jika pengguna membatalkan proses (Abort/NotAllowed)
       if (err.name === 'AbortError' || err.name === 'NotAllowedError' || err.message?.includes('timed out')) {
         setLoading(false);
@@ -98,28 +120,51 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
     setMessage('');
 
     try {
+      console.log('\n==================================================');
+      console.log('[LOGIN WEBAUTHN - LANGKAH 1] Meminta opsi login (challenge) dari server...');
+      console.log(` -> Payload dikirim: NIK/Identifier = ${nik}`);
+      
       setMessage('Menghubungkan ke sistem kelurahan...');
       const options = await api.post('/auth/webauthn/login/options', { identifier: nik });
+
+      console.log(' -> Respon Opsi Login dari server:', options);
+      console.log('    - Challenge dari server:', options.challenge);
+      console.log('    - Jumlah kredensial terdaftar yang diizinkan:', options.allowCredentials?.length);
 
       if (!options || !options.challenge) {
         throw new Error('Gagal mendapatkan respon dari server.');
       }
 
       setMessage('Silakan gunakan sidik jari atau wajah Anda...');
+      console.log('[LOGIN WEBAUTHN - LANGKAH 2] Memanggil startAuthentication() dari @simplewebauthn/browser...');
+      console.log(' -> Menunggu warga memverifikasi sidik jari/wajah pada perangkat...');
+      
       const credential = await startAuthentication({
         ...options,
       });
 
+      console.log(' -> Pengguna memverifikasi sidik jari! Tanda tangan digital berhasil dibuat perangkat.');
+      console.log('    - Credential ID yang digunakan:', credential.id);
+      console.log('    - Signature Kriptografis:', credential.response.signature);
+      console.log('    - Client Data JSON (mengandung challenge saat ini):', atob(credential.response.clientDataJSON));
+
       setMessage('Memverifikasi autentikasi...');
+      console.log('[LOGIN WEBAUTHN - LANGKAH 3] Mengirim signature dan data login ke server untuk verifikasi...');
+      
       const verifyResponse = await api.post('/auth/webauthn/login/verify', {
         identifier: nik,
         credential,
       });
 
+      console.log(' -> Verifikasi backend berhasil! Pengguna berhasil login.');
+      console.log('    - User Info:', verifyResponse.user);
+      console.log('==================================================\n');
+
       setAuth(verifyResponse.token, verifyResponse.user);
       setMessage('Login berhasil!');
       onSuccess(verifyResponse);
     } catch (err) {
+      console.error(' [!] Error saat login:', err);
       if (err.name === 'AbortError' || err.name === 'NotAllowedError' || err.message?.includes('timed out')) {
         setLoading(false);
         setMessage('');
