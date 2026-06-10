@@ -45,10 +45,10 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
       console.log('\n==================================================');
       console.log('[REGISTRASI WEBAUTHN - LANGKAH 1] Meminta opsi registrasi dari server...');
       console.log(` -> Payload dikirim: NIK = ${nik}, Nama = ${username}`);
-      
+
       setMessage('Meminta opsi registrasi...');
       const options = await api.post('/auth/webauthn/register/options', { nik, username });
-      
+
       console.log(' -> Respon Opsi Registrasi dari server:', options);
       console.log('    - Challenge dari server:', options.challenge);
       console.log('    - RpID (Domain):', options.rp.id);
@@ -56,11 +56,11 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
       setMessage('Memicu sensor biometrik perangkat...');
       console.log('[REGISTRASI WEBAUTHN - LANGKAH 2] Memanggil startRegistration() dari @simplewebauthn/browser...');
       console.log(' -> Menunggu warga memverifikasi sidik jari/wajah pada prompt browser...');
-      
+
       const credential = await startRegistration({
         ...options,
       });
-      
+
       console.log(' -> Kredensial berhasil dibuat oleh Authenticator Perangkat!');
       console.log('    - Credential ID:', credential.id);
       console.log('    - Raw Attestation Object:', credential.response.attestationObject);
@@ -68,12 +68,12 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
 
       setMessage('Menyimpan kunci aman ke server...');
       console.log('[REGISTRASI WEBAUTHN - LANGKAH 3] Mengirim data kredensial ke server untuk verifikasi...');
-      
+
       const verifyResponse = await api.post('/auth/webauthn/register/verify', {
         nik,
         credential,
       });
-      
+
       console.log(' -> Verifikasi backend berhasil! Pengguna telah terdaftar.');
       console.log('    - User Info:', verifyResponse.user);
       console.log('==================================================\n');
@@ -123,7 +123,7 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
       console.log('\n==================================================');
       console.log('[LOGIN WEBAUTHN - LANGKAH 1] Meminta opsi login (challenge) dari server...');
       console.log(` -> Payload dikirim: NIK/Identifier = ${nik}`);
-      
+
       setMessage('Menghubungkan ke sistem kelurahan...');
       const options = await api.post('/auth/webauthn/login/options', { identifier: nik });
 
@@ -138,7 +138,7 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
       setMessage('Silakan gunakan sidik jari atau wajah Anda...');
       console.log('[LOGIN WEBAUTHN - LANGKAH 2] Memanggil startAuthentication() dari @simplewebauthn/browser...');
       console.log(' -> Menunggu warga memverifikasi sidik jari/wajah pada perangkat...');
-      
+
       const credential = await startAuthentication({
         ...options,
       });
@@ -150,7 +150,7 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
 
       setMessage('Memverifikasi autentikasi...');
       console.log('[LOGIN WEBAUTHN - LANGKAH 3] Mengirim signature dan data login ke server untuk verifikasi...');
-      
+
       const verifyResponse = await api.post('/auth/webauthn/login/verify', {
         identifier: nik,
         credential,
@@ -171,7 +171,7 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
         return;
       }
       const errorMsg = err.response?.data?.message || err.message;
-      console.log("Pesan Error Login:", errorMsg);
+      console.log('Pesan Error Login:', errorMsg);
       setError(errorMsg || 'Login gagal, pastikan akun sudah terdaftar.');
       setMessage('');
     } finally {
@@ -221,7 +221,7 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
             className="w-full px-4 py-3 bg-white/3 border border-white/8 rounded-xl text-(--text) placeholder-gray-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all text-sm"
             placeholder="Masukkan 16 digit NIK"
           />
-          {mode === 'register' && nik.length > 0 && nik.length < 16 && <p className="text-[10px] text-yellow-400 mt-1.5 font-medium">{nik.length}/16 digit</p>}
+          {mode && nik.length > 0 && nik.length < 16 && <p className="text-[10px] text-yellow-400 mt-1.5 font-medium">{nik.length}/16 digit</p>}
         </div>
 
         {/* Notifikasi Error */}

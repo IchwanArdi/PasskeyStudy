@@ -125,18 +125,6 @@ const Profile = () => {
                       className="w-full px-4 py-3 bg-(--input-bg) border border-(--input-border) rounded-xl text-sm focus:outline-none focus:border-(--primary-hover) focus:ring-1 focus:ring-(--primary-glow) transition-all"
                     />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-(--text-muted) mb-2">NIK</label>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      name="nik"
-                      value={formData.nik}
-                      onChange={(e) => setFormData({ ...formData, nik: e.target.value.replace(/\D/g, '').slice(0, 16) })}
-                      required
-                      className="w-full px-4 py-3 bg-(--input-bg) border border-(--input-border) rounded-xl text-sm focus:outline-none focus:border-(--primary-hover) focus:ring-1 focus:ring-(--primary-glow) transition-all"
-                    />
-                  </div>
                   <div className="flex gap-3 pt-2">
                     <button type="submit" className="px-5 py-2.5 bg-(--primary) hover:bg-(--primary-hover) text-white rounded-xl text-sm font-semibold transition-all flex items-center gap-2 shadow-md hover:shadow-lg">
                       <Check className="w-4 h-4" />

@@ -141,7 +141,7 @@ const ManageDevices = () => {
   const getDeviceLabel = (cred) => {
     const type = cred.deviceType || '';
     if (type === 'platform') return 'Sidik Jari HP/Laptop';
-    if (type === 'cross-platform') return 'Pernah Discan (QR)';
+    if (type === 'cross-platform') return 'Quick Response (QR)';
     return 'Alat Masuk';
   };
 

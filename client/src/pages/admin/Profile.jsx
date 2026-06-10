@@ -133,18 +133,6 @@ const AdminProfile = () => {
                       className="w-full px-5 py-4 bg-(--card-bg) border border-(--card-border) rounded-2xl text-sm focus:outline-none focus:border-red-500/40 transition-all font-bold"
                     />
                   </div>
-                  <div>
-                    <label className="block text-[10px] font-black text-(--text-muted) uppercase tracking-widest mb-2 pl-1">NIK Baru</label>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      name="nik"
-                      value={formData.nik}
-                      onChange={(e) => setFormData({ ...formData, nik: e.target.value.replace(/\D/g, '').slice(0, 16) })}
-                      required
-                      className="w-full px-5 py-4 bg-(--card-bg) border border-(--card-border) rounded-2xl text-sm focus:outline-none focus:border-red-500/40 transition-all font-bold"
-                    />
-                  </div>
                   <div className="flex gap-3 pt-4">
                     <button type="submit" className="px-6 py-3 bg-red-600 hover:bg-red-500 text-white! rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 shadow-xl shadow-red-500/20">
                       <Check className="w-4 h-4" /> Simpan Perubahan
@@ -219,7 +207,7 @@ const AdminProfile = () => {
                       <HelpCircle className="w-6 h-6" />
                     </div>
                     <div className="text-left">
-                      <span className="text-sm font-bold block">Panduan Admin</span>
+                      <span className="text-sm font-bold block">Panduan</span>
                       <span className="text-[9px] font-black uppercase tracking-widest text-(--text-muted)\">Tata cara pengelolaan surat</span>
                     </div>
                   </div>
@@ -258,9 +246,9 @@ const AdminProfile = () => {
           </div>
 
           {/* Sidebar Status Keamanan */}
-          <div className="space-y-6">
-            <div className="bg-red-500/4 border border-red-500/10 p-7 rounded-4xl\">
-              \n <h3 className="text-[10px] font-black text-red-400 mb-5 uppercase tracking-widest border-b border-red-400/10 pb-2\">Status Proteksi</h3>
+          <div className="space-y-6 ">
+            <div className="bg-(--card-bg) border border-red-500/10 p-7 rounded-4xl\">
+              <h3 className="text-[10px] font-black text-red-400 mb-5 uppercase tracking-widest border-b border-red-400/10 pb-2\">Status Proteksi</h3>
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)] animate-pulse" />
