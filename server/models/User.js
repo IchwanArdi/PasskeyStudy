@@ -17,24 +17,9 @@ const webauthnCredentialSchema = new mongoose.Schema({
 
 // Schema Utama User
 const userSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-    minlength: 3,
-    maxlength: 30,
-  },
-  nik: {
-    type: String,
-    required: true,
-    // unique dan lowercase dihapus karena isi akan dienkripsi jadi acak
-  },
-  nikHash: {
-    type: String,
-    required: true,
-    unique: true, // Blind Index untuk pencarian cepat dan memastikan NIK unik
-  },
+  username: { type: String, required: true, unique: true, trim: true, minlength: 3, maxlength: 30 },
+  nik: { type: String, required: true },
+  nikHash: { type: String, required: true, unique: true },
   role: { type: String, enum: ['warga', 'admin'], default: 'warga' },
   webauthnCredentials: [webauthnCredentialSchema],
   createdAt: { type: Date, default: Date.now },
@@ -95,7 +80,6 @@ userSchema.methods.removeWebAuthnCredential = async function (credentialID) {
 
   // MENCEGAH TERKUNCI DARI AKUN (LOCKOUT PREVENTION)
   // Aplikasi ini murni Passwordless. User HARUS punya minimal 1 perangkat.
-  // Fitur Recovery dirancang untuk keadaan hilang, bukan untuk dipakai login harian.
   if (this.webauthnCredentials.length <= 1) {
     throw new Error('Peringatan: Anda tidak dapat menghapus satu-satunya perangkat keamanan! Harap tambahkan perangkat ke-2 terlebih dahulu sebelum menghapus perangkat ini.');
   }

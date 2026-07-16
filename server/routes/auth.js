@@ -1,7 +1,7 @@
 import express from 'express';
 import User from '../models/User.js';
 import { getRegistrationOptions, verifyRegistration, getAuthenticationOptions, verifyAuthentication } from '../utils/webauthn.js';
-import { generateToken } from '../utils/tokenHelper.js';
+import jwt from 'jsonwebtoken';
 import { createHash } from '../utils/hash.js';
 
 const router = express.Router();
@@ -124,7 +124,11 @@ router.post('/webauthn/register/verify', async (req, res) => {
     console.log(' -> Menghapus challenge dari RAM Map server karena registrasi sudah sukses.');
 
     // 4. Generate JWT Token untuk login otomatis setelah register
+    const generateToken = (userId, expiresIn = '7d') => {
+      return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn });
+    }
     const token = generateToken(user._id);
+
     console.log(` -> Generate token JWT untuk otorisasi sesi.`);
     console.log('=========================================================================');
 
@@ -255,7 +259,12 @@ router.post('/webauthn/login/verify', async (req, res) => {
       console.log(' -> Menghapus challenge dari RAM Map server untuk mencegah Replay Attack.');
 
       // Generate JWT Token
+      const generateToken = (userId, expiresIn = '7d') => {
+        return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn });
+      }
+
       const token = generateToken(user._id);
+
       console.log(` -> Generate token JWT untuk akses warga.`);
       console.log('=========================================================================');
 
@@ -269,7 +278,7 @@ router.post('/webauthn/login/verify', async (req, res) => {
     }
   } catch (error) {
     console.error(' [!] Verify login error:', error);
-    
+
     // Penanganan khusus jika tantangan tidak cocok (Replay Attack)
     if (error.message && error.message.toLowerCase().includes('challenge')) {
       console.log(' [!] Gagal: Tantangan Tidak Cocok! Potensi manipulasi replay.');
@@ -279,13 +288,13 @@ router.post('/webauthn/login/verify', async (req, res) => {
         keterangan: 'Server menolak permintaan karena tanda tangan biometrik lama dikirimkan dengan challenge baru. Ini membuktikan replay attack berhasil digagalkan.'
       });
     }
-    
+
     // [PENGUJIAN KEAMANAN 3 - DATABASE BREACH] Penanganan khusus jika tanda tangan/signature palsu
     if (
-      error.message && 
-      (error.message.toLowerCase().includes('signature') || 
-       error.message.toLowerCase().includes('decode') || 
-       error.message.toLowerCase().includes('tanda tangan'))
+      error.message &&
+      (error.message.toLowerCase().includes('signature') ||
+        error.message.toLowerCase().includes('decode') ||
+        error.message.toLowerCase().includes('tanda tangan'))
     ) {
       console.log(' [!] Gagal: Tanda Tangan Kriptografi Palsu/Tidak Valid! Potensi manipulasi signature.');
       return res.status(400).json({

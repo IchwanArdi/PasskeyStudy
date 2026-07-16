@@ -5,12 +5,11 @@ dotenv.config();
 
 // Ambil secret key dari .env (harus 32 karakter/bytes)
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || 'kunci_rahasia_minimal_32_karakter';
-const IV_LENGTH = 16; 
+const IV_LENGTH = 16;
 
 // Fungsi buat ngubah teks biasa jadi kode acak (enkripsi)
 export const encrypt = (text) => {
   if (!text) return text;
-
   // Hash key biar panjangnya pas 32 byte buat AES-256
   const key = crypto.createHash('sha256').update(String(ENCRYPTION_KEY)).digest('base64').substring(0, 32);
 
