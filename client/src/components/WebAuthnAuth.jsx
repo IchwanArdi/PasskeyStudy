@@ -58,7 +58,7 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
       console.log(' -> Menunggu warga memverifikasi sidik jari/wajah pada prompt browser...');
 
       const credential = await startRegistration({
-        ...options,
+        optionsJSON: options,
       });
 
       console.log(' -> Kredensial berhasil dibuat oleh Authenticator Perangkat!');
@@ -140,7 +140,7 @@ const WebAuthnAuth = ({ onSuccess, mode = 'login' }) => {
       console.log(' -> Menunggu warga memverifikasi sidik jari/wajah pada perangkat...');
 
       const credential = await startAuthentication({
-        ...options,
+        optionsJSON: options,
       });
 
       console.log(' -> Pengguna memverifikasi sidik jari! Tanda tangan digital berhasil dibuat perangkat.');

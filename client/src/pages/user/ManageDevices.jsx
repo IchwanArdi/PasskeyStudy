@@ -52,7 +52,7 @@ const ManageDevices = () => {
       // Step 2: Mulai "upacara" registrasi di browser
       // Browser akan minta sidik jari / wajah / PIN keamanan
       const credential = await startRegistration({
-        ...options,
+        optionsJSON: options,
       });
 
       // Step 3: Kirim hasil verifikasi dari browser balik ke server buat disimpan
@@ -197,9 +197,8 @@ const ManageDevices = () => {
                 {/* Info Perangkat */}
                 <div className="flex items-start gap-4 flex-1 min-w-0">
                   <div
-                    className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
-                      cred.deviceType === 'platform' ? 'bg-(--primary-subtle) border border-(--primary-border) text-(--primary)' : 'bg-purple-500/10 border border-purple-500/20 text-purple-400'
-                    }`}
+                    className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors ${cred.deviceType === 'platform' ? 'bg-(--primary-subtle) border border-(--primary-border) text-(--primary)' : 'bg-purple-500/10 border border-purple-500/20 text-purple-400'
+                      }`}
                   >
                     {getDeviceIcon(cred)}
                   </div>
