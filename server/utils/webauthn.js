@@ -1,4 +1,4 @@
-import { generateRegistrationOptions, verifyRegistrationResponse, generateAuthenticationOptions, verifyAuthenticationResponse, } from '@simplewebauthn/server';
+import { generateRegistrationOptions, verifyRegistrationResponse, generateAuthenticationOptions, verifyAuthenticationResponse } from '@simplewebauthn/server';
 import { isoUint8Array } from '@simplewebauthn/server/helpers'; // helper untuk konversi data ke format biner
 
 // Nama aplikasi (Relying Party Name)
@@ -8,24 +8,22 @@ const rpID = process.env.RP_ID;
 // Origin website (harus sama dengan domain frontend)
 const origin = process.env.RP_ORIGIN;
 
-
 // ======================================================
 // 1. MEMINTA OPSI REGISTRASI PASSKEY KE BROWSER
 // ======================================================
 
 export const getRegistrationOptions = async (user, allowExisting = false) => {
-
   // ID user harus diubah ke format biner (Uint8Array) karena WebAuthn tidak menerima string biasa
   const userID = isoUint8Array.fromUTF8String(user._id.toString());
 
-  // Jika user sudah pernah punya passkey maka perangkat tersebut dimasukkan ke daftar exclude supaya tidak bisa register passkey yang sama lagi  
+  // Jika user sudah pernah punya passkey maka perangkat tersebut dimasukkan ke daftar exclude supaya tidak bisa register passkey yang sama lagi
   const excludeCredentials = allowExisting
     ? []
     : (user.webauthnCredentials || []).map((cred) => ({
-      id: cred.credentialID,      // ID perangkat authenticator
-      type: 'public-key',         // tipe credential WebAuthn
-      transports: cred.transports || [], // metode komunikasi (usb, nfc, internal)
-    }));
+        id: cred.credentialID, // ID perangkat authenticator
+        type: 'public-key', // tipe credential WebAuthn
+        transports: cred.transports || [], // metode komunikasi (usb, nfc, internal)
+      }));
 
   // generateRegistrationOptions akan:
   // 1. membuat challenge random
@@ -47,19 +45,17 @@ export const getRegistrationOptions = async (user, allowExisting = false) => {
   });
 };
 
-
 // ======================================================
 // 2. VERIFIKASI HASIL REGISTRASI DARI PERANGKAT
 // ======================================================
 
 export const verifyRegistration = async (body, expectedChallenge, user) => {
-
   // Memverifikasi data registrasi yang dikirim browser
   const verification = await verifyRegistrationResponse({
-    response: body,            // data dari browser
-    expectedChallenge,         // challenge yang sebelumnya dibuat server
-    expectedOrigin: origin,    // origin harus sama dengan website
-    expectedRPID: rpID,        // domain harus cocok
+    response: body, // data dari browser
+    expectedChallenge, // challenge yang sebelumnya dibuat server
+    expectedOrigin: origin, // origin harus sama dengan website
+    expectedRPID: rpID, // domain harus cocok
     requireUserVerification: false,
   });
 
@@ -73,20 +69,16 @@ export const verifyRegistration = async (body, expectedChallenge, user) => {
 
   // Public key yang dihasilkan perangkat
   // diubah ke Base64 agar bisa disimpan di MongoDB
-  const credentialPublicKeyString =
-    Buffer.from(credential.publicKey).toString('base64');
+  const credentialPublicKeyString = Buffer.from(credential.publicKey).toString('base64');
 
   // Jenis perangkat authenticator
-  const deviceType =
-    body.response?.authenticatorAttachment ||
-    body.authenticatorAttachment ||
-    'cross-platform';
+  const deviceType = body.response?.authenticatorAttachment || body.authenticatorAttachment || 'cross-platform';
 
   // Data credential yang akan disimpan ke database
   return {
-    credentialID: credential.id,            // ID passkey
+    credentialID: credential.id, // ID passkey
     credentialPublicKey: credentialPublicKeyString, // public key
-    counter: credential.counter || 0,       // counter anti replay attack
+    counter: credential.counter || 0, // counter anti replay attack
     deviceType,
     transports: credential.transports || [], // metode komunikasi authenticator
   };
@@ -97,10 +89,9 @@ export const verifyRegistration = async (body, expectedChallenge, user) => {
 // ======================================================
 
 export const getAuthenticationOptions = async (user) => {
-
   // Mengambil semua credential milik user dari database
   const allowCredentials = (user.webauthnCredentials || []).map((cred) => ({
-    id: cred.credentialID,   // ID credential
+    id: cred.credentialID, // ID credential
     type: 'public-key',
     transports: cred.transports || [],
   }));
@@ -109,9 +100,9 @@ export const getAuthenticationOptions = async (user) => {
   // 1. membuat challenge baru
   // 2. menentukan credential mana yang boleh login
   return generateAuthenticationOptions({
-    rpID,                // domain website
-    timeout: 60000,      // waktu login
-    allowCredentials,    // daftar passkey milik user
+    rpID, // domain website
+    timeout: 60000, // waktu login
+    allowCredentials, // daftar passkey milik user
     userVerification: 'preferred',
   });
 };
@@ -121,16 +112,13 @@ export const getAuthenticationOptions = async (user) => {
 // ======================================================
 
 export const verifyAuthentication = async (body, expectedChallenge, user, credential) => {
-
   // Pastikan credential ada di database
   if (!credential?.credentialID || !credential?.credentialPublicKey) {
     throw new Error('Pengguna tidak memiliki data yang valid untuk login');
   }
 
   // public key disimpan di DB berupa Base64 diubah kembali ke format biner untuk verifikasi kriptografi
-  const publicKeyBytes = new Uint8Array(
-    Buffer.from(credential.credentialPublicKey, 'base64')
-  );
+  const publicKeyBytes = new Uint8Array(Buffer.from(credential.credentialPublicKey, 'base64'));
 
   // membuat objek credential untuk proses verifikasi
   const webauthnCredential = {
@@ -175,7 +163,6 @@ export const verifyAuthentication = async (body, expectedChallenge, user, creden
 
   return {
     verified: true,
-    newCounter:
-      verification.authenticationInfo?.newCounter ?? 0,
+    newCounter: verification.authenticationInfo?.newCounter ?? 0,
   };
 };

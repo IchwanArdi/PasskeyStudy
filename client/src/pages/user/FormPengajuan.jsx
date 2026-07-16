@@ -37,6 +37,7 @@ const FormPengajuan = () => {
         e.target.value = '';
         return;
       }
+      // Untuk membaca file dan mengubahnya menjadi base64
       const reader = new FileReader();
       reader.onloadend = () => {
         setForm({ ...form, dokumenPengantar: reader.result });

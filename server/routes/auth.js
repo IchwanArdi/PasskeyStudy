@@ -18,7 +18,7 @@ const challenges = new Map();
 router.post('/webauthn/register/options', async (req, res) => {
   try {
     const { nik, username: inputUsername } = req.body;
-    
+
     console.log('\n=========================================================================');
     console.log('[REGISTRASI - LANGKAH 1] Menerima permintaan opsi pendaftaran');
     console.log(` -> Input dari User - NIK: "${nik}", Nama: "${inputUsername}"`);
@@ -31,7 +31,7 @@ router.post('/webauthn/register/options', async (req, res) => {
     // 1. Enkripsi & Pencarian menggunakan Blind Index (nikHash)
     const nikHash = createHash(nik);
     console.log(` -> Melakukan Hashing NIK (HMAC-SHA256) untuk mencari di DB: ${nikHash}`);
-    
+
     let user = await User.findOne({ nikHash });
 
     // Jika user belum terdaftar, buat akun baru secara otomatis (Auto-register)
@@ -55,7 +55,7 @@ router.post('/webauthn/register/options', async (req, res) => {
         nikHash
       });
       await user.save();
-      
+
       console.log(' -> Berhasil menyimpan warga baru ke MongoDB.');
       console.log(`    - NIK Terenkripsi (AES-256-CBC): ${user.nik}`);
       console.log(`    - NIK Hash (Blind Index): ${user.nikHash}`);
@@ -66,7 +66,7 @@ router.post('/webauthn/register/options', async (req, res) => {
     // 2. Buat opsi registrasi WebAuthn
     console.log(' -> Memanggil getRegistrationOptions() untuk membuat tantangan kriptografi...');
     const options = await getRegistrationOptions(user);
-    
+
     console.log(`    - Challenge yang dibuat server: "${options.challenge}"`);
     console.log(`    - RP ID (Domain Server): "${options.rp.id}"`);
     console.log(`    - User ID (Biner): ${options.user.id}`);
@@ -113,7 +113,7 @@ router.post('/webauthn/register/verify', async (req, res) => {
     // 3. Verifikasi respons tanda tangan dari browser
     console.log(' -> Memanggil verifyRegistration() untuk memvalidasi tanda tangan kriptografi...');
     const credentialData = await verifyRegistration(credential, expectedChallenge, user);
-    
+
     console.log(' -> Kunci publik valid! Menyimpan perangkat baru ke database...');
     console.log(`    - Kunci Publik (Base64): ${credentialData.credentialPublicKey.slice(0, 30)}...`);
     console.log(`    - Tipe Perangkat: ${credentialData.deviceType}`);
@@ -239,10 +239,10 @@ router.post('/webauthn/login/verify', async (req, res) => {
     // 4. Verifikasi tanda tangan digital menggunakan Kunci Publik
     console.log(' -> Memproses verifikasi tanda tangan kriptografi (verifyAuthentication)...');
     const verification = await verifyAuthentication(credential, expectedChallenge, user, userCredential);
-    
+
     if (verification.verified) {
       console.log(' -> Tanda tangan digital valid! Otentikasi sukses.');
-      
+
       // Update counter di database (untuk menangkal Replay Attack)
       console.log(`    - Counter Baru dari Perangkat: ${verification.newCounter}`);
       userCredential.counter = verification.newCounter;
@@ -269,6 +269,8 @@ router.post('/webauthn/login/verify', async (req, res) => {
     }
   } catch (error) {
     console.error(' [!] Verify login error:', error);
+    
+    // Penanganan khusus jika tantangan tidak cocok (Replay Attack)
     if (error.message && error.message.toLowerCase().includes('challenge')) {
       console.log(' [!] Gagal: Tantangan Tidak Cocok! Potensi manipulasi replay.');
       return res.status(400).json({
@@ -277,6 +279,22 @@ router.post('/webauthn/login/verify', async (req, res) => {
         keterangan: 'Server menolak permintaan karena tanda tangan biometrik lama dikirimkan dengan challenge baru. Ini membuktikan replay attack berhasil digagalkan.'
       });
     }
+    
+    // [PENGUJIAN KEAMANAN 3 - DATABASE BREACH] Penanganan khusus jika tanda tangan/signature palsu
+    if (
+      error.message && 
+      (error.message.toLowerCase().includes('signature') || 
+       error.message.toLowerCase().includes('decode') || 
+       error.message.toLowerCase().includes('tanda tangan'))
+    ) {
+      console.log(' [!] Gagal: Tanda Tangan Kriptografi Palsu/Tidak Valid! Potensi manipulasi signature.');
+      return res.status(400).json({
+        error: 'Tanda Tangan Tidak Valid (Signature Verification Failed)',
+        message: error.message,
+        keterangan: 'Server menolak permintaan karena stempel/tanda tangan digital palsu atau formatnya rusak. Ini membuktikan meskipun data credentialID dari database bocor, penyerang tidak bisa login tanpa Kunci Privat asli.'
+      });
+    }
+
     res.status(400).json({ message: 'Login gagal', error: error.message });
   }
 });

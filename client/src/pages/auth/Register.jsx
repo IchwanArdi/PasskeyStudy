@@ -4,10 +4,6 @@ import WebAuthnAuth from '../../components/WebAuthnAuth';
 import { toast } from 'react-toastify';
 import { Shield, CheckCircle, Copy, Download, AlertTriangle, ArrowRight, HelpCircle } from 'lucide-react';
 
-/**
- * Register Page — Halaman pendaftaran akun warga baru.
- * Menggunakan biometrik (Passkey) dan menghasilkan kode pemulihan cadangan.
- */
 const Register = () => {
   const navigate = useNavigate();
   const [showRecoveryCodes, setShowRecoveryCodes] = useState(false);
@@ -124,7 +120,6 @@ const Register = () => {
             >
               Sudah Saya Simpan <ArrowRight className="w-4 h-4" />
             </button>
-
           </div>
         </div>
 
@@ -137,7 +132,7 @@ const Register = () => {
               </div>
               <h3 className="text-base font-black text-(--text) mb-2">Apakah Anda Yakin?</h3>
               <p className="text-xs text-gray-500 leading-relaxed mb-6 font-medium">
-                Pastikan Anda benar-benar telah <span className="text-amber-500 font-bold">menyalin</span> atau <span className="text-amber-500 font-bold">mengunduh</span> kode pemulihan ini. 
+                Pastikan Anda benar-benar telah <span className="text-amber-500 font-bold">menyalin</span> atau <span className="text-amber-500 font-bold">mengunduh</span> kode pemulihan ini.
                 <br />
                 <span className="text-red-400 font-bold mt-1 block">Anda tidak akan bisa melihat kode ini lagi!</span>
               </p>
@@ -158,7 +153,6 @@ const Register = () => {
             </div>
           </div>
         )}
-
       </div>
     );
   }

@@ -31,7 +31,7 @@ router.post('/', authenticate, async (req, res) => {
       keperluan: keperluan.trim(),
       penghasilan: Number(penghasilan) || 0,
       jumlahTanggungan: Number(jumlahTanggungan) || 0,
-      dokumenPengantar: dokumenPengantar || null
+      dokumenPengantar: dokumenPengantar || null,
     });
     res.status(201).json({ message: 'Pengajuan terkirim', pengajuan });
   } catch (error) {
@@ -44,13 +44,13 @@ router.get('/saya', authenticate, async (req, res) => {
   try {
     const list = await Pengajuan.find({ userId: req.user._id }).sort({ createdAt: -1 }).lean();
     // Dekripsi biar tampil teks aslinya
-    const decrypted = list.map(p => ({ 
-      ...p, 
-      nik: decrypt(p.nik), 
+    const decrypted = list.map((p) => ({
+      ...p,
+      nik: decrypt(p.nik),
       namaLengkap: decrypt(p.namaLengkap),
       tempatLahir: decrypt(p.tempatLahir),
       tanggalLahir: decrypt(p.tanggalLahir),
-      alamat: decrypt(p.alamat) 
+      alamat: decrypt(p.alamat),
     }));
     res.json({ pengajuan: decrypted });
   } catch (error) {
@@ -68,7 +68,7 @@ router.get('/:id', authenticate, async (req, res) => {
     if (req.user.role !== 'admin' && p.userId._id.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: 'Akses ditolak' });
     }
-    
+
     p.nik = decrypt(p.nik);
     p.namaLengkap = decrypt(p.namaLengkap);
     p.tempatLahir = decrypt(p.tempatLahir);
@@ -86,13 +86,13 @@ router.get('/:id/pdf', authenticate, async (req, res) => {
     let p = await Pengajuan.findById(req.params.id).lean();
     if (!p) return res.status(404).json({ message: 'Data tidak ada' });
     if (p.status !== 'disetujui') return res.status(400).json({ message: 'Surat belum disetujui admin' });
-    
+
     p.nik = decrypt(p.nik);
     p.namaLengkap = decrypt(p.namaLengkap);
     p.tempatLahir = decrypt(p.tempatLahir);
     p.tanggalLahir = decrypt(p.tanggalLahir);
     p.alamat = decrypt(p.alamat);
-    
+
     const pdfBytes = await generateSuratPDF(p);
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="Surat_${p.nik}.pdf"`);
@@ -121,15 +121,15 @@ router.get('/admin/semua', authenticate, adminOnly, async (req, res) => {
   try {
     const { status } = req.query;
     const filter = status ? { status } : {};
-    
+
     const list = await Pengajuan.find(filter).sort({ createdAt: -1 }).populate('userId', 'username nik').lean();
-    const decrypted = list.map(p => ({ 
-      ...p, 
-      nik: decrypt(p.nik), 
+    const decrypted = list.map((p) => ({
+      ...p,
+      nik: decrypt(p.nik),
       namaLengkap: decrypt(p.namaLengkap),
       tempatLahir: decrypt(p.tempatLahir),
       tanggalLahir: decrypt(p.tanggalLahir),
-      alamat: decrypt(p.alamat) 
+      alamat: decrypt(p.alamat),
     }));
     res.json({ pengajuan: decrypted });
   } catch (error) {
@@ -141,11 +141,7 @@ router.get('/admin/semua', authenticate, adminOnly, async (req, res) => {
 router.patch('/:id/status', authenticate, adminOnly, async (req, res) => {
   const { status, catatanAdmin } = req.body;
   try {
-    const p = await Pengajuan.findByIdAndUpdate(
-      req.params.id, 
-      { status, catatanAdmin, diprosesoleh: req.user._id }, 
-      { new: true }
-    );
+    const p = await Pengajuan.findByIdAndUpdate(req.params.id, { status, catatanAdmin, diprosesoleh: req.user._id }, { new: true });
     res.json({ message: 'Status surat diperbarui', pengajuan: p });
   } catch (error) {
     res.status(500).json({ message: 'Gagal update status' });
