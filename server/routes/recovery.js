@@ -1,7 +1,7 @@
 import express from 'express';
 import User from '../models/User.js';
 import { getRegistrationOptions, verifyRegistration } from '../utils/webauthn.js';
-import { generateToken } from '../utils/tokenHelper.js';
+import jwt from 'jsonwebtoken'
 import { authenticate } from '../middleware/auth.js';
 import { createHash } from '../utils/hash.js';
 
@@ -28,13 +28,16 @@ router.post('/verify-code', async (req, res) => {
   const { nik, code } = req.body;
   const user = await User.findOne({ nikHash: createHash(nik) });
   if (!user) return res.status(404).json({ message: 'User tidak ditemukan' });
-  
+
   const isValid = await user.useRecoveryCode(code);
   if (!isValid) return res.status(401).json({ message: 'Kode tidak valid/sudah dipakai' });
 
-  // Kasih token sementara buat daftar HP baru
-  const tempToken = generateToken(user._id, '1h');
-  res.json({ message: 'Kode valid! Silakan daftarkan perangkat baru.', token: tempToken });
+  // Kasih token sementara buat daftar device baru
+  const generateToken = (userId, expiresIn = '5h') => {
+    return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn });
+  }
+  const tempToken = generateToken(user._id);
+  res.json({ message: 'Kode valid! Silakan daftarkan device baru.', token: tempToken });
 });
 
 // --- 2. RECOVERY WEBAUTHN (DAFTAR ULANG) ---
@@ -56,15 +59,17 @@ router.post('/re-register/verify', authenticate, async (req, res) => {
 
   try {
     const credentialData = await verifyRegistration(credential, expected, user);
-    
     // Simpan perangkat (jika ID sama, kita timpa yang lama/update)
     const existIdx = user.webauthnCredentials.findIndex(c => c.credentialID === credentialData.credentialID);
     if (existIdx !== -1) user.webauthnCredentials[existIdx] = { ...user.webauthnCredentials[existIdx], ...credentialData };
     else user.webauthnCredentials.push(credentialData);
-    
+
     await user.save();
     recoveryChallenges.delete(user._id.toString());
-    
+
+    const generateToken = (userId, expiresIn = '5h') => {
+      return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn });
+    }
     const token = generateToken(user._id);
     const newCodes = await user.generateRecoveryCodes(); // Otomatis refresh kode cadangan
     res.json({ message: 'Akun berhasil dipulihkan!', token, newRecoveryCodes: newCodes });
@@ -78,10 +83,10 @@ router.post('/re-register/verify', authenticate, async (req, res) => {
 // Admin bikin kode darurat buat warga yang hilang segalanya
 router.post('/admin/emergency-code', authenticate, async (req, res) => {
   if (req.user.role !== 'admin') return res.status(403).json({ message: 'Akses ditolak' });
-  
+
   const user = await User.findById(req.body.userId);
   if (!user) return res.status(404).json({ message: 'User tidak ditemukan' });
-  
+
   const code = await user.generateEmergencyCode();
   res.json({ message: 'Kode darurat dibuat', code, username: user.username });
 });
